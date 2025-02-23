@@ -3,7 +3,7 @@
 import React from 'react';
 import MonacoEditorComponent from '../../components/MonacoEditor';
 
-const EditorPage1 = () => {
+const EditorPage = () => {
   const handleCodeSubmission = async (code: string) => {
     try {
       const response = await fetch('/api/submit-code', {
@@ -27,13 +27,13 @@ const EditorPage1 = () => {
   };
 
   return (
-    <div>
-      <h1>Monaco Editor - Page 1</h1>
+    <div className="ml-4 mr-4">
+      <h1>Medium Question - question</h1>
 
       {/* Monaco Editor with Language Selector */}
-      <MonacoEditorComponent darkMode={true} onSubmit={handleCodeSubmission} />
+      <MonacoEditorComponent onSubmit={handleCodeSubmission} />
     </div>
   );
 };
 
-export default EditorPage1;
+export default EditorPage;

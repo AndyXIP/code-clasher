@@ -5,7 +5,7 @@ export default function LeaderBoard() {
   const sortedItems = [...activityItems].sort((a, b) => b.score - a.score);
 
   return (
-    <div className= "py-10">
+    <div className= "py-5 ml-4 mr-4">
       <h2 className="px-4 text-2xl font-semibold dark:text-gray-200 sm:px-6 lg:px-8">
         Leaderboard
       </h2>
