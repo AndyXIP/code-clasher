@@ -1,10 +1,10 @@
-export default function Example() {
-    return (
-      <>
-      <div>
-        <p>problem</p>
-      </div>
-      </>
-    )
-  }
-  
+
+const Problem = () => {
+  return (
+    <div>
+      <p>problem</p>
+    </div>
+  );
+};
+
+export default Problem;
