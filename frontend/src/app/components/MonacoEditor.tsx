@@ -6,7 +6,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 interface MonacoEditorComponentProps {
-  onSubmit: (code: string) => void;
+  onSubmit: (code: string, language: string) => void;  // Updated to include language
 }
 
 const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit }) => {
@@ -20,7 +20,7 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit 
   }, []);
 
   const handleSubmit = () => {
-    onSubmit(value); // Pass the code to parent onSubmit function
+    onSubmit(value, language); // Pass the code and the language to parent onSubmit function
   };
 
   return (

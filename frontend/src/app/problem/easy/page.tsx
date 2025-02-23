@@ -4,14 +4,14 @@ import React from 'react';
 import MonacoEditorComponent from '../../components/MonacoEditor';
 
 const EditorPage = () => {
-  const handleCodeSubmission = async (code: string) => {
+  const handleCodeSubmission = async (code: string, language: string) => {
     try {
-      const response = await fetch('/api/submit-code', {
+      const response = await fetch('http://127.0.0.1:5000/api/submit-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code }), // Sending the code in the body
+        body: JSON.stringify({ code, language }), // Sending both code and language
       });
 
       if (!response.ok) {
