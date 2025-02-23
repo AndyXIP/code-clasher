@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from .randomq import generate_random_questions
+from randomq import generate_random_questions
 
 app = Flask(__name__)
 
@@ -13,4 +13,4 @@ def random_questions():
 
 if __name__ == '__main__':
     # Run the questions microservice on a separate port (e.g., 5001)
-    app.run(debug=True, port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5001)

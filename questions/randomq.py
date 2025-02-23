@@ -1,5 +1,5 @@
 import random
-from .db_client.db_client import supabase
+from db_client.db_client import supabase
 
 def generate_random_questions(count=5, difficulty='introductory'):
     """
