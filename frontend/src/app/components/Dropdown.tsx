@@ -20,7 +20,7 @@ export default function Dropdown() {
           <MenuItem>
             <Link
               href="/problem/easy"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-600 dark:focus:bg-gray-600 dark:text-gray-300"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-600 dark:focus:bg-gray-600"
             >
               Easy
             </Link>
