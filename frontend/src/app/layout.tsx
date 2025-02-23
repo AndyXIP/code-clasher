@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from './components/Navbar';
+// src/app/layout.tsx (Server-side layout)
+import { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import RootLayoutClient from './RootLayoutClient'; // Import the client-side layout
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,11 +26,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Navbar />
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <RootLayoutClient>{children}</RootLayoutClient> {/* Use client-side layout here */}
       </body>
     </html>
   );
