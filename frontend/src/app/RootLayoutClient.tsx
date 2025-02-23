@@ -1,13 +1,11 @@
-import Navbar from './components/Navbar';
+"use client";
 
 export default function RootLayoutClient({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
-
+}: { children: React.ReactNode }) {
   return (
-    <>
-      <Navbar />
-      {children}
-    </>
+    <div>
+      <main>{children}</main>
+    </div>
   );
 }
