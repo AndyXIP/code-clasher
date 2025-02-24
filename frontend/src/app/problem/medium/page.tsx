@@ -2,17 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import MonacoEditorComponent from '../../components/MonacoEditor';
-import { ChevronDownIcon } from '@heroicons/react/16/solid';
 
 const EditorPage = () => {
-  // State to store output, error messages, and test case inputs
   const [output, setOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [testCases, setTestCases] = useState<string>('');
-  const [apiTestCases, setApiTestCases] = useState<string[]>([]); // State to store fetched test cases
-  const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('testCases'); // Default to 'testCases'
+  const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
+  const [apiTestCases, setApiTestCases] = useState<{ testCase: string, expectedOutput: string }[]>([]);
+  const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('testCases');
 
-  // Fetch test cases from the backend API on component mount
   useEffect(() => {
     const fetchTestCases = async () => {
       try {
@@ -21,7 +19,7 @@ const EditorPage = () => {
           throw new Error('Failed to fetch test cases');
         }
         const data = await response.json();
-        setApiTestCases(data.testCases || []); // Assuming the backend returns an object with a 'testCases' array
+        setApiTestCases(data.testCases || []); // Ensure you're setting the correct data structure
       } catch (error) {
         console.error('Error fetching test cases:', error);
         setError('An error occurred while fetching test cases');
@@ -38,7 +36,7 @@ const EditorPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code, language }), // Sending both code and language
+        body: JSON.stringify({ code, language }),
       });
 
       if (!response.ok) {
@@ -47,23 +45,17 @@ const EditorPage = () => {
 
       const result = await response.json();
 
-      // Handle the successful submission and update output or error
       if (result.output) {
         setOutput(result.output);
-        setError(null);  // Clear previous errors
+        setError(null);
       } else if (result.error) {
         setError(result.error);
-        setOutput(null);  // Clear previous output
+        setOutput(null);
       }
     } catch (error) {
-      console.error(error);
-      setError("An error occurred while submitting the code."); // Display the error in the box
-      setOutput(null);  // Clear output in case of an error
+      setError("An error occurred while submitting the code.");
+      setOutput(null);
     }
-  };
-
-  const handleTestCaseInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTestCases(event.target.value); // Update test case inputs
   };
 
   const tabs = [
@@ -75,13 +67,12 @@ const EditorPage = () => {
 
   return (
     <div className="ml-4 mr-4">
-      <h1>Medium Question - question</h1>
+      <h1>Easy Question - question</h1>
 
-      {/* Monaco Editor with Language Selector */}
       <MonacoEditorComponent onSubmit={handleCodeSubmission} />
 
       {/* Tab Navigation */}
-      <div className="hidden sm:block mt-4 mx-auto max-w-4xl"> {/* Centering and limiting width */}
+      <div className="hidden sm:block mt-4 mx-auto max-w-4xl">
         <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow">
           {tabs.map((tab, tabIdx) => (
             <button
@@ -112,13 +103,15 @@ const EditorPage = () => {
       {activeTab === 'testCases' && (
         <div className="mt-4 space-y-4">
           <div className="flex space-x-4">
-            {/* Dynamically display the fetched test cases */}
             {apiTestCases.length > 0 ? (
               apiTestCases.map((testCase, index) => (
                 <button
                   key={index}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                  onClick={() => setTestCases(testCase)}
+                  onClick={() => {
+                    setTestCases(testCase.testCase);
+                    setSelectedTestCaseIndex(index);
+                  }}
                 >
                   Case {index + 1}
                 </button>
@@ -128,16 +121,18 @@ const EditorPage = () => {
             )}
           </div>
 
-          {/* Display Test Case Input */}
-          <div className="mt-4">
-            {/* Optional: Display entered test cases */}
-            {testCases && (
+          {selectedTestCaseIndex !== null && apiTestCases[selectedTestCaseIndex] && (
+            <div className="mt-4">
               <div className="mt-2 p-4 bg-gray-100 rounded-md">
-                <strong>Entered Test Cases:</strong>
+                <strong>Entered Test Case:</strong>
                 <p>{testCases}</p>
               </div>
-            )}
-          </div>
+              <div className="mt-2 p-4 bg-gray-100 rounded-md">
+                <strong>Expected Output:</strong>
+                <p>{apiTestCases[selectedTestCaseIndex]?.expectedOutput}</p> {/* Display expected output directly */}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -151,10 +146,9 @@ const EditorPage = () => {
             borderRadius: '5px',
             backgroundColor: '#f9f9f9',
             minHeight: '100px',
-            whiteSpace: 'pre-wrap', // Preserve newlines
+            whiteSpace: 'pre-wrap',
           }}
         >
-          {/* Render output or error */}
           {output ? (
             <pre>{output}</pre>
           ) : error ? (

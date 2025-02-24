@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Login() {
   return (
     <>
@@ -11,11 +13,13 @@ export default function Login() {
       */}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            alt="Your Company"
-            src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-            className="mx-auto h-10 w-auto"
-          />
+        <Image
+        alt="Your Company"
+        src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+        className="mx-auto"
+        width={40}  // Set a specific width (equivalent to h-10)
+        height={40} // Set a specific height (equivalent to h-10)
+        />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
             Sign in to your account
           </h2>

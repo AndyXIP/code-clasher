@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"; // Import useState and useEffect ho
 import Link from "next/link"; // Import Link for client-side navigation
 import { usePathname } from "next/navigation"; // Use Next.js's built-in pathname hook
 import Dropdown from "./Dropdown"; // Import your Dropdown component
+import Image from 'next/image';
 
 export default function Navbar() {
   const pathname = usePathname(); // Get the current URL path
@@ -41,7 +42,13 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <div className="shrink-0">
-              <img alt="Your Company" src="/favicon.ico" className="h-8 w-auto" />
+            <Image 
+            alt="Your Company" 
+            src="/favicon.ico" 
+            className="h-8 w-auto" 
+            width={32} // Provide the width
+            height={32} // Provide the height
+            />
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
