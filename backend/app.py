@@ -38,7 +38,7 @@ def submit_code():
         print(f"Server Error: {str(e)}")
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
 
-@app.route('/api/get-test-cases', methods=['GET'])
+@app.route('/api/daily-question', methods=['GET'])
 def get_test_cases():
     # Get the difficulty from the query parameter, default to 'easy' if not provided
     difficulty = request.args.get('difficulty', 'easy')

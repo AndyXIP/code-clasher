@@ -9,12 +9,15 @@ const EditorPage = () => {
   const [testCases, setTestCases] = useState<string>('');
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [apiTestCases, setApiTestCases] = useState<{ testCase: string, expectedOutput: string }[]>([]);
-  const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('testCases');
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy'); // State for difficulty
-  const [questionPrompt, setQuestionPrompt] = useState<string>(''); // State for question prompt
+  const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
+  const [questionPrompt, setQuestionPrompt] = useState<string>('');
 
-  const url = 'http://north-env.eba-gieq2phz.eu-north-1.elasticbeanstalk.com'
-  // Fetch test cases and question prompt based on difficulty
+  const url =
+  process.env.NODE_ENV === "production"
+    ? "http://north-env.eba-gieq2phz.eu-north-1.elasticbeanstalk.com"
+    : "http://127.0.0.1:5000";
+
   useEffect(() => {
     const fetchTestCasesAndPrompt = async () => {
       try {
@@ -24,7 +27,7 @@ const EditorPage = () => {
         }
         const data = await response.json();
         setApiTestCases(data.testCases || []);
-        setQuestionPrompt(data.questionPrompt || ''); // Set the question prompt dynamically
+        setQuestionPrompt(data.questionPrompt || '');
       } catch (error) {
         console.error('Error fetching test cases:', error);
         setError('An error occurred while fetching test cases');
@@ -32,17 +35,15 @@ const EditorPage = () => {
     };
 
     fetchTestCasesAndPrompt();
-  }, [difficulty]); // Re-fetch whenever difficulty changes
+  }, [difficulty]);
 
   const handleCodeSubmission = async (code: string, language: string) => {
-    const problemId = 42;  // temporary
+    const problemId = 42;
     try {
       const response = await fetch(`${url}/api/submit-code`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code, language, problemId}),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language, problemId }),
       });
 
       if (!response.ok) {
@@ -73,110 +74,108 @@ const EditorPage = () => {
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
   return (
-    <div className="ml-4 mr-4">
-      <h1>{questionPrompt ? questionPrompt : 'Loading question...'}</h1> {/* Display dynamic question prompt */}
+      <div
+        style={{ height: 'calc(100vh - 60px)' }} // 60px is the approximate height of your navbar
+        className="flex flex-col md:flex-row w-full"
+      >
+      {/* Left Side: Question & Test Cases */}
+      <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-900">
+        <h1 className="text-lg font-bold mb-4">{questionPrompt || 'Loading question...'}</h1>
 
-      {/* Difficulty Selection */}
-      <div className="mt-4 mb-4">
-        <button
-          className={`px-4 py-2 text-sm text-white font-medium rounded-md ${difficulty === 'easy' ? 'bg-blue-500' : 'bg-gray-500'}`}
-          onClick={() => setDifficulty('easy')}
-        >
-          Easy
-        </button>
-        <button
-          className={`ml-4 px-4 py-2 text-sm text-white font-medium rounded-md ${difficulty === 'medium' ? 'bg-blue-500' : 'bg-gray-500'}`}
-          onClick={() => setDifficulty('medium')}
-        >
-          Medium
-        </button>
-        <button
-          className={`ml-4 px-4 py-2 text-sm text-white font-medium rounded-md ${difficulty === 'hard' ? 'bg-blue-500' : 'bg-gray-500'}`}
-          onClick={() => setDifficulty('hard')}
-        >
-          Hard
-        </button>
-      </div>
-
-      {/* Monaco Editor Component */}
-      <MonacoEditorComponent onSubmit={handleCodeSubmission} />
-
-      {/* Tab Navigation */}
-      <div className="hidden sm:block mt-4 mx-auto max-w-4xl">
-      <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black">
-          {tabs.map((tab, tabIdx) => (
+        {/* Difficulty Selection */}
+        <div className="mt-4 mb-4 flex gap-2 justify-center">
+          {['easy', 'medium', 'hard'].map((level) => (
             <button
-              key={tab.name}
-              onClick={() => setActiveTab(tab.value as 'console' | 'testCases')}
-              aria-current={tab.current ? 'page' : undefined}
-              className={classNames(
-                tab.current ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700',
-                tabIdx === 0 ? 'rounded-l-lg' : '',
-                tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
-                'group relative min-w-0 flex-1 overflow-hidden bg-whitepx-4 py-4 text-center text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 focus:z-10',
-              )}
+              key={level}
+              className={`px-4 py-2 text-sm text-white font-medium rounded-md ${
+                difficulty === level ? 'bg-blue-500' : 'bg-gray-500'
+              }`}
+              onClick={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
             >
-              <span>{tab.name}</span>
-              <span
-                aria-hidden="true"
-                className={classNames(
-                  tab.current ? 'bg-indigo-500' : 'bg-transparent',
-                  'absolute inset-x-0 bottom-0 h-0.5',
-                )}
-              />
+              {level.charAt(0).toUpperCase() + level.slice(1)}
             </button>
           ))}
-        </nav>
-      </div>
+        </div>
 
-      {/* Display Tab Content */}
-      {activeTab === 'testCases' && (
-        <div className="mt-4 space-y-4">
-          <div className="flex space-x-4">
-            {apiTestCases.length > 0 ? (
-              apiTestCases.map((testCase, index) => (
-                <button
-                  key={index}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                  onClick={() => {
-                    setTestCases(testCase.testCase);
-                    setSelectedTestCaseIndex(index);
-                  }}
-                >
-                  Case {index + 1}
-                </button>
-              ))
-            ) : (
-              <p>No test cases available</p>
+        {/* Tab Navigation */}
+        <div className="mt-4">
+          <nav
+            aria-label="Tabs"
+            className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black"
+          >
+            {tabs.map((tab, tabIdx) => (
+              <button
+                key={tab.name}
+                onClick={() => setActiveTab(tab.value as 'console' | 'testCases')}
+                aria-current={tab.current ? 'page' : undefined}
+                className={classNames(
+                  tab.current ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700',
+                  tabIdx === 0 ? 'rounded-l-lg' : '',
+                  tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
+                  'group relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 focus:z-10',
+                )}
+              >
+                <span>{tab.name}</span>
+                <span
+                  aria-hidden="true"
+                  className={classNames(
+                    tab.current ? 'bg-indigo-500' : 'bg-transparent',
+                    'absolute inset-x-0 bottom-0 h-0.5',
+                  )}
+                />
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Display Tab Content */}
+        {activeTab === 'testCases' && (
+          <div className="mt-4 space-y-4">
+            <div className="flex space-x-4 justify-center">
+              {apiTestCases.length > 0 ? (
+                apiTestCases.map((testCase, index) => (
+                  <button
+                    key={index}
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                    onClick={() => {
+                      setTestCases(testCase.testCase);
+                      setSelectedTestCaseIndex(index);
+                    }}
+                  >
+                    Case {index + 1}
+                  </button>
+                ))
+              ) : (
+                <p>No test cases available</p>
+              )}
+            </div>
+
+            {selectedTestCaseIndex !== null && apiTestCases[selectedTestCaseIndex] && (
+              <div className="mt-4">
+                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
+                  <strong>Entered Test Case:</strong>
+                  <p>{testCases}</p>
+                </div>
+                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
+                  <strong>Expected Output:</strong>
+                  <p>{apiTestCases[selectedTestCaseIndex]?.expectedOutput}</p>
+                </div>
+              </div>
             )}
           </div>
+        )}
 
-          {selectedTestCaseIndex !== null && apiTestCases[selectedTestCaseIndex] && (
-            <div className="mt-4">
-              <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                <strong>Entered Test Case:</strong>
-                <p>{testCases}</p>
-              </div>
-              <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                <strong>Expected Output:</strong>
-                <p>{apiTestCases[selectedTestCaseIndex]?.expectedOutput}</p>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+        {activeTab === 'console' && (
+          <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px] whitespace-pre-wrap">
+            {output ? <pre>{output}</pre> : error ? <pre style={{ color: 'red' }}>{error}</pre> : <p>No output yet</p>}
+          </div>
+        )}
+      </div>
 
-      {activeTab === 'console' && (
-        <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px] whitespace-pre-wrap">
-          {output ? (
-            <pre>{output}</pre>
-          ) : error ? (
-            <pre style={{ color: 'red' }}>{error}</pre>
-          ) : (
-            <p>No output yet</p>
-          )}
-        </div>
-      )}
+      {/* Right Side: Code Editor */}
+      <div className="w-full md:w-1/2 p-4 flex flex-col">
+        <MonacoEditorComponent onSubmit={handleCodeSubmission} />
+      </div>
     </div>
   );
 };
