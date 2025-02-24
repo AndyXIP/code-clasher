@@ -24,11 +24,24 @@ export default function SignUp() {
     }
 
     // Call Supabase's signUp method with additional user metadata (username)
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { fullName } },
     });
+
+
+    if (!error && data?.user) {
+      // 2) Insert a profile row using the new user’s UUID
+      await supabase
+        .from('profiles')
+        .insert([
+          {
+            user_id: data.user.id,
+            display_name: data.user.user_metadata.fullName, // or 'username'
+          },
+        ]);
+    }
 
     if (signUpError) {
       setError(signUpError.message);
