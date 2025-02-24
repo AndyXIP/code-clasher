@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main  # Change this if needed
+    paths:
+      - 'frontend/**'      # Only trigger this workflow if something changes under 'frontend/'
+      - '!frontend/README.md' # Exclude certain files
 
 jobs:
   deploy:

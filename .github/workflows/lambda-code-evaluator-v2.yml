@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'lambda-code-evaluator-v2/**'      # Only trigger this workflow if something changes under 'frontend/'
+      - '!frontend/README.md' # Exclude certain files
 
 jobs:
   build_and_push:
