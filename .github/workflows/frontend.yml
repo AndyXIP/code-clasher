@@ -1,0 +1,31 @@
+name: Deploy Frontend to Vercel
+
+on:
+  push:
+    branches:
+      - main  # Change this to your default branch
+
+jobs:
+  deploy:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend  # Set working directory to "frontend"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build the project (optional)
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
