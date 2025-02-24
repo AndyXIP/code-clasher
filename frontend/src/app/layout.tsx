@@ -27,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Navbar /> {/* Navbar stays persistent and does NOT rerender */}
+        <header className="border-b border-gray-300 dark:border-gray-700">
+          <Navbar />
+        </header>
         <main>{children}</main> {/* Only this part updates when navigating */}
       </body>
     </html>
