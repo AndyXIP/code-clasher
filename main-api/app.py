@@ -79,7 +79,7 @@ async def shutdown_event():
 # ==== API Routes ====
 
 @app.get("/api/daily-question")
-def daily_qustion(difficulty: str = 'easy'):
+async def daily_qustion(difficulty: str = 'easy'):
     # # Temporary fake data:
     # return {
     #     'description': 'Define a function which adds 10 to the inputted integer and returns the result.',
