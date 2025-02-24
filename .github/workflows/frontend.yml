@@ -6,6 +6,7 @@ on:
       - main  # Change this if needed
     paths:
       - 'frontend/**'      # Only trigger this workflow if something changes under 'frontend/'
+      - '.github/workflows/frontend.yml'
       - '!frontend/README.md' # Exclude certain files
 
 jobs:
