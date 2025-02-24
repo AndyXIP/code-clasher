@@ -13,11 +13,12 @@ const EditorPage = () => {
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy'); // State for difficulty
   const [questionPrompt, setQuestionPrompt] = useState<string>(''); // State for question prompt
 
+  const url = 'http://north-env.eba-gieq2phz.eu-north-1.elasticbeanstalk.com'
   // Fetch test cases and question prompt based on difficulty
   useEffect(() => {
     const fetchTestCasesAndPrompt = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/get-test-cases?difficulty=${difficulty}`);
+        const response = await fetch(`${url}/api/daily-question?difficulty=${difficulty}`);
         if (!response.ok) {
           throw new Error('Failed to fetch test cases');
         }
@@ -34,13 +35,14 @@ const EditorPage = () => {
   }, [difficulty]); // Re-fetch whenever difficulty changes
 
   const handleCodeSubmission = async (code: string, language: string) => {
+    const problemId = 42;  // temporary
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/submit-code', {
+      const response = await fetch(`${url}/api/submit-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code, language }),
+        body: JSON.stringify({ code, language, problemId}),
       });
 
       if (!response.ok) {
