@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # Import CORS
+from compile_code import compile_code  # Import the compile_code function
 
 app = Flask(__name__)
 
@@ -21,14 +22,22 @@ def submit_code():
         if not language:
             return jsonify({"message": "No language provided"}), 400
 
-        # Print the submitted code and language to the console
-        print(f"Submitted Code ({language}):")
-        print(code)  # This will print the code in the server logs
+        # Print the submitted code and language to the console for debugging
+        print(f"Submitted Code ({language}):\n{code}")
 
-        # Respond with success
-        return jsonify({"message": "Code submitted successfully!"})
+        # Compile and run the code
+        output, error = compile_code(language, code)
+        print(f"Output: {output}")
+        print(f"Error: {error}")
+
+        # Check for errors
+        if error:
+            return jsonify({"message": "Error occurred", "error": error}), 400
+        
+        return jsonify({"message": "Code executed successfully!", "output": output})
 
     except Exception as e:
+        print(f"Server Error: {str(e)}")  # Log the error
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
 
 
