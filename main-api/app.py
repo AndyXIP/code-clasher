@@ -12,9 +12,9 @@ app = Flask(__name__)
 CORS(app)
 
 # Init SQS client using boto3 package
-sqs = boto3.client('sqs', region_name=os.getenv('AWS_REGION', 'eu-west-2'))
+sqs = boto3.client('sqs', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
 
-SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL', 'https://sqs.eu-west-2.amazonaws.com/202533540156/CodeQueue.fifo')
+SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
 @app.route('/')
 def index():
