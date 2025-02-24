@@ -14,9 +14,9 @@ const EditorPage = () => {
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
 
   const url =
-  process.env.NODE_ENV === "production"
-    ? "http://north-env.eba-gieq2phz.eu-north-1.elasticbeanstalk.com"
-    : "http://127.0.0.1:5000";
+    process.env.NODE_ENV === 'production'
+      ? 'http://north-env.eba-gieq2phz.eu-north-1.elasticbeanstalk.com'
+      : 'http://127.0.0.1:5000';
 
   useEffect(() => {
     const fetchTestCasesAndPrompt = async () => {
@@ -28,6 +28,12 @@ const EditorPage = () => {
         const data = await response.json();
         setApiTestCases(data.testCases || []);
         setQuestionPrompt(data.questionPrompt || '');
+
+        // If test cases are fetched, set the default to the first test case (Case 1)
+        if (data.testCases && data.testCases.length > 0) {
+          setTestCases(data.testCases[0].testCase);
+          setSelectedTestCaseIndex(0);
+        }
       } catch (error) {
         console.error('Error fetching test cases:', error);
         setError('An error occurred while fetching test cases');
@@ -61,7 +67,7 @@ const EditorPage = () => {
       }
     } catch (error) {
       console.error(error);
-      setError("An error occurred while submitting the code.");
+      setError('An error occurred while submitting the code.');
       setOutput(null);
     }
   };
@@ -74,10 +80,10 @@ const EditorPage = () => {
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
   return (
-      <div
-        style={{ height: 'calc(100vh - 60px)' }} // 60px is the approximate height of your navbar
-        className="flex flex-col md:flex-row w-full"
-      >
+    <div
+      style={{ height: 'calc(100vh - 60px)' }} // 60px is the approximate height of your navbar
+      className="flex flex-col md:flex-row w-full"
+    >
       {/* Left Side: Question & Test Cases */}
       <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600">
         <h1 className="text-lg font-bold mb-4">{questionPrompt || 'Loading question...'}</h1>
@@ -136,7 +142,11 @@ const EditorPage = () => {
                 apiTestCases.map((testCase, index) => (
                   <button
                     key={index}
-                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500"
+                    className={`px-4 py-2 text-sm font-medium rounded-md ${
+                      selectedTestCaseIndex === index
+                        ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                        : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
+                    }`}
                     onClick={() => {
                       setTestCases(testCase.testCase);
                       setSelectedTestCaseIndex(index);
@@ -153,7 +163,7 @@ const EditorPage = () => {
             {selectedTestCaseIndex !== null && apiTestCases[selectedTestCaseIndex] && (
               <div className="mt-4">
                 <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Entered Test Case:</strong>
+                  <strong>Input:</strong>
                   <p>{testCases}</p>
                 </div>
                 <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">

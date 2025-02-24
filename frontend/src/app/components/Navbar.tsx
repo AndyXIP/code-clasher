@@ -19,8 +19,12 @@ export default function Navbar() {
   // Check if dark mode preference is stored in localStorage
   useEffect(() => {
     const savedMode = localStorage.getItem("darkMode");
-    if (savedMode) {
-      setIsDarkMode(savedMode === "true");
+    if (savedMode === "true") {
+      setIsDarkMode(true);
+      document.documentElement.classList.add("dark"); // Apply dark mode on load
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove("dark"); // Ensure light mode is applied
     }
   }, []);
 
