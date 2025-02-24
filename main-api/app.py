@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import boto3
 import os
@@ -19,9 +20,17 @@ from glide import (
     LogLevel
 )
 
+
 load_dotenv()
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or specify your frontend domain(s) like ["https://myapp.vercel.app"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 valkey_client = None
 
 sqs = boto3.client('sqs', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
