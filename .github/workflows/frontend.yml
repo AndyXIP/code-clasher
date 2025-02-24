@@ -25,4 +25,4 @@ jobs:
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to the Correct Vercel Project
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --project sse-team-project
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
