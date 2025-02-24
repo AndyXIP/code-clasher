@@ -5,6 +5,17 @@ import os
 import uuid
 import json
 from dotenv import load_dotenv
+from typing import List, Optional
+import asyncio
+from glide import (
+    GlideClient,
+    GlideClientConfiguration,
+    NodeAddress,
+    TimeoutError,
+    RequestError,
+    ConnectionError,
+    ClosingError,
+)
 
 load_dotenv()
 
@@ -17,13 +28,29 @@ class SubmitCodePayload(BaseModel):
     code: str
     problem_id: str
     language: str
-    test_cases: list = None
+
+
 
 @app.get("/")
 def index():
-    return {"message": "hello"}
+    return {"message": "Welcome to the Main API!"}
 
-@app.post("/submit-code")
+@app.get("/api/daily-question")
+def daily_qustion(difficulty: str = 'easy'):
+    # Temporary fake data:
+    return {
+        'description': 'Define a function which adds 10 to the inputted integer and returns the result.',
+        'problem_id': '123',
+        'test_cases': [[-10], [10], [7]]
+    }
+    """
+    Check Valkey cache: if miss, get new set of questions from Questions API
+    and store in cache, and use #1; otherwise use today's Q from cache
+
+    Return the Q as json to frontend
+    """
+
+@app.post("/api/submit-code")
 def submit_code(payload: SubmitCodePayload):
     job_id = str(uuid.uuid4())
 
@@ -47,3 +74,4 @@ def submit_code(payload: SubmitCodePayload):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
