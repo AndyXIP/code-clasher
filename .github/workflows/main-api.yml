@@ -1,0 +1,48 @@
+name: Deploy main-api to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'main-api/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: main-api
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install EB CLI
+        run: |
+          pip install --upgrade pip
+          pip install awsebcli
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Initialize Elastic Beanstalk Application
+        run: |
+          # Initialize EB using the Docker platform.
+          eb init -p docker main-api --region ${{ secrets.AWS_REGION }}
+          # Use the target environment
+          eb use north-env
+
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          eb deploy
+
