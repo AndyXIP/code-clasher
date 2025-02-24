@@ -86,19 +86,21 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit 
           theme: theme, // Apply the theme (which is always vs-dark)
         }}
       />
-      <button
-        type="button"
-        className="rounded-md bg-indigo-200 dark:bg-indigo-300 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
-      >
-        Run
-      </button>
-      <button
-        type="button"
-        onClick={handleSubmit}
-        className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-      >
-        Submit Code
-      </button>
+      <div className="flex justify-end space-x-4 mt-4"> {/* Flex container with space between items */}
+        <button
+          type="button"
+          className="rounded-md bg-indigo-200 dark:bg-indigo-300 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
+        >
+          Run
+        </button>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          Submit Code
+        </button>
+      </div>
     </div>
   );
 };

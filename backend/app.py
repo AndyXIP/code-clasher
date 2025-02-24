@@ -40,12 +40,34 @@ def submit_code():
 
 @app.route('/api/get-test-cases', methods=['GET'])
 def get_test_cases():
-    # Example test cases and their corresponding expected outputs
-    test_cases = [
-        {"testCase": "[1, 2, 5]", "expectedOutput": "8"},
-        {"testCase": "[6, 1, -4, 1]", "expectedOutput": "4"}
-    ]
-    return jsonify({"testCases": test_cases})
+    # Get the difficulty from the query parameter, default to 'easy' if not provided
+    difficulty = request.args.get('difficulty', 'easy')
+
+    # Define different test cases and question prompts for each difficulty
+    if difficulty == 'easy':
+        test_cases = [
+            {"testCase": "[1, 2, 5]", "expectedOutput": "8"},
+            {"testCase": "[6, 1, -4, 1]", "expectedOutput": "4"}
+        ]
+        question_prompt = "Given an array of integers, write a function that returns the sum of all elements."
+    elif difficulty == 'medium':
+        test_cases = [
+            {"testCase": "[1, 2, 5, 10]", "expectedOutput": "18"},
+            {"testCase": "[3, -1, -4, 6]", "expectedOutput": "4"}
+        ]
+        question_prompt = "Given an array of integers, write a function that returns the sum of all positive numbers."
+    elif difficulty == 'hard':
+        test_cases = [
+            {"testCase": "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]", "expectedOutput": "55"},
+            {"testCase": "[-5, -3, -2, -1, 0, 1, 2, 3, 4, 5]", "expectedOutput": "10"}
+        ]
+        question_prompt = "Given an array of integers, write a function that returns the sum of all elements in the array, handling both positive and negative numbers."
+
+    # Return the corresponding test cases and question prompt
+    return jsonify({
+        "testCases": test_cases,
+        "questionPrompt": question_prompt
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)

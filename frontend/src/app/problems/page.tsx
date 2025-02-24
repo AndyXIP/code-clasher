@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import MonacoEditorComponent from '../../components/MonacoEditor';
+import MonacoEditorComponent from '../components/MonacoEditor';
 
 const EditorPage = () => {
   const [output, setOutput] = useState<string | null>(null);
@@ -10,24 +10,28 @@ const EditorPage = () => {
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [apiTestCases, setApiTestCases] = useState<{ testCase: string, expectedOutput: string }[]>([]);
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('testCases');
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy'); // State for difficulty
+  const [questionPrompt, setQuestionPrompt] = useState<string>(''); // State for question prompt
 
+  // Fetch test cases and question prompt based on difficulty
   useEffect(() => {
-    const fetchTestCases = async () => {
+    const fetchTestCasesAndPrompt = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/get-test-cases');
+        const response = await fetch(`http://127.0.0.1:5000/api/get-test-cases?difficulty=${difficulty}`);
         if (!response.ok) {
           throw new Error('Failed to fetch test cases');
         }
         const data = await response.json();
-        setApiTestCases(data.testCases || []); // Ensure you're setting the correct data structure
+        setApiTestCases(data.testCases || []);
+        setQuestionPrompt(data.questionPrompt || ''); // Set the question prompt dynamically
       } catch (error) {
         console.error('Error fetching test cases:', error);
         setError('An error occurred while fetching test cases');
       }
     };
 
-    fetchTestCases();
-  }, []); // Empty dependency array means it will run once when the component mounts
+    fetchTestCasesAndPrompt();
+  }, [difficulty]); // Re-fetch whenever difficulty changes
 
   const handleCodeSubmission = async (code: string, language: string) => {
     try {
@@ -68,13 +72,36 @@ const EditorPage = () => {
 
   return (
     <div className="ml-4 mr-4">
-      <h1>Easy Question - question</h1>
+      <h1>{questionPrompt ? questionPrompt : 'Loading question...'}</h1> {/* Display dynamic question prompt */}
 
+      {/* Difficulty Selection */}
+      <div className="mt-4 mb-4">
+        <button
+          className={`px-4 py-2 text-sm text-white font-medium rounded-md ${difficulty === 'easy' ? 'bg-blue-500' : 'bg-gray-500'}`}
+          onClick={() => setDifficulty('easy')}
+        >
+          Easy
+        </button>
+        <button
+          className={`ml-4 px-4 py-2 text-sm text-white font-medium rounded-md ${difficulty === 'medium' ? 'bg-blue-500' : 'bg-gray-500'}`}
+          onClick={() => setDifficulty('medium')}
+        >
+          Medium
+        </button>
+        <button
+          className={`ml-4 px-4 py-2 text-sm text-white font-medium rounded-md ${difficulty === 'hard' ? 'bg-blue-500' : 'bg-gray-500'}`}
+          onClick={() => setDifficulty('hard')}
+        >
+          Hard
+        </button>
+      </div>
+
+      {/* Monaco Editor Component */}
       <MonacoEditorComponent onSubmit={handleCodeSubmission} />
 
       {/* Tab Navigation */}
       <div className="hidden sm:block mt-4 mx-auto max-w-4xl">
-        <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black">
+      <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black">
           {tabs.map((tab, tabIdx) => (
             <button
               key={tab.name}
@@ -130,7 +157,7 @@ const EditorPage = () => {
               </div>
               <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
                 <strong>Expected Output:</strong>
-                <p>{apiTestCases[selectedTestCaseIndex]?.expectedOutput}</p> {/* Display expected output directly */}
+                <p>{apiTestCases[selectedTestCaseIndex]?.expectedOutput}</p>
               </div>
             </div>
           )}
@@ -142,7 +169,7 @@ const EditorPage = () => {
           {output ? (
             <pre>{output}</pre>
           ) : error ? (
-            <pre style={{ color: 'red' }}>{error}</pre> // This is where you are using `error`
+            <pre style={{ color: 'red' }}>{error}</pre>
           ) : (
             <p>No output yet</p>
           )}

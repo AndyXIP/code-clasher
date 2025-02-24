@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"; // Import useState and useEffect hooks
 import Link from "next/link"; // Import Link for client-side navigation
 import { usePathname } from "next/navigation"; // Use Next.js's built-in pathname hook
-import Dropdown from "./Dropdown"; // Import your Dropdown component
 import Image from 'next/image';
 import { MoonIcon} from '@heroicons/react/24/solid';
 
@@ -14,6 +13,7 @@ export default function Navbar() {
   const links = [
     { name: "Dashboard", href: "/" },
     { name: "Leader Board", href: "/leaderboard" },
+    { name: "Problems", href: "/problems"},
   ];
 
   // Check if dark mode preference is stored in localStorage
@@ -66,8 +66,6 @@ export default function Navbar() {
                     {link.name}
                   </Link>
                 ))}
-                {/* Dropdown Component */}
-                <Dropdown />
               </div>
             </div>
           </div>
