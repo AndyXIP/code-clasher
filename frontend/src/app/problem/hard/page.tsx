@@ -74,17 +74,17 @@ const EditorPage = () => {
 
       {/* Tab Navigation */}
       <div className="hidden sm:block mt-4 mx-auto max-w-4xl">
-        <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow">
+        <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black">
           {tabs.map((tab, tabIdx) => (
             <button
               key={tab.name}
               onClick={() => setActiveTab(tab.value as 'console' | 'testCases')}
               aria-current={tab.current ? 'page' : undefined}
               className={classNames(
-                tab.current ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700',
+                tab.current ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700',
                 tabIdx === 0 ? 'rounded-l-lg' : '',
                 tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
-                'group relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10',
+                'group relative min-w-0 flex-1 overflow-hidden bg-whitepx-4 py-4 text-center text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 focus:z-10',
               )}
             >
               <span>{tab.name}</span>
@@ -124,11 +124,11 @@ const EditorPage = () => {
 
           {selectedTestCaseIndex !== null && apiTestCases[selectedTestCaseIndex] && (
             <div className="mt-4">
-              <div className="mt-2 p-4 bg-gray-100 rounded-md">
+              <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
                 <strong>Entered Test Case:</strong>
                 <p>{testCases}</p>
               </div>
-              <div className="mt-2 p-4 bg-gray-100 rounded-md">
+              <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
                 <strong>Expected Output:</strong>
                 <p>{apiTestCases[selectedTestCaseIndex]?.expectedOutput}</p> {/* Display expected output directly */}
               </div>
@@ -138,18 +138,7 @@ const EditorPage = () => {
       )}
 
       {activeTab === 'console' && (
-        <div
-          style={{
-            marginTop: '20px',
-            marginBottom: '20px',
-            padding: '15px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-            backgroundColor: '#f9f9f9',
-            minHeight: '100px',
-            whiteSpace: 'pre-wrap',
-          }}
-        >
+        <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px] whitespace-pre-wrap">
           {output ? (
             <pre>{output}</pre>
           ) : error ? (
