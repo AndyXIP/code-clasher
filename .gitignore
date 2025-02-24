@@ -8,6 +8,7 @@ __pycache__/
 
 # AWS
 AWSCLIV2.pkg
+eb-selfsigned*
 
 # Distribution / packaging
 .Python
