@@ -28,7 +28,6 @@ def submit_code():
         # Compile and run the code
         output, error = compile_code(language, code)
         print(f"Output: {output}")
-        print(f"Error: {error}")
 
         # Check for errors
         if error:

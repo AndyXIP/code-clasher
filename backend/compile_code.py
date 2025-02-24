@@ -3,28 +3,46 @@ import os
 
 # Function to compile and run Python code
 def run_python(code):
-    with open("temp_code.py", "w") as f:
+    filename = "temp_code.py"
+
+    # Write the Python code to a temporary file
+    with open(filename, "w") as f:
         f.write(code)
     
     try:
-        result = subprocess.run(["python3", "temp_code.py"], capture_output=True, text=True)  # Use python3
+        result = subprocess.run(["python3", filename], capture_output=True, text=True)
         return result.stdout, result.stderr
     except Exception as e:
         return f"Error: {str(e)}", ""
+    finally:
+        if os.path.exists(filename):
+            os.remove(filename)  # Clean up Python file
 
 # Function to compile and run C++ code
 def run_cpp(code):
-    with open("temp_code.cpp", "w") as f:
+    cpp_filename = "temp_code.cpp"
+    executable = "temp_code"
+
+    with open(cpp_filename, "w") as f:
         f.write(code)
     
     try:
-        subprocess.run(["g++", "temp_code.cpp", "-o", "temp_code"], check=True)
-        result = subprocess.run(["./temp_code"], capture_output=True, text=True)
+        # Compile C++ code
+        subprocess.run(["g++", cpp_filename, "-o", executable], check=True)
+
+        # Run the compiled binary
+        result = subprocess.run(["./" + executable], capture_output=True, text=True)
         return result.stdout, result.stderr
     except subprocess.CalledProcessError as e:
         return f"Compilation Error: {e.stderr}", ""
     except Exception as e:
         return f"Error: {str(e)}", ""
+    finally:
+        # Clean up temporary files
+        if os.path.exists(cpp_filename):
+            os.remove(cpp_filename)
+        if os.path.exists(executable):
+            os.remove(executable)
 
 # Function to compile and run Java code
 def run_java(code):
@@ -39,7 +57,7 @@ def run_java(code):
         subprocess.run(["javac", java_filename], check=True)
 
         # Run the compiled Java program
-        result = subprocess.run(["java", "Test"], capture_output=True, text=True)  # No .class extension
+        result = subprocess.run(["java", "Test"], capture_output=True, text=True)
         return result.stdout, result.stderr
     except subprocess.CalledProcessError as e:
         return f"Compilation Error: {e.stderr}", ""
