@@ -6,10 +6,14 @@ on:
       - main
     paths:
       - 'lambda-code-evaluator-v2/**'      # Only trigger this workflow if something changes under 'frontend/'
-      - '!frontend/README.md' # Exclude certain files
+      - '!lambda-code-evaluator-v2/README.md' # Exclude certain files
 
 jobs:
   build_and_push:
+    defaults:
+      run:
+        working-directory: lambda-code-evaluator-v2
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
