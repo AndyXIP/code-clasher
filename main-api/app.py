@@ -1,61 +1,49 @@
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 import boto3
-import json
 import os
 import uuid
+import json
 from dotenv import load_dotenv
-from flask_cors import CORS
 
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI()
 
-# Init SQS client using boto3 package.
 sqs = boto3.client('sqs', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
-
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
-@app.route('/')
+class SubmitCodePayload(BaseModel):
+    code: str
+    problem_id: str
+    language: str
+    test_cases: list = None
+
+@app.get("/")
 def index():
-    return "hello"
+    return {"message": "hello"}
 
-@app.route('/submit-code', methods=['POST'])
-def submit_code():
-    print('entering submit code')
-    data = request.get_json()
-    code = data.get('code')
-    problem_id = data.get('problem_id')
-    language = data.get('language')
-    test_cases = data.get('test_cases')
-
-    if not code or not problem_id or not language:
-        return jsonify({'error': 'Missing required parameters'}), 400
-
+@app.post("/submit-code")
+def submit_code(payload: SubmitCodePayload):
     job_id = str(uuid.uuid4())
 
     job_payload = {
         'job_id': job_id,
-        'problem_id': problem_id,
-        'language': language,
-        'code': code,
+        'problem_id': payload.problem_id,
+        'language': payload.language,
+        'code': payload.code,
         'status': 'queued',
     }
-
-    message_body = json.dumps(job_payload)
 
     try:
         response = sqs.send_message(
             QueueUrl=SQS_QUEUE_URL,
-            MessageBody=message_body,
+            MessageBody=json.dumps(job_payload),
             MessageGroupId='default'
         )
-        print('sent...')
-        return jsonify({'message_id': response.get('MessageId'), 'status': 'queued'}), 200
-    
+        return {
+            "message_id": response.get('MessageId'), 
+            "status": "queued"
+        }
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
-
-if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+        raise HTTPException(status_code=500, detail=str(e))

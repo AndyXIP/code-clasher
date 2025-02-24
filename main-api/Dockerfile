@@ -14,13 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of your application code
 COPY . .
 
-# Set environment variables for Flask
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
-ENV PORT=8080
-
 # Expose port 8080 so the app is accessible
 EXPOSE 8080
 
-# Run the Flask application
-CMD ["flask", "run", "--port=8080"]
+# Run the FastAPI application using Uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
