@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import { supabase } from '../SupabaseClient';
 import Image from 'next/image';
 
