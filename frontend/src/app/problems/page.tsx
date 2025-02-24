@@ -21,7 +21,7 @@ const EditorPage = () => {
   useEffect(() => {
     const fetchTestCasesAndPrompt = async () => {
       try {
-        const response = await fetch(`${url}/daily-question?difficulty=${difficulty}`);
+        const response = await fetch(`${url}/api/daily-question?difficulty=${difficulty}`);
         if (!response.ok) {
           throw new Error('Failed to fetch test cases');
         }
@@ -46,7 +46,7 @@ const EditorPage = () => {
   const handleCodeSubmission = async (code: string, language: string) => {
     const problemId = 42;
     try {
-      const response = await fetch(`${url}/submit-code`, {
+      const response = await fetch(`${url}/api/submit-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language, problemId }),
