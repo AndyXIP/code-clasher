@@ -15,7 +15,7 @@ const EditorPage = () => {
 
   const url =
     process.env.NODE_ENV === 'production'
-      ? 'http://north-env.eba-gieq2phz.eu-north-1.elasticbeanstalk.com'
+      ? 'https://main-api.click'
       : 'http://127.0.0.1:5000';
 
   useEffect(() => {
