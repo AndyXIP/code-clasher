@@ -79,7 +79,7 @@ const EditorPage = () => {
         className="flex flex-col md:flex-row w-full"
       >
       {/* Left Side: Question & Test Cases */}
-      <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-900">
+      <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600">
         <h1 className="text-lg font-bold mb-4">{questionPrompt || 'Loading question...'}</h1>
 
         {/* Difficulty Selection */}
@@ -88,7 +88,7 @@ const EditorPage = () => {
             <button
               key={level}
               className={`px-4 py-2 text-sm text-white font-medium rounded-md ${
-                difficulty === level ? 'bg-blue-500' : 'bg-gray-500'
+                difficulty === level ? 'bg-indigo-600' : 'bg-gray-500'
               }`}
               onClick={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
             >
@@ -109,7 +109,7 @@ const EditorPage = () => {
                 onClick={() => setActiveTab(tab.value as 'console' | 'testCases')}
                 aria-current={tab.current ? 'page' : undefined}
                 className={classNames(
-                  tab.current ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700',
+                  tab.current ? 'text-gray-900 dark:text-white dark:bg-gray-800' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-400 dark:bg-gray-800',
                   tabIdx === 0 ? 'rounded-l-lg' : '',
                   tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
                   'group relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 focus:z-10',
@@ -136,7 +136,7 @@ const EditorPage = () => {
                 apiTestCases.map((testCase, index) => (
                   <button
                     key={index}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500"
                     onClick={() => {
                       setTestCases(testCase.testCase);
                       setSelectedTestCaseIndex(index);

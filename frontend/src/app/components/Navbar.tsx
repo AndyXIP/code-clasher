@@ -40,15 +40,16 @@ export default function Navbar() {
   return (
     <nav className="bg-white dark:bg-gray-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-16 items-center justify-between w-full">
+          {/* Left Side (Logo + Navigation Links) */}
           <div className="flex items-center">
             <div className="shrink-0">
               <Image 
-                alt="Your Company" 
+                alt="{CC}" 
                 src="/favicon.ico" 
                 className="h-8 w-auto" 
-                width={32} // Provide the width
-                height={32} // Provide the height
+                width={32} 
+                height={32} 
               />
             </div>
             <div className="hidden sm:ml-6 sm:block">
@@ -59,8 +60,8 @@ export default function Navbar() {
                     href={link.href}
                     className={`rounded-md px-3 py-2 text-sm font-medium ${
                       pathname === link.href
-                        ? "bg-gray-900 text-white dark:bg-gray-700 dark:text-white" // Active link styling
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" // Default styling
+                        ? "bg-gray-300 text-black dark:bg-gray-700 dark:text-white" 
+                        : "text-gray-600 hover:bg-gray-200 hover:text-black dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                     }`}
                   >
                     {link.name}
@@ -69,15 +70,15 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-          
-          {/* Buttons - Sign In and Dark Mode Toggle */}
+
+          {/* Right Side (Sign In + Dark Mode Toggle) */}
           <div className="flex items-center space-x-4">
-            {/* Dark Mode Toggle Button */}
+            {/* Dark Mode Toggle */}
             <button onClick={toggleDarkMode} className="text-gray-800 dark:text-white">
               <MoonIcon className="h-6 w-6" />
             </button>
 
-            {/* Link wrapper for the Sign In button */}
+            {/* Sign In Button */}
             <Link href="/login">
               <button
                 type="button"

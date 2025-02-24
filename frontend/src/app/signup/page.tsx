@@ -1,7 +1,6 @@
 "use client";
 import { useState } from 'react';
 import { supabase } from '../SupabaseClient';
-import Image from 'next/image';
 
 export default function SignUp() {
   const [message, setMessage] = useState('');
@@ -81,13 +80,6 @@ export default function SignUp() {
       */}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-white dark:bg-gray-900">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <Image
-            alt="Your Company"
-            src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-            className="mx-auto"
-            width={40}
-            height={40}
-          />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
             Sign up for your account
           </h2>

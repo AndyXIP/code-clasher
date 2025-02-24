@@ -1,7 +1,6 @@
 "use client";
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation'; // or 'next/router' if using the pages directory
-import Image from 'next/image';
 import { supabase } from '../SupabaseClient';
 
 export default function Login() {
@@ -37,13 +36,6 @@ export default function Login() {
       */}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <Image
-            alt="Your Company"
-            src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-            className="mx-auto"
-            width={40}
-            height={40}
-          />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
             Sign in to your account
           </h2>
