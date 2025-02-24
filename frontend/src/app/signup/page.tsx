@@ -24,30 +24,51 @@ export default function SignUp() {
     }
 
     // Call Supabase's signUp method with additional user metadata (username)
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const { data } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { fullName } },
     });
 
 
-    if (!error && data?.user) {
-      // 2) Insert a profile row using the new user’s UUID
-      await supabase
+    if (data?.user) {
+      // Insert a profile row using the new user’s UUID
+      const { error: profileError } = await supabase
         .from('profiles')
         .insert([
           {
             user_id: data.user.id,
-            display_name: data.user.user_metadata.fullName, // or 'username'
+            display_name: data.user.user_metadata.fullName, // or fullName
           },
         ]);
-    }
 
-    if (signUpError) {
-      setError(signUpError.message);
-    } else {
+      if (profileError) {
+        setError(`Profile creation error: ${profileError.message}`);
+        return;
+      }
+
+      // Insert a new row into the leaderboard with default values
+      const { error: leaderboardError } = await supabase
+        .from('leaderboard')
+        .insert([
+          {
+            user_id: data.user.id,
+            display_name: fullName || '',
+            easy: 0,
+            medium: 0,
+            hard: 0,
+          },
+        ]);
+
+      if (leaderboardError) {
+        setError(`Leaderboard error: ${leaderboardError.message}`);
+        return;
+      }
+
       setMessage('Sign up successful! Please check your email to confirm your account.');
       setError(null);
+    } else {
+      setError('Unexpected error: User not created.');
     }
   };
 
