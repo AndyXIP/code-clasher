@@ -11,6 +11,10 @@ def random_questions():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+def lambda_handler(event, context):
+    return awsgi.response(app, event, context)
+
+
 if __name__ == '__main__':
-    # Run the questions microservice on a separate port (e.g., 5001)
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=8080)

@@ -1,21 +1,12 @@
-# Use an official Python runtime as a parent image
-FROM python:3.11-slim
+# Use AWS Lambda Python 3.9 runtime base image
+FROM public.ecr.aws/lambda/python:3.9
 
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the requirements file into the container
-# (Make sure you have a requirements.txt file in your questions folder or adjust accordingly)
+# Copy requirements.txt and install dependencies
 COPY requirements.txt ./
-
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire questions package into the container
-COPY . .
+# Copy your entire application code into the container
+COPY . ${LAMBDA_TASK_ROOT}
 
-# Expose the port that the Flask app runs on (we use 5001 as defined in run.py)
-EXPOSE 5001
-
-# Command to run the microservice as a module from the package
-CMD ["python", "-m", "run"]
+# Set the CMD to your Lambda handler function
+CMD ["run.lambda_handler"]
