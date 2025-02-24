@@ -9,7 +9,7 @@ def generate_random_questions(count=5, difficulty='introductory'):
     :param count: The number of random questions to return.
     :param difficulty: If provided, filter questions by difficulty.
     :return: A list of random question dictionaries.
-    """
+    """"
     # Build the base query
     query = supabase.table("questions").select("*")
     
