@@ -1,0 +1,13 @@
+# Basic dependencies
+requests
+python-dotenv
+timeout-decorator
+
+# For security sandboxing
+RestrictedPython
+
+# AWS-related tools (if running tests or deploying locally)
+boto3
+
+# For local Docker testing of Lambda functions
+aws-lambda-runtime-interface-emulator
