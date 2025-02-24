@@ -12,6 +12,7 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@monaco-editor/react": "^4.7.0",
+    "@supabase/supabase-js": "^2.48.1",
     "@types/react-router-dom": "^5.3.3",
     "monaco-editor": "^0.52.2",
     "next": "15.1.7",

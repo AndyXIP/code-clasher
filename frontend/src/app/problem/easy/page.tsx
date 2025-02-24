@@ -53,6 +53,7 @@ const EditorPage = () => {
         setOutput(null);
       }
     } catch (error) {
+      console.error(error);
       setError("An error occurred while submitting the code.");
       setOutput(null);
     }
@@ -152,7 +153,7 @@ const EditorPage = () => {
           {output ? (
             <pre>{output}</pre>
           ) : error ? (
-            <pre style={{ color: 'red' }}>{error}</pre>
+            <pre style={{ color: 'red' }}>{error}</pre> // This is where you are using `error`
           ) : (
             <p>No output yet</p>
           )}
