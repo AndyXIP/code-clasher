@@ -7,7 +7,7 @@ import tempfile
 
 
 # ------------------------------
-# Function to run user code
+# Function to run user code.
 # ------------------------------
 def run_user_code(user_code, test_input):
     """
