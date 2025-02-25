@@ -147,6 +147,8 @@ async def submit_code(payload: SubmitCodePayload):
         }
     }
 
+    print(f"Job payload: {job_payload}")
+
     try:
         response = sqs.send_message(
             QueueUrl=SQS_QUEUE_URL,
