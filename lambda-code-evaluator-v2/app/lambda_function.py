@@ -143,10 +143,14 @@ def lambda_handler(event, context):
             body_obj = json.loads(body_str)  # Make into dict
             user_code = body_obj.get("code")
             test_cases = body_obj.get("test_cases")
+            job_id = body_obj.get("job_id")
         
             if not user_code:
                 print("Missing user_code.")
                 return {"statusCode": 400, "body": json.dumps("Missing user_code.")}
+            if not job_id:
+                print("Missing job_id.")
+                return {"statusCode": 400, "body": json.dumps("Missing job_id.")}
             
             input_cases = test_cases.get("inputs")
             expected_outputs = test_cases.get("outputs")
@@ -158,7 +162,6 @@ def lambda_handler(event, context):
             print("Data from job successfully accessed.")
             results = process_job(user_code, input_cases, expected_outputs)
 
-            job_id = event.get("job_id")
             asyncio.run(store_result_in_valkey(job_id, results))
 
             return {
