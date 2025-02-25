@@ -49,7 +49,7 @@ class DailyQuestion(BaseModel):
     test_cases: list
 
 @app.get("/")
-def index():
+async def index():
     return {"message": "Welcome to the Main API!"}
 
 @app.on_event("startup")
@@ -133,7 +133,7 @@ async def daily_qustion(difficulty: str = 'easy'):
 
 
 @app.post("/api/submit-code")
-def submit_code(payload: SubmitCodePayload):
+async def submit_code(payload: SubmitCodePayload):
     job_id = str(uuid.uuid4())
 
     job_payload = {
@@ -141,7 +141,6 @@ def submit_code(payload: SubmitCodePayload):
         'problem_id': payload.problem_id,
         'language': payload.language,
         'code': payload.code,
-        'status': 'queued',
     }
 
     try:
@@ -151,8 +150,8 @@ def submit_code(payload: SubmitCodePayload):
             MessageGroupId='default'
         )
         return {
-            "message_id": response.get('MessageId'), 
-            "status": "queued"
+            "status": "queued",
+            "job_id": job_id
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
