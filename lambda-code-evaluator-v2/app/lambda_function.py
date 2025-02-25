@@ -1,6 +1,7 @@
 import json
 import subprocess
 import os
+import sys
 import tempfile
 import asyncio
 from glide import (
@@ -39,7 +40,7 @@ def run_user_code(user_code, test_input):
         # Convert the test input (a Python object) to a JSON string.
         input_data = json.dumps(test_input)
         # Build the command to execute the Python code.
-        cmd = ["/usr/bin/python3", tmp_filename]
+        cmd = [sys.executable, tmp_filename]
         # Run the command, passing input_data to stdin.
         proc = subprocess.run(cmd, input=input_data, capture_output=True, text=True, timeout=35)
         print(f"Code ran, returning. stdout: {proc.stdout}, stderr: {proc.stderr}")
