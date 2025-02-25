@@ -182,15 +182,22 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
             if not cache_polled:
                 print("Cache being polled.")
                 cache_polled = True
+
             if job_result:
                 print("> Cache hit!", job_result)
-                await websocket.send_json({"status": "done", "job_result": job_result})
+
+                # Turn 'JSON string' cache data into JSON object
+                json_job_result = json.loads(job_result.decode('utf-8'))
+                # Send back to client
+                await websocket.send_json({"status": "done", "job_result": json_job_result})
                 break  # Stop polling once result is available
+
             elif time.time() - start_time > timeout:
                 print(">> Time ran out!")
                 error_msg = f"Job timed out after {timeout} seconds"
                 await websocket.send_json({"status": "timeout", "error": error_msg})
                 break  # Timeout; notify client and close websocket
+            
             print("> Cache miss.")
             await asyncio.sleep(poll_interval)  # wait before next poll
     finally:
