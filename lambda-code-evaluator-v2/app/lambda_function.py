@@ -125,37 +125,39 @@ async def store_result_in_valkey(job_id, results):
 # Main handler for Lambda
 # ------------------------------
 def lambda_handler(event, context):
-    print("Entering lambda...")
+    print("Entering lambda...", event)
     try:
-        # If running via API Gateway, event may have a "body" field.
-        if "body" in event:
-            event = json.loads(event["body"])
-            print(event)
+        if "Records" in event:
+            record = event["Records"][0]     # batch size of 1
+            
+            body_str = record["body"]        # SQS JSON string
+            body_obj = json.loads(body_str)  # Make into dict
+            user_code = body_obj.get("code")
+            test_cases = body_obj.get("test_cases")
         
-        user_code = event.get("code")
-        test_cases = event.get("test_cases")
-        
-        if not user_code:
-            print("Missing user_code.")
-            return {"statusCode": 400, "body": json.dumps("Missing user_code.")}
-        
-        input_cases = test_cases.get("inputs")
-        expected_outputs = test_cases.get("outputs")
-        
-        if not input_cases or not expected_outputs:
-            print("Missing test case data.")
-            return {"statusCode": 400, "body": json.dumps("Missing test case data.")}
-        
-        print("Data from job successfully accessed.")
-        results = process_job(user_code, input_cases, expected_outputs)
+            if not user_code:
+                print("Missing user_code.")
+                return {"statusCode": 400, "body": json.dumps("Missing user_code.")}
+            
+            input_cases = test_cases.get("inputs")
+            expected_outputs = test_cases.get("outputs")
+            
+            if not input_cases or not expected_outputs:
+                print("Missing test case data.")
+                return {"statusCode": 400, "body": json.dumps("Missing test case data.")}
+            
+            print("Data from job successfully accessed.")
+            results = process_job(user_code, input_cases, expected_outputs)
 
-        job_id = event.get("job_id")
-        asyncio.run(store_result_in_valkey(job_id, results))
+            job_id = event.get("job_id")
+            asyncio.run(store_result_in_valkey(job_id, results))
 
-        return {
-            "statusCode": 200,
-            "body": json.dumps(results)
-        }
+            return {
+                "statusCode": 200,
+                "body": json.dumps(results)
+            }
+        else:
+            print("Event not in expected SQS format!")
     except Exception as e:
         return {
             "statusCode": 500,
