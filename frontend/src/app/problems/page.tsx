@@ -7,11 +7,13 @@ const EditorPage = () => {
   const [output, setOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
-  const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[][]>([]); // Store test cases as mixed types
+  const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[][]>([]); 
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
+  const [problemId, setProblemId] = useState<string>(''); 
 
+  // Fetch test cases and question prompt on component mount or difficulty change
   useEffect(() => {
     const fetchTestCasesAndPrompt = async () => {
       try {
@@ -20,10 +22,10 @@ const EditorPage = () => {
           throw new Error('Failed to fetch test cases');
         }
         const data = await response.json();
-        setApiTestCases(data.test_cases || []); // API returns test_cases with mixed types (strings, numbers, arrays)
+        setApiTestCases(data.test_cases || []); 
         setQuestionPrompt(data.description || '');
+        setProblemId(data.problem_id || '');
 
-        // If test cases are fetched, set the default to the first test case
         if (data.test_cases && data.test_cases.length > 0) {
           setSelectedTestCaseIndex(0);
         }
@@ -36,16 +38,22 @@ const EditorPage = () => {
     fetchTestCasesAndPrompt();
   }, [difficulty]);
 
-  const handleCodeSubmission = async (code: string, language: string) => {
+  // Handle code submission to the API (for both Run and Submit)
+  const handleCodeSubmission = async (code: string, language: string, isSubmit: boolean = false) => {
     try {
-      const response = await fetch('/api/submit-question', {
+      if (!problemId) {
+        throw new Error('Problem ID is missing');
+      }
+
+      const response = await fetch('/api/submit-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          code, // The code that was submitted
-          language, // The programming language
+          problem_id: problemId,  // Send the problem ID
+          language,               // Programming language
+          code,                   // The code submitted by the user
         }),
       });
 
@@ -61,6 +69,13 @@ const EditorPage = () => {
       } else if (result.error) {
         setError(result.error);
         setOutput(null);
+      }
+
+      // Additional logic for "Submit" behavior
+      if (isSubmit) {
+        // Handle submission specific behavior (e.g., mark the submission as complete, etc.)
+        console.log("Code submitted successfully!");
+        // Example: you could call another API here to mark the submission as "complete"
       }
     } catch (error) {
       console.error(error);
@@ -86,6 +101,10 @@ const EditorPage = () => {
         return String(item); // Convert numbers and strings to string
       })
       .join(', ');
+  };
+
+  const handleTestCaseSelection = (index: number) => {
+    setSelectedTestCaseIndex(index);
   };
 
   return (
@@ -156,9 +175,7 @@ const EditorPage = () => {
                         ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
                         : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
                     }`}
-                    onClick={() => {
-                      setSelectedTestCaseIndex(index);
-                    }}
+                    onClick={() => handleTestCaseSelection(index)}
                   >
                     Case {index + 1}
                   </button>
@@ -172,7 +189,6 @@ const EditorPage = () => {
               <div className="mt-4">
                 <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
                   <strong>Input:</strong>
-                  {/* Display input for the selected test case using flattenArray */}
                   <p>{flattenArray(apiTestCases[selectedTestCaseIndex])}</p>
                 </div>
               </div>

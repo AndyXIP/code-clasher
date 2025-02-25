@@ -8,7 +8,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
 interface MonacoEditorComponentProps {
-  onSubmit: (code: string, language: string) => void;
+  onSubmit: (code: string, language: string, isSubmit: boolean) => void;
 }
 
 const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit }) => {
@@ -24,8 +24,8 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit 
     setTheme(isDarkMode ? 'vs-dark' : 'vs');
   }, []);
  
-  const handleSubmit = () => {
-    onSubmit(value, language);
+  const handleSubmit = (isSubmit: boolean) => {
+    onSubmit(value, language, isSubmit);
   };
 
   return (
@@ -84,13 +84,14 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit 
         <div className="flex space-x-3">
           <button
             type="button"
+            onClick={() => handleSubmit(false)}
             className="rounded-md bg-indigo-200 dark:bg-indigo-300 px-3.5 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
           >
             Run
           </button>
           <button
             type="button"
-            onClick={handleSubmit}
+            onClick={() => handleSubmit(true)}
             className="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
           >
             Submit Code
