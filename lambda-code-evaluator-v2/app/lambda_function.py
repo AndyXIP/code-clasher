@@ -42,8 +42,10 @@ def run_user_code(user_code, test_input):
         cmd = ["/usr/bin/python3", tmp_filename]
         # Run the command, passing input_data to stdin.
         proc = subprocess.run(cmd, input=input_data, capture_output=True, text=True, timeout=35)
+        print(f"Code ran, returning. stdout: {proc.stdout}, stderr: {proc.stderr}")
         return proc.stdout, proc.stderr
     except Exception as e:
+        print("ERROR running user's code (higher-level)", str(e))
         return "", str(e)
     finally:
         # Remove the temporary file.
@@ -79,6 +81,7 @@ def process_job(user_code, input_cases, expected_outputs):
             "actual": result_data,
             "passed": passed
         })
+    print("Results from process_job:", results)
     return results
 
 
@@ -107,8 +110,9 @@ async def store_result_in_valkey(job_id, results):
         })
 
         # Store with a TTL (e.g., 300 seconds)
-        await client.set(f"job:{job_id}", results_json)
-        await client.expire(f"job:{job_id}", 300)  # auto-expire in 5 minutes
+        TTL = 300
+        await client.setex(f"job:{job_id}", 300, results_json)
+        print("Sent data to Valkey.")
 
     except (TimeoutError, RequestError, ConnectionError, ClosingError) as e:
         print(f"Valkey error: {e}")
