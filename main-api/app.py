@@ -158,7 +158,7 @@ def submit_code(payload: SubmitCodePayload):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ==== WEBSOCKET for job results ====
+# ==== WEBSOCKET for job results ===
 
 @app.websocket("/ws/job-status/{job_id}")
 async def websocket_job_status(websocket: WebSocket, job_id: str):
