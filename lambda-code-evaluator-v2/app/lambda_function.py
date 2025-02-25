@@ -54,10 +54,12 @@ def run_user_code(user_code, test_input):
 # Function to process the job across all test cases
 # ------------------------------
 def process_job(user_code, input_cases, expected_outputs):
+    print("Entering process_job...")
     results = []
     for test_input, expected in zip(input_cases, expected_outputs):
         output, err = run_user_code(user_code, test_input)
         if err:
+            print("Error running user code.")
             result_data = {"error": err}
             passed = False
         else:
@@ -69,6 +71,8 @@ def process_job(user_code, input_cases, expected_outputs):
             if not isinstance(result_data, list):
                 result_data = [result_data]
             passed = (result_data == expected)
+            print(f"Result: {result_data}")
+            print(f"Passed: {passed}")
         results.append({
             "test_input": test_input,
             "expected": expected,
@@ -82,6 +86,7 @@ def process_job(user_code, input_cases, expected_outputs):
 # Async function to store job result in Valkey
 # ------------------------------
 async def store_result_in_valkey(job_id, results):
+    print("Entering Valkey function...")
     # Optional: set up logging
     Logger.set_logger_config(LogLevel.INFO)
 
@@ -93,7 +98,8 @@ async def store_result_in_valkey(job_id, results):
     try:
         # Connect to Valkey
         client = await GlideClient.create(config)
-
+        print("Connected to Valkey.")
+        
         # Convert results to JSON string
         results_json = json.dumps({
             "status": "completed",
@@ -119,6 +125,7 @@ async def store_result_in_valkey(job_id, results):
 # Main handler for Lambda
 # ------------------------------
 def lambda_handler(event, context):
+    print("Entering lambda...")
     try:
         # If running via API Gateway, event may have a "body" field.
         if "body" in event:
@@ -136,6 +143,7 @@ def lambda_handler(event, context):
         if not input_cases or not expected_outputs:
             return {"statusCode": 400, "body": json.dumps("Missing test case data.")}
         
+        print("Data from job successfully accessed.")
         results = process_job(user_code, input_cases, expected_outputs)
 
         job_id = event.get("job_id")
