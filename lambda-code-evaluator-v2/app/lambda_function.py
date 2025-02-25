@@ -137,6 +137,10 @@ def lambda_handler(event, context):
             return {"statusCode": 400, "body": json.dumps("Missing test case data.")}
         
         results = process_job(user_code, input_cases, expected_outputs)
+
+        job_id = event.get("job_id")
+        store_result_in_valkey(job_id, results)
+
         return {
             "statusCode": 200,
             "body": json.dumps(results)
