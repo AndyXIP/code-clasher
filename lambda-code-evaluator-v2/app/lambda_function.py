@@ -99,7 +99,7 @@ async def store_result_in_valkey(job_id, results):
         # Connect to Valkey
         client = await GlideClient.create(config)
         print("Connected to Valkey.")
-        
+
         # Convert results to JSON string
         results_json = json.dumps({
             "status": "completed",
@@ -135,12 +135,14 @@ def lambda_handler(event, context):
         test_cases = event.get("test_cases")
         
         if not user_code:
+            print("Missing user_code.")
             return {"statusCode": 400, "body": json.dumps("Missing user_code.")}
         
         input_cases = test_cases.get("inputs")
         expected_outputs = test_cases.get("outputs")
         
         if not input_cases or not expected_outputs:
+            print("Missing test case data.")
             return {"statusCode": 400, "body": json.dumps("Missing test case data.")}
         
         print("Data from job successfully accessed.")
