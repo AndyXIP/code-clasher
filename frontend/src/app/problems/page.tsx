@@ -13,25 +13,20 @@ const EditorPage = () => {
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
 
-  const url =
-    process.env.NODE_ENV === 'production'
-      ? 'https://main-api.click'
-      : 'http://127.0.0.1:5000';
-
   useEffect(() => {
     const fetchTestCasesAndPrompt = async () => {
       try {
-        const response = await fetch(`${url}/api/daily-question?difficulty=${difficulty}`);
+        const response = await fetch(`/api/daily-question?difficulty=${difficulty}`);
         if (!response.ok) {
           throw new Error('Failed to fetch test cases');
         }
         const data = await response.json();
-        setApiTestCases(data.testCases || []);
-        setQuestionPrompt(data.questionPrompt || '');
+        setApiTestCases(data.test_cases || []);
+        setQuestionPrompt(data.description || '');
 
         // If test cases are fetched, set the default to the first test case (Case 1)
-        if (data.testCases && data.testCases.length > 0) {
-          setTestCases(data.testCases[0].testCase);
+        if (data.test_cases && data.test_cases.length > 0) {
+          setTestCases(data.test_cases[0].testCase);
           setSelectedTestCaseIndex(0);
         }
       } catch (error) {
@@ -44,20 +39,24 @@ const EditorPage = () => {
   }, [difficulty]);
 
   const handleCodeSubmission = async (code: string, language: string) => {
-    const problemId = 42;
     try {
-      const response = await fetch(`${url}/api/submit-code`, {
+      const response = await fetch('/api/submit-question', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language, problemId }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code, // The code that was submitted
+          language, // The programming language
+        }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to submit code');
       }
-
+  
       const result = await response.json();
-
+  
       if (result.output) {
         setOutput(result.output);
         setError(null);
