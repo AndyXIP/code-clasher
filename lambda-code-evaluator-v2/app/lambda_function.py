@@ -111,7 +111,7 @@ async def store_result_in_valkey(job_id, results):
 
         # Store with a TTL (e.g., 300 seconds)
         TTL = 300
-        await client.setex(f"job:{job_id}", 300, results_json)
+        await client.set(f"job:{job_id}", results_json)
         print("Sent data to Valkey.")
 
     except (TimeoutError, RequestError, ConnectionError, ClosingError) as e:
