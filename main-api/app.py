@@ -141,6 +141,10 @@ async def submit_code(payload: SubmitCodePayload):
         'problem_id': payload.problem_id,
         'language': payload.language,
         'code': payload.code,
+        'test_cases': {
+            'inputs': [[-10], [10], [7]],
+            'outputs': [[0], [20], [17]]
+        }
     }
 
     try:
