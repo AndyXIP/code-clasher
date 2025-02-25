@@ -124,14 +124,14 @@ def lambda_handler(event, context):
         if "body" in event:
             event = json.loads(event["body"])
         
-        user_code = event.get("user_code")
-        test_data = event.get("test_data")
+        user_code = event.get("code")
+        test_cases = event.get("test_cases")
         
         if not user_code:
             return {"statusCode": 400, "body": json.dumps("Missing user_code.")}
         
-        input_cases = test_data.get("inputs")
-        expected_outputs = test_data.get("outputs")
+        input_cases = test_cases.get("inputs")
+        expected_outputs = test_cases.get("outputs")
         
         if not input_cases or not expected_outputs:
             return {"statusCode": 400, "body": json.dumps("Missing test case data.")}
@@ -154,11 +154,11 @@ def lambda_handler(event, context):
 #     # Create a test event containing the solution code and test data.
 #     test_event_1 = {
 #         "user_code": SOLUTION_CODE_1,
-#         "test_data": TEST_DATA_1
+#         "test_cases": TEST_DATA_1
 #     }
 #     test_event_2 = {
 #         "user_code": SOLUTION_CODE_2,
-#         "test_data": TEST_DATA_2
+#         "test_cases": TEST_DATA_2
 #     }
 #     response = lambda_handler(test_event_1, None)
 #     print("Response:", response)
