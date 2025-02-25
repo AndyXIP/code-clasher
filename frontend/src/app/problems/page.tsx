@@ -6,9 +6,8 @@ import MonacoEditorComponent from '../components/MonacoEditor';
 const EditorPage = () => {
   const [output, setOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [testCases, setTestCases] = useState<string>('');
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
-  const [apiTestCases, setApiTestCases] = useState<{ testCase: string, expectedOutput: string }[]>([]);
+  const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[][]>([]); // Store test cases as mixed types
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
@@ -21,12 +20,11 @@ const EditorPage = () => {
           throw new Error('Failed to fetch test cases');
         }
         const data = await response.json();
-        setApiTestCases(data.test_cases || []);
+        setApiTestCases(data.test_cases || []); // API returns test_cases with mixed types (strings, numbers, arrays)
         setQuestionPrompt(data.description || '');
 
-        // If test cases are fetched, set the default to the first test case (Case 1)
+        // If test cases are fetched, set the default to the first test case
         if (data.test_cases && data.test_cases.length > 0) {
-          setTestCases(data.test_cases[0].testCase);
           setSelectedTestCaseIndex(0);
         }
       } catch (error) {
@@ -50,13 +48,13 @@ const EditorPage = () => {
           language, // The programming language
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to submit code');
       }
-  
+
       const result = await response.json();
-  
+
       if (result.output) {
         setOutput(result.output);
         setError(null);
@@ -77,6 +75,18 @@ const EditorPage = () => {
   ];
 
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
+
+  // Utility function to recursively flatten arrays
+  const flattenArray = (arr: (string | number | (string | number)[])[]): string => {
+    return arr
+      .map(item => {
+        if (Array.isArray(item)) {
+          return flattenArray(item); // Recursively flatten nested arrays
+        }
+        return String(item); // Convert numbers and strings to string
+      })
+      .join(', ');
+  };
 
   return (
     <div
@@ -147,7 +157,6 @@ const EditorPage = () => {
                         : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
                     }`}
                     onClick={() => {
-                      setTestCases(testCase.testCase);
                       setSelectedTestCaseIndex(index);
                     }}
                   >
@@ -163,11 +172,8 @@ const EditorPage = () => {
               <div className="mt-4">
                 <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
                   <strong>Input:</strong>
-                  <p>{testCases}</p>
-                </div>
-                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Expected Output:</strong>
-                  <p>{apiTestCases[selectedTestCaseIndex]?.expectedOutput}</p>
+                  {/* Display input for the selected test case using flattenArray */}
+                  <p>{flattenArray(apiTestCases[selectedTestCaseIndex])}</p>
                 </div>
               </div>
             )}
