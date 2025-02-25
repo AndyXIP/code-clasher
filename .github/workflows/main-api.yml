@@ -40,7 +40,7 @@ jobs:
           # Initialize EB using the Docker platform.
           eb init -p docker main-api --region ${{ secrets.AWS_REGION }}
           # Use the target environment
-          eb use north-env
+          eb use vpc-env
 
       - name: Deploy to Elastic Beanstalk
         run: |
