@@ -63,19 +63,20 @@ const EditorPage = () => {
 
       const result = await response.json();
 
-      if (result.output) {
-        setOutput(result.output);
-        setError(null);
-      } else if (result.error) {
-        setError(result.error);
-        setOutput(null);
-      }
+      // --- Done via websocket now ---
+      // if (result.output) {
+      //   setOutput(result.output);
+      //   setError(null);
+      // } else if (result.error) {
+      //   setError(result.error);
+      //   setOutput(null);
+      // }
 
-      if (!result.message_id) {
+      if (!result.job_id) {
         throw new Error('Job ID is missing in response');
       }
 
-      const jobId = result.message_id; // Extract job ID from response
+      const jobId = result.job_id; // Extract job ID from response
 
       // ======== START OF WEBSOCKET CONNECTION ========
       const ws = new WebSocket(`wss://main-api.click/ws/job-status/${jobId}`);
@@ -89,6 +90,7 @@ const EditorPage = () => {
 
         if (data.status === "done") {
           setOutput(data.job_result);
+          console.log("Job Result", data.job_result);
           setError(null);
           ws.close();
         } else if (data.status === "timeout") {
