@@ -130,6 +130,7 @@ def lambda_handler(event, context):
         # If running via API Gateway, event may have a "body" field.
         if "body" in event:
             event = json.loads(event["body"])
+            print(event)
         
         user_code = event.get("code")
         test_cases = event.get("test_cases")
