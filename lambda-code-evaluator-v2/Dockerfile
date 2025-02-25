@@ -4,7 +4,7 @@ FROM public.ecr.aws/lambda/python:3.9
 # Install necessary dependencies
 RUN yum update -y && \
     yum install -y gcc-c++ curl && \
-    pip install RestrictedPython timeout-decorator
+    pip install RestrictedPython timeout-decorator valkey-glide
 
 # Copy your Lambda function code into the container
 COPY app/ ${LAMBDA_TASK_ROOT}

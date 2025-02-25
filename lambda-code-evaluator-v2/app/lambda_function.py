@@ -2,8 +2,23 @@ import json
 import subprocess
 import os
 import tempfile
+import asyncio
+from glide import (
+    ClosingError,
+    ConnectionError,
+    GlideClient,
+    GlideClientConfiguration,
+    Logger,
+    LogLevel,
+    NodeAddress,
+    RequestError,
+    TimeoutError
+)
 # from test_data_1 import TEST_DATA_1, SOLUTION_CODE_1
 # from test_data_2 import TEST_DATA_2, SOLUTION_CODE_2
+
+VALKEY_HOST = os.getenv("VALKEY_HOST")
+VALKEY_PORT = os.getenv("VALKEY_PORT")
 
 
 # ------------------------------
@@ -64,7 +79,44 @@ def process_job(user_code, input_cases, expected_outputs):
 
 
 # ------------------------------
-# Main handler (simulating a Lambda handler)
+# Async function to store job result in Valkey
+# ------------------------------
+async def store_result_in_valkey(job_id, results):
+    # Optional: set up logging
+    Logger.set_logger_config(LogLevel.INFO)
+
+    # Configure the Glide Cluster Client
+    addresses = [NodeAddress(VALKEY_HOST, VALKEY_PORT)]
+    config = GlideClientConfiguration(addresses=addresses, use_tls=True)
+    client = None
+
+    try:
+        # Connect to Valkey
+        client = await GlideClient.create(config)
+
+        # Convert results to JSON string
+        results_json = json.dumps({
+            "status": "completed",
+            "output": results
+        })
+
+        # Store with a TTL (e.g., 300 seconds)
+        await client.set(f"job:{job_id}", results_json)
+        await client.expire(f"job:{job_id}", 300)  # auto-expire in 5 minutes
+
+    except (TimeoutError, RequestError, ConnectionError, ClosingError) as e:
+        print(f"Valkey error: {e}")
+    finally:
+        if client:
+            try:
+                await client.close()
+            except ClosingError as e:
+                print(f"Error closing Valkey client: {e}")
+
+
+
+# ------------------------------
+# Main handler for Lambda
 # ------------------------------
 def lambda_handler(event, context):
     try:
