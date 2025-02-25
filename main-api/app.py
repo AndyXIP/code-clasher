@@ -24,10 +24,11 @@ from glide import (
 load_dotenv()
 
 app = FastAPI()
+origins = ['https://sse-team-project.vercel.app', 'http://localhost:3000', 'http://127.0.0.1:3000']
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or specify your frontend domain(s) like ["https://myapp.vercel.app"]
-    allow_credentials=False,
+    allow_origins=origins,  # or specify your frontend domain(s) like ["https://myapp.vercel.app"]
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
