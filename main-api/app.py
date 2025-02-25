@@ -28,7 +28,7 @@ app = FastAPI()
 origins = ['https://sse-team-project.vercel.app', 'http://localhost:3000', 'http://127.0.0.1:3000']
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # or specify your frontend domain(s) like ["https://myapp.vercel.app"]
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -119,7 +119,7 @@ async def daily_qustion(difficulty: str = 'easy'):
             default_question = {
                 "problem_id": "123",
                 "description": "Define a function which adds 10 to the inputted integer and returns the result.",
-                "test_cases": [[-10], [10], [7]]
+                "test_cases": [[-10], [10], [7000]]
             }
 
             await valkey_client.set(key, json.dumps(default_question))
