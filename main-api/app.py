@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import boto3
 import os
 import uuid
 import json
+import time
 from dotenv import load_dotenv
 from typing import List, Optional
 import asyncio
@@ -156,3 +157,28 @@ def submit_code(payload: SubmitCodePayload):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ==== WEBSOCKET for job results ====
+
+@app.websocket("/ws/job-status/{job_id}")
+async def websocket_job_status(websocket: WebSocket, job_id: str):
+    await websocket.accept()
+
+    timeout = 30
+    start_time = time.time()
+    poll_interval = 1  # seconds
+
+    try:
+        while True:
+            job_result = await valkey_client.get(f"job:{job_id}")
+            
+            if job_result:
+                await websocket.send_json({"status": "done", "job_result": job_result})
+                break  # Stop polling once result is available
+            elif time.time() - start_time > timeout:
+                await websocket.send_json({"status": "timeout", "error": "Job took too long"})
+                break  # Timeout; notify client and close websocket
+
+            await asyncio.sleep(poll_interval)  # wait before next poll
+    finally:
+        await websocket.close()
