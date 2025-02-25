@@ -17,8 +17,8 @@ from glide import (
 # from test_data_1 import TEST_DATA_1, SOLUTION_CODE_1
 # from test_data_2 import TEST_DATA_2, SOLUTION_CODE_2
 
-VALKEY_HOST = os.getenv("VALKEY_HOST")
-VALKEY_PORT = os.getenv("VALKEY_PORT")
+VALKEY_HOST = "main-cache-mutbnm.serverless.eun1.cache.amazonaws.com" #os.getenv("VALKEY_HOST")
+VALKEY_PORT = 6379  #os.getenv("VALKEY_PORT")
 
 
 # ------------------------------
@@ -139,7 +139,7 @@ def lambda_handler(event, context):
         results = process_job(user_code, input_cases, expected_outputs)
 
         job_id = event.get("job_id")
-        store_result_in_valkey(job_id, results)
+        asyncio.run(store_result_in_valkey(job_id, results))
 
         return {
             "statusCode": 200,
