@@ -71,6 +71,44 @@ const EditorPage = () => {
         setOutput(null);
       }
 
+      if (!result.message_id) {
+        throw new Error('Job ID is missing in response');
+      }
+
+      const jobId = result.message_id; // Extract job ID from response
+
+      // ======== START OF WEBSOCKET CONNECTION ========
+      const ws = new WebSocket(`wss://main-api.click/ws/job-status/${jobId}`);
+
+      ws.onopen = () => {
+        console.log("WebSocket connected for job:", jobId);
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.status === "done") {
+          setOutput(data.job_result);
+          setError(null);
+          ws.close();
+        } else if (data.status === "timeout") {
+          setError("Job took too long to execute");
+          ws.close();
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        setError("WebSocket error occurred");
+        ws.close();
+      };
+
+      ws.onclose = () => {
+        console.log("WebSocket closed for job:", jobId);
+      };
+      // ======= END OF WEBSOCKET CONNECTION =======
+
+
       // Additional logic for "Submit" behavior
       if (isSubmit) {
         // Handle submission specific behavior (e.g., mark the submission as complete, etc.)
