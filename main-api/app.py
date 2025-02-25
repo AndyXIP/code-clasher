@@ -167,7 +167,9 @@ async def submit_code(payload: SubmitCodePayload):
 
 @app.websocket("/ws/job-status/{job_id}")
 async def websocket_job_status(websocket: WebSocket, job_id: str):
+    print(f"Entering websocket for job_id: {job_id}")
     await websocket.accept()
+    print("Websocket accepted.")
 
     timeout = 300
     start_time = time.time()
@@ -176,11 +178,13 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
     try:
         while True:
             job_result = await valkey_client.get(f"job:{job_id}")
-            
+            print("Job result retrieved...")
             if job_result:
+                print("Cache hit!", job_result)
                 await websocket.send_json({"status": "done", "job_result": job_result})
                 break  # Stop polling once result is available
             elif time.time() - start_time > timeout:
+                print("Cache miss! Adding time..")
                 error_msg = f"Job timed out after {timeout} seconds"
                 await websocket.send_json({"status": "timeout", "error": error_msg})
                 break  # Timeout; notify client and close websocket
