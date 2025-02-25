@@ -163,7 +163,7 @@ async def submit_code(payload: SubmitCodePayload):
 async def websocket_job_status(websocket: WebSocket, job_id: str):
     await websocket.accept()
 
-    timeout = 30
+    timeout = 300
     start_time = time.time()
     poll_interval = 1  # seconds
 
@@ -175,7 +175,8 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                 await websocket.send_json({"status": "done", "job_result": job_result})
                 break  # Stop polling once result is available
             elif time.time() - start_time > timeout:
-                await websocket.send_json({"status": "timeout", "error": "Job took too long"})
+                error_msg = f"Job timed out after {timeout} seconds"
+                await websocket.send_json({"status": "timeout", "error": error_msg})
                 break  # Timeout; notify client and close websocket
 
             await asyncio.sleep(poll_interval)  # wait before next poll
