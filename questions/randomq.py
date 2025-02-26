@@ -1,31 +1,27 @@
-import random
-from db_client.db_client import supabase
+import json
+from randomq import generate_random_questions  # Adjust if your file is named differently
 
-def generate_random_questions(count=5, difficulty='introductory'):
-    """
-    Fetch questions from Supabase, optionally filtering by difficulty,
-    then randomly return `count` questions.
-    
-    :param count: The number of random questions to return.
-    :param difficulty: If provided, filter questions by difficulty.
-    :return: A list of random question dictionaries.
-    """
-    # Build the base query
-    query = supabase.table("questions").select("*")
-    
-    # If a difficulty filter is provided, add a condition
-    if difficulty:
-        query = query.eq("difficulty", difficulty)
-    
-    response = query.execute()
-    data = response.dict()
+def lambda_handler(event, context):
+    try:
+        # Optionally, extract query parameters from event["queryStringParameters"]
+        count = 5  # default value
+        difficulty = 'introductory'
+        if event.get("queryStringParameters"):
+            qs = event["queryStringParameters"]
+            if "count" in qs:
+                count = int(qs["count"])
+            if "difficulty" in qs:
+                difficulty = qs["difficulty"]
 
-    if data.get("error"):
-        error_msg = data["error"].get("message", "Unknown error")
-        raise RuntimeError(f"Error fetching questions: {error_msg}")
-
-    questions = data.get("data", [])
-    if len(questions) < count:
-        raise ValueError("Not enough questions available to generate the requested number of questions.")
-
-    return random.sample(questions, count)
+        questions = generate_random_questions(count=count, difficulty=difficulty)
+        return {
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"questions": questions})
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"error": str(e)})
+        }

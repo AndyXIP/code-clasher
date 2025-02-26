@@ -1,20 +1,27 @@
-from flask import Flask, jsonify
-from randomq import generate_random_questions
-
-app = Flask(__name__)
-
-@app.route('/random-questions', methods=['GET'])
-def random_questions():
-    try:
-        questions = generate_random_questions()
-        return jsonify({"questions": questions}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+import json
+from randomq import generate_random_questions  # Adjust if your file is named differently
 
 def lambda_handler(event, context):
-    return awsgi.response(app, event, context)
+    try:
+        # Optionally, extract query parameters from event["queryStringParameters"]
+        count = 5  # default value
+        difficulty = 'introductory'
+        if event.get("queryStringParameters"):
+            qs = event["queryStringParameters"]
+            if "count" in qs:
+                count = int(qs["count"])
+            if "difficulty" in qs:
+                difficulty = qs["difficulty"]
 
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
+        questions = generate_random_questions(count=count, difficulty=difficulty)
+        return {
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"questions": questions})
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"error": str(e)})
+        }
