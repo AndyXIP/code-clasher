@@ -89,7 +89,7 @@ const EditorPage = () => {
         const data = JSON.parse(event.data);
 
         if (data.status === "done") {
-          setOutput(data.job_result);
+          setOutput(JSON.stringify(data.job_result));
           console.log("Job Result", data.job_result);
           setError(null);
           ws.close();
