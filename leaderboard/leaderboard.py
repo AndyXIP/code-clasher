@@ -37,7 +37,7 @@ def get_top_leaderboard_entries(count=5):
         raise RuntimeError(f"Error fetching 'interview' leaderboard: {error_msg}")
     interview_leaders = interview_data.get("data", [])
 
-    # Transform the data to a simplified format-
+    # Transform the data to a simplified format
     introductory_results = [{"name": entry["display_name"], "score": entry["introductory"]} for entry in introductory_leaders]
     interview_results = [{"name": entry["display_name"], "score": entry["interview"]} for entry in interview_leaders]
 
