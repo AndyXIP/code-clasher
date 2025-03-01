@@ -20,7 +20,7 @@ from glide import (
     Logger,
     LogLevel
 )
-
+from questions_fns import get_weekly_questions
 
 load_dotenv()
 
@@ -146,7 +146,6 @@ async def submit_code(payload: SubmitCodePayload):
             'outputs': [[0], [20], [17]]
         }
     }
-
     print(f"Job payload: {job_payload}")
 
     try:
