@@ -53,9 +53,8 @@ export default function SignUp() {
           {
             user_id: data.user.id,
             display_name: fullName || '',
-            easy: 0,
-            medium: 0,
-            hard: 0,
+            introductory: 0,
+            interview: 0,
           },
         ]);
 

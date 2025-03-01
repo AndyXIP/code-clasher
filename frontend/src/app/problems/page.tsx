@@ -171,13 +171,13 @@ const EditorPage = () => {
 
         {/* Difficulty Selection */}
         <div className="mt-4 mb-4 flex gap-2 justify-center">
-          {['easy', 'medium', 'hard'].map((level) => (
+          {['Easy', 'Medium'].map((level) => (
             <button
               key={level}
               className={`px-4 py-2 text-sm text-white font-medium rounded-md ${
                 difficulty === level ? 'bg-indigo-600' : 'bg-gray-500'
               }`}
-              onClick={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
+              onClick={() => setDifficulty(level as 'easy' | 'medium')}
             >
               {level.charAt(0).toUpperCase() + level.slice(1)}
             </button>
