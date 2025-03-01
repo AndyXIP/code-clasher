@@ -10,7 +10,7 @@ from glide import (
     LogLevel,
     ClosingError,
 )
-from get_questions import get_questions, format_questions_data
+from get_questions import get_questions, format_questions_data  # Note: ensure function names match
 
 # Load environment variables from .env file if needed
 load_dotenv()
@@ -39,12 +39,10 @@ async def initialize_valkey_client():
         print("Failed to create Valkey client:", e)
         raise
 
-async def lambda_handler(event, context):
+async def async_handler(event, context):
     """
-    AWS Lambda entry point.
-    This function initializes the Valkey client if needed,
-    fetches new questions, formats the data with a timestamp,
-    and updates the cache.
+    Async handler that initializes the client if needed, fetches new questions,
+    formats the data with a timestamp, and updates the cache.
     """
     global valkey_client
 
@@ -60,7 +58,8 @@ async def lambda_handler(event, context):
     
     # Try to get new set of (5) questions.
     try:
-        questions = await get_weekly_questions(count=5)
+        # Note: ensure you're calling the correct function; here we use get_questions.
+        questions = await get_questions(count=5)
     except Exception as e:
         print(f"Error getting weekly questions: {e}")
         return {
@@ -69,7 +68,7 @@ async def lambda_handler(event, context):
         }
     
     # Format the data (e.g., add a timestamp, etc.)
-    cache_payload = format_questions_data_for_caching(questions)
+    cache_payload = format_questions_data(questions)
 
     # Update the cache with the new data.
     key = "active_questions"
@@ -79,3 +78,9 @@ async def lambda_handler(event, context):
         "statusCode": 200,
         "body": json.dumps(cache_payload)
     }
+
+def lambda_handler(event, context):
+    """
+    Synchronous wrapper for the async lambda handler.
+    """
+    return asyncio.run(async_handler(event, context))
