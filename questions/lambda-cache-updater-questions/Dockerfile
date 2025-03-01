@@ -10,4 +10,4 @@ COPY . ${LAMBDA_TASK_ROOT}
 
 # Set the CMD to your Lambda handler function.
 # Adjust "run.lambda_handler" if your file/handler name is different.
-CMD ["run.lambda_handler"]
+CMD ["lambda_handler.lambda_handler"]
