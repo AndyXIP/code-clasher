@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';  // Import AuthProvider and useAuth hook
 
 export default function RootLayoutClient({
   children,
 }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();  // Access the user and loading state from AuthContext
+
   useEffect(() => {
     // Check for saved theme in localStorage
     const savedTheme = localStorage.getItem('theme');
@@ -35,9 +38,24 @@ export default function RootLayoutClient({
     };
   }, []);
 
+  // Display loading state until authentication info is loaded
+  if (loading) {
+    <AuthProvider>
+      return <div>Loading...</div>; // You can add a loading spinner or other loading UI here
+    </AuthProvider>
+  }
+
   return (
-    <div>
-      <main>{children}</main>
-    </div>
+    <AuthProvider>
+      <div>
+        <main>{children}</main>
+        {/* Conditionally render UI elements based on whether the user is authenticated */}
+        {user ? (
+          <div>Welcome, {user.email}!</div>  // Display the authenticated user's email
+        ) : (
+          <div>Please log in</div>  // If not logged in, show login prompt
+        )}
+      </div>
+    </AuthProvider>
   );
 }

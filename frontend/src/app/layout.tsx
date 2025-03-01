@@ -1,8 +1,8 @@
-// src/app/layout.tsx (Server-side layout)
 import { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import { AuthProvider } from "./contexts/AuthContext"; // Import AuthProvider
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,10 +27,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <header className="border-b border-gray-300 dark:border-gray-700">
-          <Navbar />
-        </header>
-        <main>{children}</main> {/* Only this part updates when navigating */}
+        {/* Wrap only the main part of the page with AuthProvider */}
+        <AuthProvider>
+          <header className="border-b border-gray-300 dark:border-gray-700">
+            <Navbar />
+          </header>
+          <main>{children}</main> {/* Only this part updates when navigating */}
+        </AuthProvider>
       </body>
     </html>
   );
