@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MonacoEditorComponent from '../components/MonacoEditor';
 
 const EditorPage = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [output, setOutput] = useState<null | any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
@@ -141,6 +142,7 @@ const EditorPage = () => {
     setSelectedTestCaseIndex(index);
   };
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   // Function to extract actual values from the API output
   const extractActualValues = (data: any) => {
     if (data && Array.isArray(data.output)) {
@@ -156,6 +158,7 @@ const EditorPage = () => {
     }
     return []; // Return an empty array if `data.output` is not an array
   };
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   return (
     <div
