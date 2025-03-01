@@ -10,7 +10,7 @@ from glide import (
     LogLevel,
     ClosingError,
 )
-from get_questions import get_weekly_questions, format_questions_data_for_caching
+from get_questions import get_questions, format_questions_data
 
 # Load environment variables from .env file if needed
 load_dotenv()
