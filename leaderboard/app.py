@@ -1,21 +1,28 @@
-from flask import Flask, jsonify
+import json
 from leaderboard import get_top_leaderboard_entries
 
-app = Flask(__name__)
-
-@app.route("/leaderboard", methods=["GET"])
-def leaderboard_route():
-    try:
-        leaderboard = get_top_leaderboard_entries()
-        return jsonify(leaderboard), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 def lambda_handler(event, context):
-    return awsgi.response(app, event, context)
+    try:
+        # Extract any query parameters (if needed)
+        qs = event.get("queryStringParameters") or {}
+        
+        # For example, let’s see if the user can pass 'count' via ?count=10
+        count = int(qs["count"]) if "count" in qs else 5
 
+        # Call your leaderboard function with that count
+        leaderboard = get_top_leaderboard_entries(count=count)
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
-
+        # Return an HTTP 200 with JSON
+        return {
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps(leaderboard)
+        }
+    except Exception as e:
+        # If something goes wrong, log and return a 500
+        print("Error in lambda_handler:", str(e))
+        return {
+            "statusCode": 500,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"error": str(e)})
+        }

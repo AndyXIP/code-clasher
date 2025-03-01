@@ -1,19 +1,21 @@
 import json
-from randomq import generate_random_questions  # Adjust if your file is named differently
+from randomq import generate_random_questions
 
 def lambda_handler(event, context):
     try:
-        # Optionally, extract query parameters from event["queryStringParameters"]
-        count = 5  # default value
-        difficulty = 'introductory'
-        if event.get("queryStringParameters"):
-            qs = event["queryStringParameters"]
-            if "count" in qs:
-                count = int(qs["count"])
-            if "difficulty" in qs:
-                difficulty = qs["difficulty"]
+        qs = event.get("queryStringParameters") or {}
+        
+        count = int(qs["count"]) if "count" in qs else None
+        difficulty = qs.get("difficulty")
+        source = qs.get("source")
 
-        questions = generate_random_questions(count=count, difficulty=difficulty)
+        # If count is None, or any parameter is not provided, the function's defaults will apply.
+        questions = generate_random_questions(
+            count=count if count is not None else 7,
+            difficulty=difficulty if difficulty is not None else 'introductory',
+            source='leetcode'  # Defaults to None if not provided
+        )
+        
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},

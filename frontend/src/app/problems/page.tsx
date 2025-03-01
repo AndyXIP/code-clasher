@@ -1,10 +1,11 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import MonacoEditorComponent from '../components/MonacoEditor';
 
 const EditorPage = () => {
-  const [output, setOutput] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [output, setOutput] = useState<null | any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[][]>([]); 
@@ -12,6 +13,8 @@ const EditorPage = () => {
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
   const [problemId, setProblemId] = useState<string>(''); 
+  const [passedValues, setPassedValues] = useState<boolean[]>([]);
+  const [actualValues, setActualValues] = useState<string[]>([]);
 
   // Fetch test cases and question prompt on component mount or difficulty change
   useEffect(() => {
@@ -64,14 +67,6 @@ const EditorPage = () => {
       const result = await response.json();
 
       // --- Done via websocket now ---
-      // if (result.output) {
-      //   setOutput(result.output);
-      //   setError(null);
-      // } else if (result.error) {
-      //   setError(result.error);
-      //   setOutput(null);
-      // }
-
       if (!result.job_id) {
         throw new Error('Job ID is missing in response');
       }
@@ -89,8 +84,11 @@ const EditorPage = () => {
         const data = JSON.parse(event.data);
 
         if (data.status === "done") {
-          setOutput(JSON.stringify(data.job_result));
-          console.log("Job Result", data.job_result);
+          setOutput(data.job_result);
+          const actualValues = extractActualValues(data.job_result);
+          const passedValues = extractPassedValues(data.job_result);
+          setActualValues(actualValues);
+          setPassedValues(passedValues);
           setError(null);
           ws.close();
         } else if (data.status === "timeout") {
@@ -110,12 +108,9 @@ const EditorPage = () => {
       };
       // ======= END OF WEBSOCKET CONNECTION =======
 
-
       // Additional logic for "Submit" behavior
       if (isSubmit) {
-        // Handle submission specific behavior (e.g., mark the submission as complete, etc.)
         console.log("Code submitted successfully!");
-        // Example: you could call another API here to mark the submission as "complete"
       }
     } catch (error) {
       console.error(error);
@@ -147,6 +142,24 @@ const EditorPage = () => {
     setSelectedTestCaseIndex(index);
   };
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  // Function to extract actual values from the API output
+  const extractActualValues = (data: any) => {
+    if (data && Array.isArray(data.output)) {
+      return data.output.map((testCase: any) => testCase.actual).flat();
+    }
+    return []; // Return an empty array if `data.output` is not an array
+  };
+
+  // Function to extract passed status from the API output
+  const extractPassedValues = (data: any) => {
+    if (data && Array.isArray(data.output)) {
+      return data.output.map((testCase: any) => testCase.passed);
+    }
+    return []; // Return an empty array if `data.output` is not an array
+  };
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
   return (
     <div
       style={{ height: 'calc(100vh - 60px)' }} // 60px is the approximate height of your navbar
@@ -158,13 +171,13 @@ const EditorPage = () => {
 
         {/* Difficulty Selection */}
         <div className="mt-4 mb-4 flex gap-2 justify-center">
-          {['easy', 'medium', 'hard'].map((level) => (
+          {['Easy', 'Medium'].map((level) => (
             <button
               key={level}
               className={`px-4 py-2 text-sm text-white font-medium rounded-md ${
                 difficulty === level ? 'bg-indigo-600' : 'bg-gray-500'
               }`}
-              onClick={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
+              onClick={() => setDifficulty(level as 'easy' | 'medium')}
             >
               {level.charAt(0).toUpperCase() + level.slice(1)}
             </button>
@@ -231,14 +244,28 @@ const EditorPage = () => {
                   <strong>Input:</strong>
                   <p>{flattenArray(apiTestCases[selectedTestCaseIndex])}</p>
                 </div>
+
+                {/* Display Actual Output for the selected test case */}
+                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
+                  <strong>Actual Output:</strong>
+                  {/* Display the actual output for the selected test case */}
+                  <pre>{JSON.stringify(actualValues[selectedTestCaseIndex], null, 2)}</pre>
+                </div>
+
+                {/* Display Passed status for the selected test case */}
+                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
+                  <strong>Test Passed:</strong>
+                  {/* Display the passed status for the selected test case */}
+                  <pre>{JSON.stringify(passedValues[selectedTestCaseIndex], null, 2)}</pre>
+                </div>
               </div>
             )}
           </div>
         )}
 
         {activeTab === 'console' && (
-          <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px] whitespace-pre-wrap">
-            {output ? <pre>{output}</pre> : error ? <pre style={{ color: 'red' }}>{error}</pre> : <p>No output yet</p>}
+          <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
+            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.status, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
           </div>
         )}
       </div>
