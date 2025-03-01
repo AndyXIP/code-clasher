@@ -1,5 +1,4 @@
 import os
-import random
 from db_client.db_client import supabase
 
 def get_top_leaderboard_entries(count=5, difficulty='introductory'):
