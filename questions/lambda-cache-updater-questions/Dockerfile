@@ -8,6 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy your entire application code into the container
 COPY . ${LAMBDA_TASK_ROOT}
 
-# Set the CMD to your Lambda handler function.
-# Adjust "run.lambda_handler" if your file/handler name is different.
 CMD ["lambda_handler.lambda_handler"]
