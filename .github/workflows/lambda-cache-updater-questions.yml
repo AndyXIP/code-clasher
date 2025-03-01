@@ -1,19 +1,19 @@
-name: Build and Deploy Questions Microservice
+name: Build and Deploy Cache Updater Microservice
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'questions/random-questions/**'
-      - '!questions/random-questions/README.md'
+      - 'questions/lambda-cache-updater-questions/**'
+      - '!questions/lambda-cache-updater-questions/README.md'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: questions/random-questions
+        working-directory: questions/lambda-cache-updater-questions
 
     steps:
       - name: Checkout code
@@ -33,7 +33,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: lambda-questions-api
+          REPOSITORY: lambda-cache-updater-questions
           IMAGE_TAG: ${{ github.sha }}
         run: |
           echo "Building image..."
@@ -44,12 +44,12 @@ jobs:
       - name: Update Lambda Function
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: lambda-questions-api
+          REPOSITORY: lambda-cache-updater-questions
           IMAGE_TAG: ${{ github.sha }}
         run: |
           echo "Updating Lambda function..."
           aws lambda update-function-code \
-            --function-name random-questions \
+            --function-name lambda-cache-updater-questions \
             --image-uri $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Log out of Amazon ECR
