@@ -18,11 +18,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 1: Install dependencies
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm install
+
+      # Step 2: Run tests (Optional, but recommended before deploying)
+      - name: Run Tests
+        run: |
+          cd frontend
+          npm test
+
+      # Step 3: Install Vercel CLI
       - name: Install Vercel CLI
         run: npm install -g vercel
 
+      # Step 4: Pull Vercel Environment Information
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
+      # Step 5: Build the frontend (if needed, depending on your project)
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm run build
+
+      # Step 6: Deploy to Vercel
       - name: Deploy to Vercel
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
