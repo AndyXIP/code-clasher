@@ -1,4 +1,5 @@
 import json
+import time
 import pytest
 import asyncio
 from fastapi.testclient import TestClient
@@ -88,3 +89,46 @@ def test_job_result_websocket(client, fake_valkey_client):
         # Assert that the response indicates the job is done and contains the correct result.
         assert data["status"] == "done"
         assert data["job_result"] == job_result
+
+
+# --- Test for Timeout Scenario ---
+def test_job_result_websocket_timeout(client, fake_valkey_client, monkeypatch):
+    """
+    Simulate a scenario where the job result is never stored in the cache.
+    The websocket should eventually time out and send a timeout message.
+    """
+    job_id = "timeoutjob"
+
+    # Force fake_valkey_client.get to always return None.
+    async def always_none(key):
+        return None
+    monkeypatch.setattr(fake_valkey_client, "get", always_none)
+
+    # Create a fake time function to simulate that time advances beyond the timeout.
+    original_time = time.time()
+    class TimeMock:
+        def __init__(self, start):
+            self.start = start
+            self.calls = 0
+        def __call__(self):
+            self.calls += 1
+            # On first call, return the actual start time.
+            # On subsequent calls, simulate that 31 seconds have passed.
+            if self.calls > 1:
+                return self.start + 31
+            return self.start
+    time_mock = TimeMock(original_time)
+    monkeypatch.setattr(time, "time", time_mock)
+
+    # Override asyncio.sleep so that it doesn't actually wait.
+    async def fake_sleep(duration):
+        pass
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+
+    # Connect to the websocket endpoint.
+    with client.websocket_connect(f"/ws/job-status/{job_id}") as websocket:
+        data = websocket.receive_json()
+        # The endpoint should have timed out.
+        assert data["status"] == "timeout"
+        # Check that the error message indicates a timeout.
+        assert "timed out after" in data["error"]

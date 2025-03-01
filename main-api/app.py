@@ -171,9 +171,11 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
     await websocket.accept()
     print("Websocket accepted.")
 
-    timeout = 30
+    # Set max time to wait for job result (seconds)
+    timeout = 30 
+    # Set time to wait in between cache polls
+    poll_interval = 0.5
     start_time = time.time()
-    poll_interval = 1  # seconds
 
     try:
         cache_polled = False
