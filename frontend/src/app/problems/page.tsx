@@ -78,7 +78,7 @@ const EditorPage = () => {
   }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
 
   // Handle code submission to the API (for both Run and Submit)
-  const handleCodeSubmission = async (code: string, language: string, isSubmit: boolean = false) => {
+  const handleCodeSubmission = async (code: string, language: string, isSubmit: boolean) => {
     try {
       if (!problemId) {
         throw new Error('Problem ID is missing');
@@ -90,9 +90,10 @@ const EditorPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          problem_id: problemId,  // Send the problem ID
+          problemId,              // Send the problem ID
           language,               // Programming language
           code,                   // The code submitted by the user
+          isSubmit,               // Whether its a submission
         }),
       });
 
