@@ -78,7 +78,7 @@ const EditorPage = () => {
   }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
 
   // Handle code submission to the API (for both Run and Submit)
-  const handleCodeSubmission = async (code: string, language: string, isSubmit: boolean = false) => {
+  const handleCodeSubmission = async (code: string, language: string, isSubmit: boolean) => {
     try {
       if (!problemId) {
         throw new Error('Problem ID is missing');
@@ -90,9 +90,10 @@ const EditorPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          problem_id: problemId,  // Send the problem ID
+          problemId,              // Send the problem ID
           language,               // Programming language
           code,                   // The code submitted by the user
+          isSubmit,               // Whether its a submission
         }),
       });
 
@@ -177,6 +178,15 @@ const EditorPage = () => {
     return [];
   };
 
+  const renderFormattedQuestion = (text: string) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+  };
+
   return (
     <div
       style={{ height: 'calc(100vh - 60px)' }}
@@ -184,7 +194,9 @@ const EditorPage = () => {
     >
       {/* Left Side: Question & Test Cases */}
       <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600 overflow-y-auto" style={{ maxHeight: '100vh' }}>
-        <h1 className="text-lg mb-4">{questionPrompt || 'Loading question...'}</h1>
+        <p className="text-lg mb-4">
+          {questionPrompt ? renderFormattedQuestion(questionPrompt) : 'Loading question...'}
+        </p>
 
         {/* Difficulty Selection */}
         <div className="mt-4 mb-4 flex gap-2 justify-center">
