@@ -8,7 +8,7 @@ const EditorPage = () => {
   const [hardData, setHardData] = useState<any>(null);
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
   const [problemId, setProblemId] = useState<string>('');
-  const [apiTestCases, setApiTestCases] = useState<(string | number)[]>([]);
+  const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[]>([]);
   const [apiTestResults, setApiTestResults] = useState<(string | number)[]>([]);
   
   const [output, setOutput] = useState<any>(null);
@@ -162,10 +162,13 @@ const EditorPage = () => {
 
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
-  const flattenArray = (arr: any): (string | number)[] => {
-    // Do nothing, just return the array as it is
-    return arr || [];
-  };
+  const flattenArray = (arr: any): (string | number | (string | number)[])[] => {
+    if (!Array.isArray(arr)) return [];
+    
+    return arr.flat(1).filter(item => 
+      typeof item === 'string' || typeof item === 'number' || Array.isArray(item)
+    );
+  };  
 
   const handleTestCaseSelection = (index: number) => {
     setSelectedTestCaseIndex(index);
@@ -191,8 +194,8 @@ const EditorPage = () => {
       className="flex flex-col md:flex-row w-full"
     >
       {/* Left Side: Question & Test Cases */}
-      <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600">
-        <h1 className="text-lg font-bold mb-4">{questionPrompt + apiTestCases || 'Loading question...'}</h1>
+      <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600 overflow-y-auto" style={{ maxHeight: '100vh' }}>
+        <h1 className="text-lg mb-4">{questionPrompt || 'Loading question...'}</h1>
 
         {/* Difficulty Selection */}
         <div className="mt-4 mb-4 flex gap-2 justify-center">
@@ -237,34 +240,40 @@ const EditorPage = () => {
           </nav>
         </div>
 
-        {/* Display Tab Content */}
+        {/* Display Test Cases */}
         {activeTab === 'testCases' && (
-          <div className="mt-4 space-y-4">
-            <div className="flex space-x-4 justify-center">
-              {apiTestCases.length > 0 ? (
-                apiTestCases.map((testCase, index) => (
-                  <button
-                    key={index}
-                    className={`px-4 py-2 text-sm font-medium rounded-md ${
-                      selectedTestCaseIndex === index
-                        ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
-                        : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
-                    }`}
-                    onClick={() => handleTestCaseSelection(index)}
-                  >
-                    Case {index + 1}
-                  </button>
-                ))
-              ) : (
-                <p>No test cases available</p>
-              )}
+          <>
+            <div className="mt-4 flex space-x-4 justify-center">
+              {apiTestCases.map((_, index) => (
+                <button
+                  key={index}
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    selectedTestCaseIndex === index
+                      ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                      : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
+                  }`}
+                  onClick={() => handleTestCaseSelection(index)}
+                >
+                  Case {index + 1}
+                </button>
+              ))}
             </div>
-          </div>
+
+            {/* Selected Test Case Details */}
+            {selectedTestCaseIndex !== null && (
+              <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                <h2 className="text-md font-bold">Input:</h2>
+                <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                  {JSON.stringify(apiTestCases[selectedTestCaseIndex], null, 2)}
+                </pre>
+              </div>
+            )}
+          </>
         )}
 
         {activeTab === 'console' && (
           <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
-            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.status, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
+            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
           </div>
         )}
       </div>
