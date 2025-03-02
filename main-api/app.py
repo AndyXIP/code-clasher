@@ -20,7 +20,7 @@ from glide import (
     Logger,
     LogLevel
 )
-from questions_fns import get_weekly_questions, get_day_index
+from questions_fns import get_day_index, parse_inputs_outputs
 
 load_dotenv()
 
@@ -142,6 +142,10 @@ async def daily_question(difficulty: str = "easy"):
     # Remove the "solutions" key from both question objects, if present.
     easy.pop("solutions", None)
     hard.pop("solutions", None)
+
+    # Parse stringified arrays for I/O keys back into arrays
+    easy = parse_inputs_outputs(easy)
+    hard = parse_inputs_outputs(hard)
 
     # Return the selected questions as a JSON object.
     return {"easy": easy, "hard": hard}
