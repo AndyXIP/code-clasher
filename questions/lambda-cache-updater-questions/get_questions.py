@@ -11,6 +11,7 @@ class WeeklyQuestionsError(Exception):
     pass
 
 async def get_questions(count=5, source='leetcode', difficulty_easy="introductory", difficulty_hard="interview"):
+    print("Entering get_questions()...")
     """
     Fetches two sets of questions (easy & hard) from the external API.
     Raises a WeeklyQuestionsError for network, status, or JSON errors.
@@ -19,11 +20,15 @@ async def get_questions(count=5, source='leetcode', difficulty_easy="introductor
     query_string = f"/random-questions?count={count}&source={source}&difficulty="
     url_easy = f"{BASE_URL}{query_string}{difficulty_easy}"
     url_hard = f"{BASE_URL}{query_string}{difficulty_hard}"
-
+    print("Constructed URLs for easy and hard calls")
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        print("Enterying try block to make call...")
+        async with httpx.AsyncClient(timeout=72.0) as client:
+            print("Making calls")
             easy_response = await client.get(url_easy)
+            print("First call made")
             hard_response = await client.get(url_hard)
+            print("Second call made")
     except httpx.RequestError as exc:
         raise WeeklyQuestionsError(f"Failed to contact external API: {str(exc)}") from exc
 

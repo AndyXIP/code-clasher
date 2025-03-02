@@ -44,9 +44,11 @@ async def async_handler(event, context):
     Async handler that initializes the client if needed, fetches new questions,
     formats the data with a timestamp, and updates the cache.
     """
+    
     global valkey_client
 
     # Initialize the client if not already done.
+    print("Initialising valkey client")
     if valkey_client is None:
         try:
             await initialize_valkey_client()
