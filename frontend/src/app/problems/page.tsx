@@ -13,7 +13,7 @@ const EditorPage = () => {
   
   const [output, setOutput] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | string | null>(null);
+  const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'hard'>('easy');
   const [passedValues, setPassedValues] = useState<boolean[]>([]);
@@ -37,22 +37,19 @@ const EditorPage = () => {
         setEasyData(easy);
         setHardData(hard);
 
+        setDifficulty('easy')
+
         // Set default test case for the selected difficulty
         if (easy && easy.inputs && easy.inputs.length > 0) {
           setSelectedTestCaseIndex(0);
         }
 
         // Set the question prompt and problem ID based on selected difficulty
-        if (difficulty === 'easy' && easy) {
+        if (easy) {
           setQuestionPrompt(easy.question || '');
           setProblemId(easy.id || '');
-          setApiTestCases(flattenArray(easy.inputs) || []); // Flatten inputs to handle them properly
+          setApiTestCases(easy.inputs || []);
           setApiTestResults(easy.outputs || []);
-        } else if (difficulty === 'hard' && hard) {
-          setQuestionPrompt(hard.question || '');
-          setProblemId(hard.id || '');
-          setApiTestCases(flattenArray(hard.inputs) || []); // Flatten inputs to handle them properly
-          setApiTestResults(hard.outputs || []);
         }
 
       } catch (error) {
@@ -70,12 +67,12 @@ const EditorPage = () => {
     if (difficulty === 'easy' && easyData) {
       setQuestionPrompt(easyData.question || '');
       setProblemId(easyData.id || '');
-      setApiTestCases(flattenArray(easyData.inputs) || []); // Flatten inputs
+      setApiTestCases(easyData.inputs || []);
       setApiTestResults(easyData.outputs || []);
     } else if (difficulty === 'hard' && hardData) {
       setQuestionPrompt(hardData.question || '');
       setProblemId(hardData.id || '');
-      setApiTestCases(flattenArray(hardData.inputs) || []); // Flatten inputs
+      setApiTestCases(hardData.inputs || []);
       setApiTestResults(hardData.outputs || []);
     }
   }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
@@ -161,14 +158,6 @@ const EditorPage = () => {
   ];
 
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
-
-  const flattenArray = (arr: any): (string | number | (string | number)[])[] => {
-    if (!Array.isArray(arr)) return [];
-    
-    return arr.flat(1).filter(item => 
-      typeof item === 'string' || typeof item === 'number' || Array.isArray(item)
-    );
-  };  
 
   const handleTestCaseSelection = (index: number) => {
     setSelectedTestCaseIndex(index);
@@ -261,11 +250,31 @@ const EditorPage = () => {
 
             {/* Selected Test Case Details */}
             {selectedTestCaseIndex !== null && (
-              <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
-                <h2 className="text-md font-bold">Input:</h2>
-                <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                  {JSON.stringify(apiTestCases[selectedTestCaseIndex], null, 2)}
-                </pre>
+              <div>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Input:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(apiTestCases[selectedTestCaseIndex], null, 2)}
+                  </pre>
+                </div>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Expected Output:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(apiTestResults[selectedTestCaseIndex], null, 2)}
+                  </pre>
+                </div>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Actual Output:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(actualValues[selectedTestCaseIndex], null, 2)}
+                  </pre>
+                </div>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Passed:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(passedValues[selectedTestCaseIndex], null, 2)}
+                  </pre>
+                </div>
               </div>
             )}
           </>
