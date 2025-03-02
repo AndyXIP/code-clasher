@@ -1,7 +1,10 @@
 const stats = [
-  { name: "Total Questions Completed", stat: "5" },
-  { name: "Question Streak", stat: "3" },
-  { name: "Questions Completion Rate", stat: "80%" },
+  { name: "Easy Questions Completed", stat: "5" },
+  { name: "Hard Questions Completed", stat: "3" },
+  { name: "Total Questions Completed", stat: "8" },
+  { name: "Easy Questions Completion Rate", stat: "100%" },
+  { name: "Hard Questions Completion Rate", stat: "33%" },
+  { name: "Total Questions Completion Rate", stat: "75%" },
 ];
 
 export default function StatCard() {

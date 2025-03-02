@@ -6,7 +6,6 @@ import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 export default function CodeTracker() {
   // Track completion status for each difficulty
   const [easyDone, setEasyDone] = useState(false);
-  const [mediumDone, setMediumDone] = useState(false);
   const [hardDone, setHardDone] = useState(false);
 
   return (
@@ -24,12 +23,12 @@ export default function CodeTracker() {
           <div className="flex-none self-end px-6 pt-4">
             <dd
               className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
-                easyDone && mediumDone && hardDone
+                easyDone && hardDone
                   ? "bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/20 dark:text-green-400 dark:ring-green-500/30"
                   : "bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/20 dark:text-red-400 dark:ring-red-500/30"
               }`}
             >
-              {easyDone && mediumDone && hardDone ? "Complete" : "Incomplete"}
+              {easyDone && hardDone ? "Complete" : "Incomplete"}
             </dd>
           </div>
 
@@ -46,21 +45,6 @@ export default function CodeTracker() {
               )}
             </dt>
             <dd className="text-sm/6 font-medium text-gray-900 dark:text-gray-200">Easy</dd>
-          </div>
-
-          {/* Medium */}
-          <div
-            className="mt-4 flex w-full flex-none gap-x-4 px-6 cursor-pointer"
-            onClick={() => setMediumDone(!mediumDone)}
-          >
-            <dt className="flex-none">
-              {mediumDone ? (
-                <CheckCircleIcon aria-hidden="true" className="h-6 w-5 text-green-700 dark:text-green-400" />
-              ) : (
-                <XCircleIcon aria-hidden="true" className="h-6 w-5 text-red-700 dark:text-red-400" />
-              )}
-            </dt>
-            <dd className="text-sm/6 font-medium text-gray-900 dark:text-gray-200">Medium</dd>
           </div>
 
           {/* Hard */}
