@@ -23,3 +23,17 @@ describe("CodeTracker Component", () => {
     fireEvent.click(easyButton); // Click again to reset
     expect(screen.getByText("Incomplete")).toBeInTheDocument();
   });
+
+  test("clicking all difficulties marks status as 'Complete'", () => {
+    const easyButton = screen.getByText("Easy");
+    const mediumButton = screen.getByText("Medium");
+    const hardButton = screen.getByText("Hard");
+
+    // Click all buttons to complete all
+    fireEvent.click(easyButton);
+    fireEvent.click(mediumButton);
+    fireEvent.click(hardButton);
+
+    // Now, the badge should show "Complete"
+    expect(screen.getByText("Complete")).toBeInTheDocument();
+  });
