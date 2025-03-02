@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'leaderboard/**'
-      - '!leaderboard/README.md'
+      - 'leaderboard/leaderboard_function/**'
+      - '!leaderboard/leaderboard_function/README.md'
 
 jobs:
   build:
