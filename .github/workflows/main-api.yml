@@ -8,7 +8,7 @@ on:
       - 'main-api/**'
 
 jobs:
-  deploy:
+  test-and-deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,9 +23,18 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install EB CLI
+      - name: Install Dependencies
         run: |
           pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run Pytest
+        run: |
+          pytest tests
+
+      - name: Install EB CLI
+        run: |
           pip install awsebcli
 
       - name: Configure AWS Credentials
@@ -45,4 +54,3 @@ jobs:
       - name: Deploy to Elastic Beanstalk
         run: |
           eb deploy
-
