@@ -26,7 +26,7 @@ def get_top_leaderboard_entries(count=5, difficulty='introductory'):
         raise RuntimeError(f"Error fetching 'introductory' leaderboard: {error_msg}")
     introductory_leaders = introductory_data.get("data", [])
 
-    # Query for top entries based on 'interview' score (highest first)
+    # Query for top entries based on 'interview' score (highest first)-
     interview_query = (
         supabase.table("leaderboard")
         .select("display_name, interview")

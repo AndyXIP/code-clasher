@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: leaderboard
+        working-directory: leaderboard/leaderboard_function
 
     steps:
       - name: Checkout code
