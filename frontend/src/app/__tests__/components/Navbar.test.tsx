@@ -12,3 +12,11 @@ jest.mock("../../SupabaseClient", () => ({
     },
   },
 }));
+
+test("Navbar renders without crashing", async () => {
+  await act(async () => {
+    render(<Navbar />);
+  });
+
+  expect(screen.getByRole("navigation")).toBeInTheDocument();
+});
