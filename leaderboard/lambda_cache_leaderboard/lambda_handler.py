@@ -18,7 +18,7 @@ load_dotenv()
 # Configure logger for Glide
 Logger.set_logger_config(LogLevel.INFO)
 
-# Global variable to hold the Valkey client instance-
+# Global variable to hold the Valkey client instance
 valkey_client = None
 
 async def initialize_valkey_client():

@@ -33,7 +33,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: lambda-cache-updater-leaderboard
+          REPOSITORY: lambda-cache-leaderboard
           IMAGE_TAG: ${{ github.sha }}
         run: |
           echo "Building image..."
@@ -49,7 +49,7 @@ jobs:
         run: |
           echo "Updating Lambda function..."
           aws lambda update-function-code \
-            --function-name cache-updater-leaderboard \
+            --function-name cache-leaderboard \
             --image-uri $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Log out of Amazon ECR
