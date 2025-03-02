@@ -1,8 +1,10 @@
 import httpx
 import json
 import datetime
+import dotenv
+import os
 
-BASE_URL = "https://byspc9u2xa.execute-api.eu-north-1.amazonaws.com/random-questions"
+BASE_URL = os.getenv('QUESTIONS_API_URL')
 
 class WeeklyQuestionsError(Exception):
     """Custom exception for errors fetching weekly questions."""
@@ -14,12 +16,12 @@ async def get_questions(count=5, source='leetcode', difficulty_easy="introductor
     Raises a WeeklyQuestionsError for network, status, or JSON errors.
     Returns a dict with keys 'easy' and 'hard' containing lists of questions.
     """
-    query_string = f"?count={count}&source={source}&difficulty="
+    query_string = f"/random-questions?count={count}&source={source}&difficulty="
     url_easy = f"{BASE_URL}{query_string}{difficulty_easy}"
     url_hard = f"{BASE_URL}{query_string}{difficulty_hard}"
 
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             easy_response = await client.get(url_easy)
             hard_response = await client.get(url_hard)
     except httpx.RequestError as exc:
