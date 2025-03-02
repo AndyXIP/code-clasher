@@ -8,8 +8,8 @@ const EditorPage = () => {
   const [hardData, setHardData] = useState<any>(null);
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
   const [problemId, setProblemId] = useState<string>('');
-  const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[][]>([]);
-  const [apiTestResults, setApiTestResults] = useState<(string | number | (string | number)[])[][]>([]);
+  const [apiTestCases, setApiTestCases] = useState<(string | number)[]>([]);
+  const [apiTestResults, setApiTestResults] = useState<(string | number)[]>([]);
   
   const [output, setOutput] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +38,7 @@ const EditorPage = () => {
         setHardData(hard);
 
         // Set default test case for the selected difficulty
-        if (easy && easy.input && easy.input.length > 0) {
+        if (easy && easy.inputs && easy.inputs.length > 0) {
           setSelectedTestCaseIndex(0);
         }
 
@@ -46,13 +46,13 @@ const EditorPage = () => {
         if (difficulty === 'easy' && easy) {
           setQuestionPrompt(easy.question || '');
           setProblemId(easy.id || '');
-          setApiTestCases(easy.inputs || '');
-          setApiTestResults(easy.outputs || '');
+          setApiTestCases(flattenArray(easy.inputs) || []); // Flatten inputs to handle them properly
+          setApiTestResults(easy.outputs || []);
         } else if (difficulty === 'hard' && hard) {
           setQuestionPrompt(hard.question || '');
           setProblemId(hard.id || '');
-          setApiTestCases(hard.inputs || '');
-          setApiTestResults(hard.outputs || '');
+          setApiTestCases(flattenArray(hard.inputs) || []); // Flatten inputs to handle them properly
+          setApiTestResults(hard.outputs || []);
         }
 
       } catch (error) {
@@ -70,13 +70,13 @@ const EditorPage = () => {
     if (difficulty === 'easy' && easyData) {
       setQuestionPrompt(easyData.question || '');
       setProblemId(easyData.id || '');
-      setApiTestCases(easyData.input || []);
-      setApiTestResults(easyData.output || []);
+      setApiTestCases(flattenArray(easyData.inputs) || []); // Flatten inputs
+      setApiTestResults(easyData.outputs || []);
     } else if (difficulty === 'hard' && hardData) {
       setQuestionPrompt(hardData.question || '');
       setProblemId(hardData.id || '');
-      setApiTestCases(hardData.input || []);
-      setApiTestResults(hardData.output || []);
+      setApiTestCases(flattenArray(hardData.inputs) || []); // Flatten inputs
+      setApiTestResults(hardData.outputs || []);
     }
   }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
 
@@ -162,15 +162,9 @@ const EditorPage = () => {
 
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
-  const flattenArray = (arr: (string | number | (string | number)[])[]): string => {
-    return arr
-      .map(item => {
-        if (Array.isArray(item)) {
-          return flattenArray(item);
-        }
-        return String(item);
-      })
-      .join(', ');
+  const flattenArray = (arr: any): (string | number)[] => {
+    // Do nothing, just return the array as it is
+    return arr || [];
   };
 
   const handleTestCaseSelection = (index: number) => {
@@ -198,7 +192,7 @@ const EditorPage = () => {
     >
       {/* Left Side: Question & Test Cases */}
       <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600">
-        <h1 className="text-lg font-bold mb-4">{questionPrompt || 'Loading question...'}</h1>
+        <h1 className="text-lg font-bold mb-4">{questionPrompt + apiTestCases || 'Loading question...'}</h1>
 
         {/* Difficulty Selection */}
         <div className="mt-4 mb-4 flex gap-2 justify-center">
@@ -247,48 +241,24 @@ const EditorPage = () => {
         {activeTab === 'testCases' && (
           <div className="mt-4 space-y-4">
             <div className="flex space-x-4 justify-center">
-              {/* Conditional rendering based on the selected difficulty */}
-              {Array.isArray(difficulty === 'easy' ? easyData?.inputs : hardData?.inputs) &&
-              (difficulty === 'easy' ? easyData?.inputs : hardData?.inputs).length > 0 ? (
-                // Normalize inputs in case it's an array of arrays or a single array
-                (Array.isArray(difficulty === 'easy' ? easyData?.inputs : hardData?.inputs[0])
-                  ? (difficulty === 'easy' ? easyData?.inputs : hardData?.inputs)
-                  : [(difficulty === 'easy' ? easyData?.inputs : hardData?.inputs)]).map((testCase, index) => (
-                    <button
-                      key={index}
-                      className={`px-4 py-2 text-sm font-medium rounded-md ${
-                        selectedTestCaseIndex === index
-                          ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
-                          : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
-                      }`}
-                      onClick={() => handleTestCaseSelection(index)}
-                    >
-                      Case {index + 1}
-                    </button>
+              {apiTestCases.length > 0 ? (
+                apiTestCases.map((testCase, index) => (
+                  <button
+                    key={index}
+                    className={`px-4 py-2 text-sm font-medium rounded-md ${
+                      selectedTestCaseIndex === index
+                        ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                        : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
+                    }`}
+                    onClick={() => handleTestCaseSelection(index)}
+                  >
+                    Case {index + 1}
+                  </button>
                 ))
               ) : (
                 <p>No test cases available</p>
               )}
             </div>
-
-            {selectedTestCaseIndex !== null && (
-              <div className="mt-4">
-                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Input:</strong>
-                  <p>{flattenArray(difficulty === 'easy' ? easyData?.inputs[selectedTestCaseIndex] : hardData?.inputs[selectedTestCaseIndex])}</p>
-                </div>
-
-                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Expected Output:</strong>
-                  <pre>{JSON.stringify(difficulty === 'easy' ? easyData?.outputs[selectedTestCaseIndex] : hardData?.outputs[selectedTestCaseIndex], null, 2)}</pre>
-                </div>
-
-                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Id:</strong>
-                  <pre>{JSON.stringify(difficulty === 'easy' ? easyData?.id[selectedTestCaseIndex] : hardData?.id[selectedTestCaseIndex], null, 2)}</pre>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
