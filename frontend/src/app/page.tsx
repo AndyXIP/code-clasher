@@ -100,7 +100,7 @@ int main() {
   // When the user is logged in, show the Dashboard
   return (
     <div className="py-5 ml-4 mr-4">
-      <div className="text-2xl font-semibold mb-5">
+      <div className="text-2xl font-semibold mb-10">
         Welcome back, {user.email || 'User'}!
       </div>
       <div className="flex gap-10">
