@@ -3,6 +3,7 @@
 import { useAuth } from './contexts/AuthContext'; // Import the useAuth hook
 import StatCard from './components/StatCard';
 import CodeTracker from './components/CodeTracker';
+import StreakBar from './components/StreakBar';
 import { ChevronRightIcon } from '@heroicons/react/20/solid'; // Import the ChevronRightIcon
 
 export default function HomePage() {
@@ -100,7 +101,7 @@ int main() {
   // When the user is logged in, show the Dashboard
   return (
     <div className="py-5 ml-4 mr-4">
-      <div className="text-2xl font-semibold mb-10">
+      <div className="text-1xl font-semibold mb-2">
         Welcome back, {user.email || 'User'}!
       </div>
       <div className="flex gap-10">
@@ -110,6 +111,9 @@ int main() {
         <div className="w-[70%]">
           <StatCard />
         </div>
+      </div>
+      <div className="w-[100%]">
+          <StreakBar easyStreak={5} hardStreak={6} />
       </div>
     </div>
   );
