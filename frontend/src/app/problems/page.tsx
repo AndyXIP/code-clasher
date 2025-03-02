@@ -4,42 +4,78 @@ import React, { useState, useEffect } from 'react';
 import MonacoEditorComponent from '../components/MonacoEditor';
 
 const EditorPage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [output, setOutput] = useState<null | any>(null);
+  const [easyData, setEasyData] = useState<any>(null);
+  const [hardData, setHardData] = useState<any>(null);
+  const [questionPrompt, setQuestionPrompt] = useState<string>('');
+  const [problemId, setProblemId] = useState<string>('');
+  const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[]>([]);
+  const [apiTestResults, setApiTestResults] = useState<(string | number)[]>([]);
+  
+  const [output, setOutput] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
-  const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[][]>([]); 
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
-  const [questionPrompt, setQuestionPrompt] = useState<string>('');
-  const [problemId, setProblemId] = useState<string>(''); 
+  const [difficulty, setDifficulty] = useState<'easy' | 'hard'>('easy');
   const [passedValues, setPassedValues] = useState<boolean[]>([]);
   const [actualValues, setActualValues] = useState<string[]>([]);
 
-  // Fetch test cases and question prompt on component mount or difficulty change
+  // Use useEffect to fetch data once on initial mount
   useEffect(() => {
     const fetchTestCasesAndPrompt = async () => {
       try {
-        const response = await fetch(`/api/daily-question?difficulty=${difficulty}`);
+        const response = await fetch(`/api/daily-question`);
         if (!response.ok) {
-          throw new Error('Failed to fetch test cases');
+          throw new Error('Failed to fetch question data');
         }
         const data = await response.json();
-        setApiTestCases(data.test_cases || []); 
-        setQuestionPrompt(data.description || '');
-        setProblemId(data.problem_id || '');
 
-        if (data.test_cases && data.test_cases.length > 0) {
+        // Get both easy and hard question data
+        const easy = data.easy;
+        const hard = data.hard;
+
+        // Update the state with both easy and hard data
+        setEasyData(easy);
+        setHardData(hard);
+
+        setDifficulty('easy')
+
+        // Set default test case for the selected difficulty
+        if (easy && easy.inputs && easy.inputs.length > 0) {
           setSelectedTestCaseIndex(0);
         }
+
+        // Set the question prompt and problem ID based on selected difficulty
+        if (easy) {
+          setQuestionPrompt(easy.question || '');
+          setProblemId(easy.id || '');
+          setApiTestCases(easy.inputs || []);
+          setApiTestResults(easy.outputs || []);
+        }
+
       } catch (error) {
-        console.error('Error fetching test cases:', error);
-        setError('An error occurred while fetching test cases');
+        console.error('Error fetching question data:', error);
+        setError('An error occurred while fetching question data');
       }
     };
 
+    // Fetch data once on mount
     fetchTestCasesAndPrompt();
-  }, [difficulty]);
+  }, []); // Empty dependency array ensures it runs only once on mount
+
+  // Handle difficulty change without fetching data again
+  useEffect(() => {
+    if (difficulty === 'easy' && easyData) {
+      setQuestionPrompt(easyData.question || '');
+      setProblemId(easyData.id || '');
+      setApiTestCases(easyData.inputs || []);
+      setApiTestResults(easyData.outputs || []);
+    } else if (difficulty === 'hard' && hardData) {
+      setQuestionPrompt(hardData.question || '');
+      setProblemId(hardData.id || '');
+      setApiTestCases(hardData.inputs || []);
+      setApiTestResults(hardData.outputs || []);
+    }
+  }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
 
   // Handle code submission to the API (for both Run and Submit)
   const handleCodeSubmission = async (code: string, language: string, isSubmit: boolean = false) => {
@@ -66,14 +102,13 @@ const EditorPage = () => {
 
       const result = await response.json();
 
-      // --- Done via websocket now ---
+      // WebSocket connection for job status
       if (!result.job_id) {
         throw new Error('Job ID is missing in response');
       }
 
-      const jobId = result.job_id; // Extract job ID from response
+      const jobId = result.job_id;
 
-      // ======== START OF WEBSOCKET CONNECTION ========
       const ws = new WebSocket(`wss://main-api.click/ws/job-status/${jobId}`);
 
       ws.onopen = () => {
@@ -106,9 +141,7 @@ const EditorPage = () => {
       ws.onclose = () => {
         console.log("WebSocket closed for job:", jobId);
       };
-      // ======= END OF WEBSOCKET CONNECTION =======
 
-      // Additional logic for "Submit" behavior
       if (isSubmit) {
         console.log("Code submitted successfully!");
       }
@@ -126,70 +159,51 @@ const EditorPage = () => {
 
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
-  // Utility function to recursively flatten arrays
-  const flattenArray = (arr: (string | number | (string | number)[])[]): string => {
-    return arr
-      .map(item => {
-        if (Array.isArray(item)) {
-          return flattenArray(item); // Recursively flatten nested arrays
-        }
-        return String(item); // Convert numbers and strings to string
-      })
-      .join(', ');
-  };
-
   const handleTestCaseSelection = (index: number) => {
     setSelectedTestCaseIndex(index);
   };
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  // Function to extract actual values from the API output
   const extractActualValues = (data: any) => {
     if (data && Array.isArray(data.output)) {
       return data.output.map((testCase: any) => testCase.actual).flat();
     }
-    return []; // Return an empty array if `data.output` is not an array
+    return [];
   };
 
-  // Function to extract passed status from the API output
   const extractPassedValues = (data: any) => {
     if (data && Array.isArray(data.output)) {
       return data.output.map((testCase: any) => testCase.passed);
     }
-    return []; // Return an empty array if `data.output` is not an array
+    return [];
   };
-  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   return (
     <div
-      style={{ height: 'calc(100vh - 60px)' }} // 60px is the approximate height of your navbar
+      style={{ height: 'calc(100vh - 60px)' }}
       className="flex flex-col md:flex-row w-full"
     >
       {/* Left Side: Question & Test Cases */}
-      <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600">
-        <h1 className="text-lg font-bold mb-4">{questionPrompt || 'Loading question...'}</h1>
+      <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600 overflow-y-auto" style={{ maxHeight: '100vh' }}>
+        <h1 className="text-lg mb-4">{questionPrompt || 'Loading question...'}</h1>
 
         {/* Difficulty Selection */}
         <div className="mt-4 mb-4 flex gap-2 justify-center">
-          {['Easy', 'Medium'].map((level) => (
+          {['Easy', 'Hard'].map((level) => (
             <button
               key={level}
               className={`px-4 py-2 text-sm text-white font-medium rounded-md ${
-                difficulty === level ? 'bg-indigo-600' : 'bg-gray-500'
+                difficulty === level.toLowerCase() ? 'bg-indigo-600' : 'bg-gray-500'
               }`}
-              onClick={() => setDifficulty(level as 'easy' | 'medium')}
+              onClick={() => setDifficulty(level.toLowerCase() as 'easy' | 'hard')}
             >
-              {level.charAt(0).toUpperCase() + level.slice(1)}
+              {level}
             </button>
           ))}
         </div>
 
         {/* Tab Navigation */}
         <div className="mt-4">
-          <nav
-            aria-label="Tabs"
-            className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black"
-          >
+          <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black">
             {tabs.map((tab, tabIdx) => (
               <button
                 key={tab.name}
@@ -215,57 +229,60 @@ const EditorPage = () => {
           </nav>
         </div>
 
-        {/* Display Tab Content */}
+        {/* Display Test Cases */}
         {activeTab === 'testCases' && (
-          <div className="mt-4 space-y-4">
-            <div className="flex space-x-4 justify-center">
-              {apiTestCases.length > 0 ? (
-                apiTestCases.map((testCase, index) => (
-                  <button
-                    key={index}
-                    className={`px-4 py-2 text-sm font-medium rounded-md ${
-                      selectedTestCaseIndex === index
-                        ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
-                        : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
-                    }`}
-                    onClick={() => handleTestCaseSelection(index)}
-                  >
-                    Case {index + 1}
-                  </button>
-                ))
-              ) : (
-                <p>No test cases available</p>
-              )}
+          <>
+            <div className="mt-4 flex space-x-4 justify-center">
+              {apiTestCases.map((_, index) => (
+                <button
+                  key={index}
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    selectedTestCaseIndex === index
+                      ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                      : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
+                  }`}
+                  onClick={() => handleTestCaseSelection(index)}
+                >
+                  Case {index + 1}
+                </button>
+              ))}
             </div>
 
-            {selectedTestCaseIndex !== null && apiTestCases[selectedTestCaseIndex] && (
-              <div className="mt-4">
-                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Input:</strong>
-                  <p>{flattenArray(apiTestCases[selectedTestCaseIndex])}</p>
+            {/* Selected Test Case Details */}
+            {selectedTestCaseIndex !== null && (
+              <div>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Input:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(apiTestCases[selectedTestCaseIndex], null, 2)}
+                  </pre>
                 </div>
-
-                {/* Display Actual Output for the selected test case */}
-                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Actual Output:</strong>
-                  {/* Display the actual output for the selected test case */}
-                  <pre>{JSON.stringify(actualValues[selectedTestCaseIndex], null, 2)}</pre>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Expected Output:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(apiTestResults[selectedTestCaseIndex], null, 2)}
+                  </pre>
                 </div>
-
-                {/* Display Passed status for the selected test case */}
-                <div className="mt-2 p-4 bg-gray-100 dark:bg-slate-800 rounded-md border border-gray-300">
-                  <strong>Test Passed:</strong>
-                  {/* Display the passed status for the selected test case */}
-                  <pre>{JSON.stringify(passedValues[selectedTestCaseIndex], null, 2)}</pre>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Actual Output:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(actualValues[selectedTestCaseIndex], null, 2)}
+                  </pre>
+                </div>
+                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
+                  <h2 className="text-md font-bold">Passed:</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
+                    {JSON.stringify(passedValues[selectedTestCaseIndex], null, 2)}
+                  </pre>
                 </div>
               </div>
             )}
-          </div>
+          </>
         )}
 
         {activeTab === 'console' && (
           <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
-            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.status, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
+            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
           </div>
         )}
       </div>

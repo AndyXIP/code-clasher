@@ -1,12 +1,9 @@
 // app/api/daily-question/route.ts
 
-export async function GET(req: Request) {
+export async function GET() {
     try {
       // Extract the 'difficulty' parameter from the request URL query
-      const url = new URL(req.url);
-      const difficulty = url.searchParams.get('difficulty') || 'easy'; // Default to 'easy' if not provided
-  
-      const response = await fetch(`https://main-api.click/api/daily-question?difficulty=${difficulty}`, {
+      const response = await fetch(`https://main-api.click/api/daily-question`, {
         headers: {
           'Content-Type': 'application/json',
         },
