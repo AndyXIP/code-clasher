@@ -21,6 +21,7 @@ from glide import (
     LogLevel
 )
 from questions_fns import get_day_index, parse_inputs_outputs
+from leaderboard import format_leaderboard_data
 
 load_dotenv()
 
@@ -183,6 +184,27 @@ async def submit_code(payload: SubmitCodePayload):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+
+@app.get("/api/leaderboard")
+async def leaderboard():
+    global valkey_client
+    if not valkey_client:
+        raise HTTPException(status_code=500, detail="Valkey client not initialized")
+
+    key = "active_leaderboard"
+    try:
+        cached_value = await valkey_client.get(key)
+        if cached_value:
+            leaderboard_data = json.loads(cached_value)
+        else:
+            raise Exception("Could not find data in cache for key 'active_leaderboard'")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    # Return the cached leaderboard data as-is
+    data = format_leaderboard_data(leaderboard_data)
+    return data
 # ==== WEBSOCKET for job results ===
 
 @app.websocket("/ws/job-status/{job_id}")
