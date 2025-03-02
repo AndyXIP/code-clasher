@@ -19,6 +19,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up and run tests
+        run: |
+          echo "Installing test dependencies..."
+          python -m pip install --upgrade pip
+          pip install pytest pytest-asyncio pytest-mock
+          echo "Running tests..."
+          python -m pytest tests/
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
