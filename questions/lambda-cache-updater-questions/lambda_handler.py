@@ -12,7 +12,7 @@ from glide import (
 )
 from get_questions import get_questions, format_questions_data  # Note: ensure function names match
 
-# Load environment variables from .env file if needed.
+# Load environment variables from .env file if needed
 load_dotenv()
 
 # Configure logger for Glide
