@@ -12,3 +12,20 @@ jest.mock("../../components/MonacoEditor", () => {
     );
   };
 });
+
+// Import the mocked MonacoEditor component
+import MonacoEditorMock from "../../components/MonacoEditor";
+
+// Mock function for onSubmit
+const mockOnSubmit = jest.fn();
+
+test("MonacoEditor renders without crashing", () => {
+  render(<MonacoEditorMock onSubmit={mockOnSubmit} />);
+
+  // Ensure the mocked Monaco component is rendered
+  expect(screen.getByTestId("monaco-mock")).toBeInTheDocument();
+
+  // Simulate clicking the submit button
+  fireEvent.click(screen.getByText("Submit"));
+  expect(mockOnSubmit).toHaveBeenCalled();
+});
