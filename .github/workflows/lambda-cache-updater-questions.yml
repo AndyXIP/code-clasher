@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "Installing test dependencies..."
           python -m pip install --upgrade pip
-          pip install pytest pytest-asyncio pytest-mock
+          pip install pytest pytest-asyncio pytest-mock python-dotenv httpx
           echo "Running tests..."
           python -m pytest tests/
 
