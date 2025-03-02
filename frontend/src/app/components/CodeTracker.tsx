@@ -13,7 +13,7 @@ export default function CodeTracker() {
       <h3 className="text-base font-semibold text-gray-900 dark:text-gray-200">
         Last 24 Hours
       </h3>
-      <div className="rounded-lg mt-5 bg-gray-50 dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700">
+      <div className="rounded-lg mt-5 bg-white dark:bg-gray-800 shadow ring-1 ring-gray-900/5 dark:ring-gray-700">
         <dl className="flex flex-wrap">
           <div className="flex-auto pl-6 pt-6">
             <dt className="text-sm/6 font-semibold text-gray-900 dark:text-gray-200">

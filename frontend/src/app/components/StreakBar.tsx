@@ -19,7 +19,7 @@ const StreakBar: React.FC<StreakBarProps> = ({ easyStreak, hardStreak }) => {
       </h3>
       <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
         {/* Easy Streak */}
-        <div className="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-5 shadow-sm dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             <div className="mb-3"><StreakBadge streak={easyStreak} /></div>
             Easy Streak
@@ -30,7 +30,7 @@ const StreakBar: React.FC<StreakBarProps> = ({ easyStreak, hardStreak }) => {
         </div>
 
         {/* Hard Streak */}
-        <div className="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-5 shadow-sm dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             <div className="mb-3"><StreakBadge streak={hardStreak} /></div>
             Hard Streak
@@ -41,7 +41,7 @@ const StreakBar: React.FC<StreakBarProps> = ({ easyStreak, hardStreak }) => {
         </div>
 
         {/* Total Streak */}
-        <div className="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-5 shadow-sm dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             <div className="mb-3"><StreakBadge streak={totalStreak} /></div>
             Total Streak

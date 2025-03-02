@@ -17,7 +17,7 @@ export default function StatCard() {
         {stats.map((item) => (
           <div
             key={item.name}
-            className="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-5 shadow-sm dark:shadow-md sm:p-6"
+            className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6"
           >
             <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
               {item.name}

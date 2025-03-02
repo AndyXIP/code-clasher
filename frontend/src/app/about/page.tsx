@@ -40,7 +40,7 @@ export default function AboutPage() {
             <div className="max-w-xs px-2.5 lg:max-w-none"></div>
           </div>
           <div className="lg:order-first lg:row-span-2 mt-5">
-            <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+            <h1 className="text-4xl mt-10 font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
               Code Clasher
             </h1>
             <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
