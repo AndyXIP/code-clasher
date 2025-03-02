@@ -139,6 +139,10 @@ async def daily_question(difficulty: str = "easy"):
     print(f"Today's easy Q: {easy}")
     print(f"Today's hard Q: {hard}")
 
+    # Remove the "solutions" key from both question objects, if present.
+    easy.pop("solutions", None)
+    hard.pop("solutions", None)
+
     # Return the selected questions as a JSON object.
     return {"easy": easy, "hard": hard}
     
