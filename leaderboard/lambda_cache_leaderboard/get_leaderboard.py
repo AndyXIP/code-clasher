@@ -8,39 +8,54 @@ class DailyLeaderboardError(Exception):
 
 async def get_leaderboard(count=5):
     """
-    Fetches the entire leaderboard (with 'introductory' and 'interview' lists),
-    sorts each by 'score', and returns the top `count` items for each difficulty.
+    Fetches all leaderboard data from the external API, then returns the
+    top `count` entries for each difficulty (introductory & interview).
+    
+    Returns a dict with keys 'easy' and 'hard', each containing a list
+    of top users sorted by their respective score in descending order.
     """
-    url = f"{BASE_URL.rstrip('/')}/lambda-leaderboard"  # ensure no trailing slash
+    # Debugging environment variable
+    print(f"DEBUG: LEADERBOARD_API_URL = {BASE_URL}")
+
+    url = f"{BASE_URL}/lambda-leaderboard"  # Single endpoint returning all data
+    print(f"DEBUG: Constructed URL = {url}")
 
     try:
         async with httpx.AsyncClient(timeout=72.0) as client:
+            print("DEBUG: About to make GET request for leaderboard data...")
             response = await client.get(url)
+            print(f"DEBUG: Response received. Status code = {response.status_code}")
+            # Optionally, print partial body for debugging
+            print(f"DEBUG: Response body (truncated): {response.text[:300]}")
     except httpx.RequestError as exc:
         raise DailyLeaderboardError(f"Failed to contact external API: {str(exc)}") from exc
-    
-    if response.status_code != 200:
-        raise DailyLeaderboardError(f"Error fetching leaderboard data. "
-                                   f"Status code: {response.status_code}")
 
+    # Raise error if non-200
+    if response.status_code != 200:
+        raise DailyLeaderboardError(
+            f"Error fetching leaderboard data. Status code: {response.status_code}"
+        )
+
+    # Parse JSON
     try:
-        data = response.json()
+        data = response.json()  # Expecting a list of row dicts
+        print(f"DEBUG: Successfully parsed JSON. Number of records = {len(data)}")
     except ValueError as exc:
         raise DailyLeaderboardError(f"Invalid JSON response from external API: {str(exc)}") from exc
 
-    # 'data' should be a dict with 'introductory' and 'interview' lists
-    intro_list = data.get("introductory", [])
-    interview_list = data.get("interview", [])
+    # (Optional) Filter out any non-dict items
+    data = [row for row in data if isinstance(row, dict)]
 
-    # Sort each list by score descending
-    intro_sorted = sorted(intro_list, key=lambda x: x.get("score", 0), reverse=True)
-    interview_sorted = sorted(interview_list, key=lambda x: x.get("score", 0), reverse=True)
+    # Sort for 'easy' (introductory) descending
+    easy_sorted = sorted(data, key=lambda x: x.get("introductory", 0), reverse=True)
+    easy_top = easy_sorted[:count]
 
-    # Slice top N
-    intro_top = intro_sorted[:count]
-    interview_top = interview_sorted[:count]
+    # Sort for 'hard' (interview) descending
+    hard_sorted = sorted(data, key=lambda x: x.get("interview", 0), reverse=True)
+    hard_top = hard_sorted[:count]
 
+    print("DEBUG: Returning top records for easy & hard.")
     return {
-        "easy": intro_top,
-        "hard": interview_top
+        "easy": easy_top,
+        "hard": hard_top
     }
