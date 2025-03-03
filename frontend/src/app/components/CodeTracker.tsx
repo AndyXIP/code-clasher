@@ -1,12 +1,51 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
+import { supabase } from '../SupabaseClient';  // Import your Supabase client
+import { useAuth } from '../contexts/AuthContext'; // Import the useAuth hook
 
 export default function CodeTracker() {
+  const { user, loading } = useAuth();
   // Track completion status for each difficulty
   const [easyDone, setEasyDone] = useState(false);
   const [hardDone, setHardDone] = useState(false);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (user && user.id) {
+        try {
+          // Get the current timestamp (now) and calculate 24 hours ago
+          const now = new Date();
+          const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(); // <-- Correctly call toISOString()
+
+          // Fetch completed questions for the user with a completed_at field (ensure you have this field in your table)
+          const { data, error } = await supabase
+            .from('completed_questions') // replace with your actual table name
+            .select('difficulty, completed_at')
+            .eq('user_id', user.id) // Assuming you have a user_id field
+            .gte('completed_at', twentyFourHoursAgo); // Filter questions completed in the last 24 hours
+
+          if (error) throw error;
+
+          // Check for "easy" and "hard" completions
+          const easyCompleted = data.filter((item: any) => item.difficulty === 'introductory').length > 0;
+          const hardCompleted = data.filter((item: any) => item.difficulty === 'interview').length > 0;
+
+          // Set the state based on whether there are any completed "easy" or "hard" questions in the last 24 hours
+          setEasyDone(easyCompleted);
+          setHardDone(hardCompleted);
+        } catch (error) {
+          console.error('Error fetching completed questions:', error);
+        }
+      }
+    };
+
+    // Only run the fetchStats function if user is loaded and authenticated
+    if (!loading && user) {
+      fetchStats();
+    }
+  }, [user, loading]); // Run the effect when the user is available
 
   return (
     <div className="lg:col-start-3 lg:row-end-1">
@@ -33,10 +72,7 @@ export default function CodeTracker() {
           </div>
 
           {/* Easy */}
-          <div
-            className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 dark:border-gray-700 px-6 pt-6 cursor-pointer"
-            onClick={() => setEasyDone(!easyDone)}
-          >
+          <div className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 dark:border-gray-700 px-6 pt-6 cursor-pointer">
             <dt className="flex-none">
               {easyDone ? (
                 <CheckCircleIcon aria-hidden="true" className="h-6 w-5 text-green-700 dark:text-green-400" />
@@ -48,10 +84,7 @@ export default function CodeTracker() {
           </div>
 
           {/* Hard */}
-          <div
-            className="mt-4 flex w-full flex-none gap-x-4 px-6 pb-6 cursor-pointer"
-            onClick={() => setHardDone(!hardDone)}
-          >
+          <div className="mt-4 flex w-full flex-none gap-x-4 px-6 pb-6 cursor-pointer">
             <dt className="flex-none">
               {hardDone ? (
                 <CheckCircleIcon aria-hidden="true" className="h-6 w-5 text-green-700 dark:text-green-400" />
