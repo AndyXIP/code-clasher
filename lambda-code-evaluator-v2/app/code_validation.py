@@ -1,21 +1,24 @@
 import inspect
 import re
+import textwrap
 
 
 def add_pass_to_starter_method_body(starter_code: str) -> str:
-    print("Entering add_pass_to_starter_method_body()...")
-    """
-    Ensures that the starter code contains a valid function body.
-    If the function is empty (just ends with ':'), this adds 'pass'
-    with the correct indentation.
-    """
-    # Match functions that end with just a colon and possible spaces
-    pattern = r"(def\s+\w+\s*\(.*\):\s*)$"
+    lines = starter_code.splitlines()
+    new_lines = []
+    for i, line in enumerate(lines):
+        new_lines.append(line)
+        # Check if the line ends with ':' (indicating a block start)
+        if line.rstrip().endswith(":"):
+            # Determine the current indentation level
+            current_indent = len(line) - len(line.lstrip())
+            expected_body_indent = current_indent + 4  # one extra indent level
 
-    # Add a properly indented 'pass' on a new line
-    code_with_pass = re.sub(pattern, r"\1\n        pass", starter_code)  # 8 spaces (4 for method indent, 4 extra for body)
+            # Look ahead to see if the next line is sufficiently indented
+            if i + 1 >= len(lines) or (len(lines[i+1]) - len(lines[i+1].lstrip())) <= current_indent:
+                new_lines.append(" " * expected_body_indent + "pass")
+    return "\n".join(new_lines)
 
-    return code_with_pass
 
 
 
@@ -60,6 +63,7 @@ def validate_user_code(starter_code: str, user_code: str):
 
     # Add 'pass' to method body in starter code
     starter_code = add_pass_to_starter_method_body(starter_code)
+    print(f"NEW STARTER CODE WITH PASS: {starter_code}")
     print("Added 'pass' to starter_code method body")
 
     # Extract expected method details from the starter code
@@ -98,37 +102,32 @@ def validate_user_code(starter_code: str, user_code: str):
 
 
 
-if __name__ == '__main__':
-    from pprint import pprint
+# if __name__ == '__main__':
+#     from pprint import pprint
 
-    test_payload = {
-        "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
-        "problem_id": 3835,
-        "language": "python",
-        "code": """
-class Solution:
-    def countSegments(self, s: str) -> int:
-        return 15""",
-        "test_cases": {
-            "inputs": [["Hello, my name is John"]],
-            "outputs": [5]
-        },
-        "starter_code": """
-class Solution:
-    def countSegments(self, s: str) -> int:
-        pass"""  # Fix: Added 'pass' to prevent exec() errors
-    }
+#     test_payload = {
+#         "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
+#         "problem_id": 3835,
+#         "language": "python",
+#         "code": """
+# class Solution:
+#     def countSegments(self, s: str) -> int:
+#         return 15""",
+#         "test_cases": {
+#             "inputs": [["Hello, my name is John"]],
+#             "outputs": [5]
+#         },
+#         "starter_code": """
+# class Solution:
+#     def countSegments(self, s: str) -> int:"""  
+#     }
 
 
-    pprint(test_payload)  # Pretty-print for debugging
+#     pprint(test_payload)  # Pretty-print for debugging
 
-    starter_code = test_payload["starter_code"]
-    user_code = test_payload["code"]
+#     starter_code = test_payload["starter_code"]
+#     user_code = test_payload["code"]
 
-    # Now call your function
-    result = extract_method_signature(starter_code)
-    print("Extracted Signature:", result)
-
-    # Run validation
-    validation_result = validate_user_code(starter_code, user_code)
-    print("Validation Result:", validation_result)
+#     # Run validation
+#     validation_result = validate_user_code(starter_code, user_code)
+#     print("Validation Result:", validation_result)
