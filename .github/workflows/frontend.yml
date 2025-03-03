@@ -11,7 +11,7 @@ on:
 
 jobs:
   test:
-    name: Run Tests
+    name: Test Frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
