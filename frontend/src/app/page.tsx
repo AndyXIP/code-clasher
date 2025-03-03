@@ -30,7 +30,7 @@ export default function HomePage() {
     <div className="py-5 ml-4 mr-4">
       <div className="text-1xl font-semibold mb-2">
         {/* Show user's full name or fallback to 'Username' */}
-        Welcome back, {user.raw_user_meta_data?.fullName || user.email || 'Username'}!
+        Welcome back, {user.user_metadata?.fullName || user.email || 'Username'}!
       </div>
       <div className="flex gap-10">
         <div className="w-[25%]">
