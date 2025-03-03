@@ -5,6 +5,7 @@ import os
 
 
 def execute_user_code_subprocess(user_code: str, test_cases: dict):
+    print("Entering execute_user_code_subprocess()...")
     """Executes user code inside a subprocess efficiently by processing all test cases in one run."""
 
     input_cases = test_cases["inputs"]
@@ -88,6 +89,7 @@ if __name__ == "__main__":
 
 
 def evaluate_results(test_cases, execution_result):
+    print("Entering evaluate_results()...")
     """Compares actual and expected outputs, formats final JSON response."""
 
     # Extract actual outputs and console logs
@@ -115,16 +117,16 @@ def evaluate_results(test_cases, execution_result):
 
 
 
-if __name__ == '__main__':
-    from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
-    # Run execution with the provided test data
-    print("\nEXECUTION:")
-    response = execute_user_code_subprocess(SOLUTION_CODE_1, TEST_DATA_1)
-    print(json.dumps(response, indent=2))
-    # Example Usage
-    print("\nEVALUATION:")
-    final_result = evaluate_results(TEST_DATA_1, response)
-    print(json.dumps(final_result, indent=2))
+# if __name__ == '__main__':
+#     from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
+#     # Run execution with the provided test data
+#     print("\nEXECUTION:")
+#     response = execute_user_code_subprocess(SOLUTION_CODE_1, TEST_DATA_1)
+#     print(json.dumps(response, indent=2))
+#     # Example Usage
+#     print("\nEVALUATION:")
+#     final_result = evaluate_results(TEST_DATA_1, response)
+#     print(json.dumps(final_result, indent=2))
 
 
 

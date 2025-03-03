@@ -19,7 +19,7 @@ VALKEY_PORT = 6379  #os.getenv("VALKEY_PORT")
 # Async function to store job result in Valkey
 # ------------------------------
 async def store_result_in_valkey(job_id, results):
-    print("Entering Valkey function...")
+    print("Entering store_result_in_valkey()...")
     # Optional: set up logging
     Logger.set_logger_config(LogLevel.INFO)
 

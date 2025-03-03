@@ -10,9 +10,12 @@ def process_submission(job_id, starter_code, user_code, test_cases):
     End-to-end function to validate, execute, and evaluate user code.
     Returns a structured JSON response with status, execution results, and errors.
     """
+    print("Entering process_submission()...")
+    print(f"job_id: {job_id}, starter_code: {starter_code}, user_code: {user_code}, test_cases: {test_cases}")
 
     # Ensure required fields are present
-    if not user_code or not job_id or not test_cases:
+    if not user_code or not job_id or not test_cases or not starter_code:
+        print("Required fields are missing")
         return {
             "job_status": "completed",
             "error": "Missing required fields: 'user_code', 'job_id', or 'test_cases'."
