@@ -2,7 +2,7 @@ import subprocess
 import json
 import tempfile
 import os
-from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
+
 
 def execute_user_code_subprocess(user_code: str, test_cases: dict):
     """Executes user code inside a subprocess efficiently by processing all test cases in one run."""
@@ -116,6 +116,7 @@ def evaluate_results(test_cases, execution_result):
 
 
 if __name__ == '__main__':
+    from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
     # Run execution with the provided test data
     print("\nEXECUTION:")
     response = execute_user_code_subprocess(SOLUTION_CODE_1, TEST_DATA_1)

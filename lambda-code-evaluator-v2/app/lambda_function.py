@@ -4,9 +4,8 @@ from cache_storing import store_result_in_valkey
 from code_validation import validate_user_code
 from code_execution import execute_user_code_subprocess, evaluate_results
 
-from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
 
-def process_submission(job_id, user_code, test_cases):
+def process_submission(job_id, starter_code, user_code, test_cases):
     """
     End-to-end function to validate, execute, and evaluate user code.
     Returns a structured JSON response with status, execution results, and errors.
@@ -20,7 +19,7 @@ def process_submission(job_id, user_code, test_cases):
         }
 
     # Step 1 & 2: Validate User Code
-    validation_result = validate_user_code(SOLUTION_CODE_1, user_code)
+    validation_result = validate_user_code(starter_code, user_code)
     if "error" in validation_result:
         return {
             "job_status": "completed",
@@ -50,14 +49,6 @@ def process_submission(job_id, user_code, test_cases):
         "actual_outputs": evaluation_result["actual_outputs"]
     }
 
-# Example Test Execution
-response = process_submission({
-    "job_id": "12345",
-    "user_code": SOLUTION_CODE_1,
-    "test_cases": TEST_DATA_1
-})
-
-
 
 # ------------------------------
 # Main handler for Lambda
@@ -73,6 +64,7 @@ def lambda_handler(event, context):
             user_code = body_obj.get("code")
             test_cases = body_obj.get("test_cases")
             job_id = body_obj.get("job_id")
+            starter_code = body_obj.get("starter_code")
         
             if not user_code:
                 print("Missing user_code.")
@@ -89,7 +81,7 @@ def lambda_handler(event, context):
                 return {"statusCode": 400, "body": json.dumps("Missing test case data.")}
             
             print("Data from job successfully accessed.")
-            results = process_submission(job_id, user_code, test_cases)
+            results = process_submission(job_id, starter_code, user_code, test_cases)
 
             asyncio.run(store_result_in_valkey(job_id, results))
 
