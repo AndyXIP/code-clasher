@@ -164,12 +164,12 @@ async def submit_code(payload: Dict[str, Any]):
 
     easy_q = daily_qs["easy"]
     hard_q = daily_qs["hard"]
-    problem_id = payload["problem_id"]
+    problem_id = payload["id"]
     question = None
 
-    if problem_id == easy_q["problem_id"]:
+    if problem_id == easy_q["id"]:
         question = easy_q
-    elif problem_id == hard_q["problem_id"]:
+    elif problem_id == hard_q["id"]:
         question = hard_q
     
     if question is None:
