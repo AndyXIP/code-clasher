@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../SupabaseClient';  // Import your Supabase client
 import { useAuth } from '../contexts/AuthContext'; // Import the useAuth hook
+import { subDays } from 'date-fns'; // Import subDays to calculate 7 days ago
 
 export default function StatCard() {
   const { user, loading } = useAuth(); // Get the user from the context
@@ -17,26 +18,32 @@ export default function StatCard() {
     const fetchStats = async () => {
       if (user && user.id) {
         try {
-          // Fetch completed questions for the user
+          // Calculate the date 7 days ago
+          const sevenDaysAgo = subDays(new Date(), 7).toISOString();
+          
           const { data, error } = await supabase
             .from('completed_questions')
-            .select('difficulty')
-            .eq('user_id', user.id);
+            .select('difficulty, completed_at')
+            .eq('user_id', user.id)
+            .gte('completed_at', sevenDaysAgo); // Filter by date range of the past 7 days
 
           if (error) throw error;
 
-          // Calculate the number of easy and hard questions
+          // Calculate the number of easy and hard questions completed
           const easyQuestions = data.filter((item: any) => item.difficulty === 'introductory');
           const hardQuestions = data.filter((item: any) => item.difficulty === 'interview');
           
           const totalQuestions = data.length;
 
-          // Calculate completion rates
-          const easyCompletionRate = totalQuestions > 0 ? ((easyQuestions.length / 7) * 100).toFixed(0) + '%' : '0%';
-          const hardCompletionRate = totalQuestions > 0 ? ((hardQuestions.length / 7) * 100).toFixed(0) + '%' : '0%';
-          const totalCompletionRate = totalQuestions > 0 ? ((totalQuestions / 14) * 100).toFixed(0) + '%' : '0%';
+          // Total days in the past 7 days (could be fewer if no data)
+          const daysInPast7Days = 7; 
 
-          // Update stats
+          // Calculate completion rates based on the number of questions that could have been completed in the past 7 days
+          const easyCompletionRate = totalQuestions > 0 ? ((easyQuestions.length / daysInPast7Days) * 100).toFixed(0) + '%' : '0%';
+          const hardCompletionRate = totalQuestions > 0 ? ((hardQuestions.length / daysInPast7Days) * 100).toFixed(0) + '%' : '0%';
+          const totalCompletionRate = totalQuestions > 0 ? ((totalQuestions / (daysInPast7Days * 2)) * 100).toFixed(0) + '%' : '0%'; // 2 is for the 2 types (easy + hard)
+
+          // Update stats with calculated values
           setStats({
             easyCompleted: easyQuestions.length,
             hardCompleted: hardQuestions.length,
@@ -66,6 +73,7 @@ export default function StatCard() {
         Last 7 days
       </h3>
       <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+        {/* Easy Questions Completed */}
         <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Easy Questions Completed
@@ -75,6 +83,7 @@ export default function StatCard() {
           </dd>
         </div>
 
+        {/* Hard Questions Completed */}
         <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Hard Questions Completed
@@ -84,6 +93,7 @@ export default function StatCard() {
           </dd>
         </div>
 
+        {/* Total Questions Completed */}
         <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Total Questions Completed
@@ -93,6 +103,7 @@ export default function StatCard() {
           </dd>
         </div>
 
+        {/* Easy Completion Rate */}
         <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Easy Questions Completion Rate
@@ -102,6 +113,7 @@ export default function StatCard() {
           </dd>
         </div>
 
+        {/* Hard Completion Rate */}
         <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Hard Questions Completion Rate
@@ -111,6 +123,7 @@ export default function StatCard() {
           </dd>
         </div>
 
+        {/* Total Completion Rate */}
         <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Total Questions Completion Rate
