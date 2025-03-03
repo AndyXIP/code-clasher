@@ -8,17 +8,9 @@ class DailyLeaderboardError(Exception):
     pass
 
 async def get_leaderboard(count=5):
-    """
-    Fetches all leaderboard data from the external API, then returns the
-    top `count` entries for each difficulty (introductory & interview).
-    
-    Returns a dict with keys 'easy' and 'hard', each containing a list
-    of top users sorted by their respective score in descending order.
-    """
-    # Debugging environment variable
     print(f"DEBUG: LEADERBOARD_API_URL = {BASE_URL}")
 
-    url = f"{BASE_URL}/lambda-leaderboard"  # Single endpoint returning all data
+    url = f"{BASE_URL}/lambda-leaderboard"
     print(f"DEBUG: Constructed URL = {url}")
 
     try:
@@ -34,18 +26,21 @@ async def get_leaderboard(count=5):
         raise DailyLeaderboardError(f"Error fetching leaderboard data. Status code: {response.status_code}")
 
     try:
-        # Use response.text here instead of undefined cached_value
-        data = json.loads(response.text)  # or simply: data = response.json()
-        print(f"DEBUG: Successfully parsed JSON. Number of records = {len(data)}")
+        data = json.loads(response.text)
+        print(f"DEBUG: Successfully parsed JSON. Number of top-level keys = {len(data)}")
     except ValueError as exc:
         raise DailyLeaderboardError(f"Invalid JSON response from external API: {str(exc)}") from exc
 
+    # Extract the lists for each category
+    introductory_list = data.get("introductory", [])
+    interview_list = data.get("interview", [])
+
     # Sort for easy (introductory) descending
-    easy_sorted = sorted(data, key=lambda x: x.get("introductory", 0), reverse=True)
+    easy_sorted = sorted(introductory_list, key=lambda x: x.get("score", 0), reverse=True)
     easy_top = easy_sorted[:count]
 
     # Sort for hard (interview) descending
-    hard_sorted = sorted(data, key=lambda x: x.get("interview", 0), reverse=True)
+    hard_sorted = sorted(interview_list, key=lambda x: x.get("score", 0), reverse=True)
     hard_top = hard_sorted[:count]
 
     print("DEBUG: Returning top records for easy & hard.")
