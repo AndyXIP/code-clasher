@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, WebSocket
+from fastapi import FastAPI, HTTPException, WebSocket, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import boto3
@@ -7,7 +7,7 @@ import uuid
 import json
 import time
 from dotenv import load_dotenv
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import asyncio
 from glide import (
     GlideClient,
@@ -39,10 +39,11 @@ valkey_client = None
 sqs = boto3.client('sqs', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
-class SubmitCodePayload(BaseModel):
-    code: str
-    problem_id: str
-    language: str
+# class SubmitCodePayload(BaseModel):
+#     code: str
+#     problem_id: str
+#     language: str
+#     is_submit: bool
 
 class DailyQuestion(BaseModel):
     problem_id: str
@@ -155,7 +156,7 @@ async def daily_question(difficulty: str = "easy"):
     
 
 @app.post("/api/submit-code")
-async def submit_code(payload: SubmitCodePayload):
+async def submit_code(payload: Dict[str, Any]):
     daily_qs = await get_daily_questions()
     # If an error occurred in the helper, return it as a 500 response
     if "error" in daily_qs:
