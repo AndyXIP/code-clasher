@@ -264,6 +264,6 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                 break  # Timeout; notify client and close websocket
 
             print("> Cache miss.")
-            await asyncio.sleep(poll_interval)  # wait before next poll
+            await asyncio.sleep(poll_interval)  # wait before next poll.
     finally:
         await websocket.close()
