@@ -94,10 +94,10 @@ const EditorPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          problemId,              // Send the problem ID
+          problem_id: problemId,              // Send the problem ID
           language,               // Programming language
           code,                   // The code submitted by the user
-          isSubmit,               // Whether its a submission
+          is_submit: isSubmit,               // Whether its a submission
         }),
       });
 
