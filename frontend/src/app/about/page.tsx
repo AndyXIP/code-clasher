@@ -62,10 +62,10 @@ export default function AboutPage() {
             </h3>
             <ul className="mt-4 list-disc list-inside text-base text-zinc-600 dark:text-zinc-400">
               <li>
-                <strong>Component 1:</strong> details
+                <strong>Next.JS Frontend:</strong> React frontend to handle components, reusable code snippets, api GET/POST requests with next.js API handling.
               </li>
               <li>
-                <strong>Component 2:</strong> details
+                <strong>AWS Backend:</strong> Handles all the code compilation and API calls made to get questions prompts, inputs, outputs, and the handling of any code.
               </li>
             </ul>
           </div>
