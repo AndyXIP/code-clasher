@@ -10,6 +10,7 @@ const EditorPage = () => {
   const [problemId, setProblemId] = useState<string>('');
   const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[]>([]);
   const [apiTestResults, setApiTestResults] = useState<(string | number)[]>([]);
+  const [starterCode, setStarterCode] = useState<string | null>(null);
   
   const [output, setOutput] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +51,7 @@ const EditorPage = () => {
           setProblemId(easy.id || '');
           setApiTestCases(easy.inputs || []);
           setApiTestResults(easy.outputs || []);
+          setStarterCode(easy.starter_code || '');
         }
 
       } catch (error) {
@@ -69,11 +71,13 @@ const EditorPage = () => {
       setProblemId(easyData.id || '');
       setApiTestCases(easyData.inputs || []);
       setApiTestResults(easyData.outputs || []);
+      setStarterCode(easyData.starter_code || '');
     } else if (difficulty === 'hard' && hardData) {
       setQuestionPrompt(hardData.question || '');
       setProblemId(hardData.id || '');
       setApiTestCases(hardData.inputs || []);
       setApiTestResults(hardData.outputs || []);
+      setStarterCode(hardData.starter_code || '');
     }
   }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
 
@@ -194,10 +198,6 @@ const EditorPage = () => {
     >
       {/* Left Side: Question & Test Cases */}
       <div className="w-full md:w-1/2 p-4 border-r border-gray-300 dark:border-gray-600 overflow-y-auto" style={{ maxHeight: '100vh' }}>
-        <p className="text-lg mb-4">
-          {questionPrompt ? renderFormattedQuestion(questionPrompt) : 'Loading question...'}
-        </p>
-
         {/* Difficulty Selection */}
         <div className="mt-4 mb-4 flex gap-2 justify-center">
           {['Easy', 'Hard'].map((level) => (
@@ -212,6 +212,10 @@ const EditorPage = () => {
             </button>
           ))}
         </div>
+
+        <p className="text-lg mb-4">
+          {questionPrompt ? renderFormattedQuestion(questionPrompt) : 'Loading question...'}
+        </p>
 
         {/* Tab Navigation */}
         <div className="mt-4">
@@ -301,7 +305,7 @@ const EditorPage = () => {
 
       {/* Right Side: Code Editor */}
       <div className="w-full md:w-1/2 p-4 flex flex-col">
-        <MonacoEditorComponent onSubmit={handleCodeSubmission} />
+        <MonacoEditorComponent onSubmit={handleCodeSubmission} starterCode={starterCode ?? '// no starter code found'}/>
       </div>
     </div>
   );
