@@ -86,12 +86,10 @@ async def shutdown_event():
         except ClosingError as e:
             print("Error closing Valkey client:", e)
 
-
-
 # ==== API Routes ====
 
-@app.get("/api/daily-question")
-async def daily_question(difficulty: str = "easy"):
+# Daily Q Helper 
+async def get_daily_questions():
     global valkey_client
     if not valkey_client:
         raise HTTPException(status_code=500, detail="Valkey client not initialized")
@@ -150,23 +148,45 @@ async def daily_question(difficulty: str = "easy"):
 
     # Return the selected questions as a JSON object.
     return {"easy": easy, "hard": hard}
+
+@app.get("/api/daily-question")
+async def daily_question(difficulty: str = "easy"):
+    return get_daily_questions
     
-
-
 
 @app.post("/api/submit-code")
 async def submit_code(payload: SubmitCodePayload):
+    daily_qs = get_daily_questions
+    easy_q = daily_qs["easy"]
+    hard_q = daily_qs["hard"]
+    problem_id = payload.problem_id
+    question = None
+
+    if problem_id == easy_q["problem_id"]:
+        question = easy_q
+    elif problem_id == hard_q["problem_id"]:
+        question = hard_q
+    
+    if question is None:
+        return {
+            "status": "failed to find matching problem_id in cache",
+            "job_id": None
+        }
+
     job_id = str(uuid.uuid4())
+    test_cases = {
+        'inputs': question["inputs"],
+        'outputs': question["outputs"]
+    } 
+    starter_code = question["starter_code"]
 
     job_payload = {
         'job_id': job_id,
-        'problem_id': payload.problem_id,
+        'problem_id': problem_id,
         'language': payload.language,
         'code': payload.code,
-        'test_cases': {
-            'inputs': [[-10], [10], [7]],
-            'outputs': [[0], [20], [17]]
-        }
+        'test_cases': test_cases,
+        'starter_code': starter_code
     }
     print(f"Job payload: {job_payload}")
 
@@ -205,6 +225,8 @@ async def leaderboard():
     # Return the cached leaderboard data as-is
     data = format_leaderboard_data(leaderboard_data)
     return data
+
+
 # ==== WEBSOCKET for job results ===
 
 @app.websocket("/ws/job-status/{job_id}")
