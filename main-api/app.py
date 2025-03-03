@@ -164,7 +164,7 @@ async def submit_code(payload: Dict[str, Any]):
 
     easy_q = daily_qs["easy"]
     hard_q = daily_qs["hard"]
-    problem_id = payload.problem_id
+    problem_id = payload["problem_id"]
     question = None
 
     if problem_id == easy_q["problem_id"]:
@@ -188,8 +188,8 @@ async def submit_code(payload: Dict[str, Any]):
     job_payload = {
         'job_id': job_id,
         'problem_id': problem_id,
-        'language': payload.language,
-        'code': payload.code,
+        'language': payload["language"],
+        'code': payload["code"],
         'test_cases': test_cases,
         'starter_code': starter_code
     }
