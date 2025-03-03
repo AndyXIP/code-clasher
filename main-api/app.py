@@ -151,12 +151,12 @@ async def get_daily_questions():
 
 @app.get("/api/daily-question")
 async def daily_question(difficulty: str = "easy"):
-    return get_daily_questions
+    return get_daily_questions()
     
 
 @app.post("/api/submit-code")
 async def submit_code(payload: SubmitCodePayload):
-    daily_qs = get_daily_questions
+    daily_qs = get_daily_questions()
     easy_q = daily_qs["easy"]
     hard_q = daily_qs["hard"]
     problem_id = payload.problem_id
