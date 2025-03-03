@@ -71,7 +71,7 @@ export default function StatCard() {
             Easy Questions Completed
           </dt>
           <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-            {stats.easyCompleted}
+            {stats.easyCompleted} / 7
           </dd>
         </div>
 
@@ -80,7 +80,7 @@ export default function StatCard() {
             Hard Questions Completed
           </dt>
           <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-            {stats.hardCompleted}
+            {stats.hardCompleted} / 7
           </dd>
         </div>
 
@@ -89,7 +89,7 @@ export default function StatCard() {
             Total Questions Completed
           </dt>
           <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-            {stats.totalCompleted}
+            {stats.totalCompleted} / 14
           </dd>
         </div>
 
