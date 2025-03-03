@@ -1,5 +1,6 @@
 import httpx
 import os
+import json
 
 BASE_URL = os.getenv('LEADERBOARD_API_URL')
 
@@ -25,17 +26,16 @@ async def get_leaderboard(count=5):
             print("DEBUG: About to make GET request for leaderboard data...")
             response = await client.get(url)
             print(f"DEBUG: Response received. Status code = {response.status_code}")
-            # Optionally, you can print partial body for debugging (be mindful of large payloads)
             print(f"DEBUG: Response body (truncated to 300 chars): {response.text[:300]}")
     except httpx.RequestError as exc:
         raise DailyLeaderboardError(f"Failed to contact external API: {str(exc)}") from exc
     
     if response.status_code != 200:
-        raise DailyLeaderboardError(f"Error fetching leaderboard data. "
-                                   f"Status code: {response.status_code}")
+        raise DailyLeaderboardError(f"Error fetching leaderboard data. Status code: {response.status_code}")
 
     try:
-        data = response.json()  # Expecting a list of rows
+        # Use response.text here instead of undefined cached_value
+        data = json.loads(response.text)  # or simply: data = response.json()
         print(f"DEBUG: Successfully parsed JSON. Number of records = {len(data)}")
     except ValueError as exc:
         raise DailyLeaderboardError(f"Invalid JSON response from external API: {str(exc)}") from exc
