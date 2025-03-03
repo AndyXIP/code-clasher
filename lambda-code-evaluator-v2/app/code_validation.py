@@ -1,6 +1,7 @@
 import inspect
 
 def extract_method_signature(starter_code: str):
+    print("Entering extract_method_signature()...")
     # Execute the starter code in a controlled environment
     exec(starter_code, globals())
 
@@ -34,6 +35,7 @@ def extract_method_signature(starter_code: str):
 
 
 def validate_user_code(starter_code: str, user_code: str):
+    print("Entering validate_user_code()...")
     # Extract expected method details from the starter code
     expected_signature = extract_method_signature(starter_code)
 
