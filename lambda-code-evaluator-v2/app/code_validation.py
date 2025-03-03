@@ -65,7 +65,7 @@ def validate_user_code(starter_code: str, user_code: str):
     # Extract expected method details from the starter code
     expected_signature = extract_method_signature(starter_code)
     print("Signature extracted")
-    
+
     # Extract the user’s method details
     try:
         user_signature = extract_method_signature(user_code)
@@ -97,46 +97,38 @@ def validate_user_code(starter_code: str, user_code: str):
 
 
 
-# if __name__ == '__main__':
-#     # Example Starter Code
-#     starter_code = """
-#     class Solution:
-#         def evaluate(self, expression: str) -> int:
-#             pass
-#     """
 
-#     # Example User Code (Correct)
-#     user_code_correct = """
-#     class Solution:
-#         def evaluate(self, expression: str) -> int:
-#             return len(expression)
-#     """
+if __name__ == '__main__':
+    from pprint import pprint
 
-#     # Example User Code (Incorrect Method Name)
-#     user_code_wrong_name = """
-#     class Solution:
-#         def compute(self, expression: str) -> int:
-#             return len(expression)
-#     """
+    test_payload = {
+        "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
+        "problem_id": 3835,
+        "language": "python",
+        "code": """
+class Solution:
+    def countSegments(self, s: str) -> int:
+        return 15""",
+        "test_cases": {
+            "inputs": [["Hello, my name is John"]],
+            "outputs": [5]
+        },
+        "starter_code": """
+class Solution:
+    def countSegments(self, s: str) -> int:
+        pass"""  # Fix: Added 'pass' to prevent exec() errors
+    }
 
-#     # Example User Code (Incorrect Parameter Count)
-#     user_code_wrong_params = """
-#     class Solution:
-#         def evaluate(self, expression: str, extra: int) -> int:
-#             return len(expression) + extra
-#     """
 
-#     # Tests
-#     # Example Starter Code
-#     starter_code = """
-#     class Solution:
-#         def evaluate(self, expression: str) -> int:
-#             pass
-#     """
+    pprint(test_payload)  # Pretty-print for debugging
 
-#     # Test
-#     print(extract_method_signature(starter_code))
+    starter_code = test_payload["starter_code"]
+    user_code = test_payload["code"]
 
-#     print(validate_user_code(starter_code, user_code_correct))  # Should be valid
-#     print(validate_user_code(starter_code, user_code_wrong_name))  # Method name mismatch
-#     print(validate_user_code(starter_code, user_code_wrong_params))  # Parameter count mismatch
+    # Now call your function
+    result = extract_method_signature(starter_code)
+    print("Extracted Signature:", result)
+
+    # Run validation
+    validation_result = validate_user_code(starter_code, user_code)
+    print("Validation Result:", validation_result)
