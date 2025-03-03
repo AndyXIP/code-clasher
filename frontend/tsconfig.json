@@ -14,7 +14,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "jsx": "preserve", // Use 'react-jsx' for React 17+ JSX transform
+    "jsx": "react-jsx", // Use 'react-jsx' for React 17+ JSX transform
     "incremental": true,
     "isolatedModules": true,
     "plugins": [
