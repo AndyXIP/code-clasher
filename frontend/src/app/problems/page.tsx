@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import MonacoEditorComponent from '../components/MonacoEditor';
+import { useAuth } from '../contexts/AuthContext';
 
 const EditorPage = () => {
+  const { user } = useAuth(); // Get authenticated user
   const [easyData, setEasyData] = useState<any>(null);
   const [hardData, setHardData] = useState<any>(null);
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
@@ -84,6 +86,10 @@ const EditorPage = () => {
   // Handle code submission to the API (for both Run and Submit)
   const handleCodeSubmission = async (code: string, language: string, isSubmit: boolean) => {
     try {
+      if (!user || !user.id) {
+        throw new Error('User is not authenticated');
+      }
+
       if (!problemId) {
         throw new Error('Problem ID is missing');
       }
@@ -94,10 +100,11 @@ const EditorPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          problem_id: problemId,              // Send the problem ID
-          language,               // Programming language
-          code,                   // The code submitted by the user
-          is_submit: isSubmit,               // Whether its a submission
+          user_id: user.id,                 // User ID
+          problem_id: problemId,            // Send the problem ID
+          language,                         // Programming language
+          code,                             // The code submitted by the user
+          is_submit: isSubmit,              // Whether its a submission
         }),
       });
 
