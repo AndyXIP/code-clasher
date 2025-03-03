@@ -87,12 +87,11 @@ async def shutdown_event():
             print("Error closing Valkey client:", e)
 
 # ==== API Routes ====
-
 # Daily Q Helper 
 async def get_daily_questions():
     global valkey_client
     if not valkey_client:
-        raise HTTPException(status_code=500, detail="Valkey client not initialized")
+        return {"error": "Valkey client not initialized."}
 
     key = "active_questions"
     try:
@@ -100,26 +99,19 @@ async def get_daily_questions():
         if cached_value:
             active_questions_data = json.loads(cached_value)
         else:
-            raise Exception("Could not find data in cache for key 'active_questions'")
+            return {"error": "Could not find data in cache for key 'active_questions'."}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"error": str(e)}
     
     # Calculate the day index relative to the stored timestamp.
     ts = active_questions_data.get("timestamp")
     if not ts:
-        raise HTTPException(status_code=500, detail="Cache data missing timestamp")
+        return {"error": "Cache data missing timestamp."}
+
     day_index = get_day_index(ts)
     print(f"Day index: {day_index}")
 
     # Retrieve today's questions.
-    # This assumes that the cached data has the following structure:
-    # {
-    #   "timestamp": "2025-03-02T00:00:00",
-    #   "questions": {
-    #       "easy": { "questions": [q1, q2, ...] },
-    #       "hard": { "questions": [q1, q2, ...] }
-    #   }
-    # }
     questions = active_questions_data.get("questions", {})
     easy_section = questions.get("easy", {})
     hard_section = questions.get("hard", {})
@@ -127,7 +119,7 @@ async def get_daily_questions():
     hard_qs = hard_section.get("questions", [])
     
     if not easy_qs or not hard_qs:
-        raise HTTPException(status_code=500, detail="No questions available in cache")
+        return {"error": "No questions available in cache."}
 
     # If the day index is greater than or equal to the number of questions, use the last one.
     if day_index >= len(easy_qs):
@@ -149,14 +141,26 @@ async def get_daily_questions():
     # Return the selected questions as a JSON object.
     return {"easy": easy, "hard": hard}
 
+# Route now checks for errors before returning response
 @app.get("/api/daily-question")
 async def daily_question(difficulty: str = "easy"):
-    return get_daily_questions()
+    daily_qs = await get_daily_questions()
+
+    # If an error occurred in the helper, return it as a 500 response
+    if "error" in daily_qs:
+        raise HTTPException(status_code=500, detail=daily_qs["error"])
+
+    return daily_qs
+
     
 
 @app.post("/api/submit-code")
 async def submit_code(payload: SubmitCodePayload):
-    daily_qs = get_daily_questions()
+    daily_qs = await get_daily_questions()
+    # If an error occurred in the helper, return it as a 500 response
+    if "error" in daily_qs:
+        raise HTTPException(status_code=500, detail=daily_qs["error"])
+
     easy_q = daily_qs["easy"]
     hard_q = daily_qs["hard"]
     problem_id = payload.problem_id
