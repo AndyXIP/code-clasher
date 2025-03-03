@@ -2,22 +2,6 @@
 
 import { useState, useEffect } from 'react';
 
-const mockEasyData = [
-  { name: 'will-foster', score: 100 },
-  { name: 'lc1234', score: 90 },
-  { name: 'yihu111', score: 80 },
-  { name: 'AndyXIP', score: 70 },
-  { name: 'fortnitegoat', score: 60 }
-];
-
-const mockHardData = [
-  { name: 'will-foster', score: 200 },
-  { name: 'lc1234', score: 180 },
-  { name: 'yihu111', score: 160 },
-  { name: 'AndyXIP', score: 150 },
-  { name: 'fortnitegoat', score: 140 }
-];
-
 export default function LeaderBoard() {
   const [easyData, setEasyData] = useState<any[]>([]);
   const [hardData, setHardData] = useState<any[]>([]);
@@ -33,12 +17,12 @@ export default function LeaderBoard() {
         const data = await response.json();
 
         // Get both easy and hard question data
-        const easy = data.introductory;
-        const hard = data.interview;
+        const easy = data.easy;
+        const hard = data.hard;
 
         // Set the easy and hard data
-        setEasyData(mockEasyData);
-        setHardData(mockHardData);
+        setEasyData(easy);
+        setHardData(hard);
       } catch (error) {
         console.error('Error fetching question data:', error);
       }

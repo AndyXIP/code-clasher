@@ -41,7 +41,7 @@ export default function HomePage() {
         </div>
       </div>
       <div className="w-[100%]">
-        <StreakBar easyStreak={5} hardStreak={6} />
+        <StreakBar />
       </div>
     </div>
   );
