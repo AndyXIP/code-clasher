@@ -58,11 +58,3 @@ def get_top_leaderboard_entries(count=5, difficulty='introductory'):
     print("DEBUG: returning result =", result)
     return result
 
-# Add a main block to run the function from the terminal:
-if __name__ == "__main__":
-    try:
-        results = get_top_leaderboard_entries()
-        print("Final Results:")
-        print(results)
-    except Exception as e:
-        print("An error occurred:", e)

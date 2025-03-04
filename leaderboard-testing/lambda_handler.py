@@ -100,5 +100,5 @@ async def async_handler(event, context):
 def lambda_handler(event, context):
     """
     Synchronous wrapper for the async lambda handler.
-    """'
+    """
     return asyncio.run(async_handler(event, context))
