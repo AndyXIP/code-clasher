@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 import { supabase } from '../SupabaseClient';  // Import your Supabase client
 import { useAuth } from '../contexts/AuthContext'; // Import the useAuth hook
+import { subHours } from 'date-fns';
 
 export default function CodeTracker() {
   const { user, loading } = useAuth();
@@ -16,8 +17,7 @@ export default function CodeTracker() {
       if (user && user.id) {
         try {
           // Get the current timestamp (now) and calculate 24 hours ago
-          const now = new Date();
-          const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(); // <-- Correctly call toISOString()
+          const twentyFourHoursAgo = subHours(new Date(), 24).toISOString();
 
           // Fetch completed questions for the user with a completed_at field (ensure you have this field in your table)
           const { data, error } = await supabase

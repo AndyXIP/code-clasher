@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MonacoEditorComponent from '../components/MonacoEditor';
 import { useAuth } from '../contexts/AuthContext';
 import QuestionPrompt from '../components/QuestionPrompt';
+import TestCase from '../components/TestCase';
 
 const EditorPage = () => {
   const { user } = useAuth(); // Get authenticated user
@@ -183,15 +184,6 @@ const EditorPage = () => {
     setSelectedTestCaseIndex(index);
   };
 
-  // const renderFormattedQuestion = (text: string) => {
-  //   return text.split('\n').map((line, index) => (
-  //     <React.Fragment key={index}>
-  //       {line}
-  //       <br />
-  //     </React.Fragment>
-  //   ));
-  // };
-
   return (
     <div
       style={{ height: 'calc(100vh - 60px)' }}
@@ -268,30 +260,12 @@ const EditorPage = () => {
             {/* Selected Test Case Details */}
             {selectedTestCaseIndex !== null && (
               <div>
-                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
-                  <h2 className="text-md font-bold">Input:</h2>
-                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(apiTestCases[selectedTestCaseIndex])}
-                  </pre>
-                </div>
-                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
-                  <h2 className="text-md font-bold">Expected Output:</h2>
-                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(apiTestResults[selectedTestCaseIndex])}
-                  </pre>
-                </div>
-                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
-                  <h2 className="text-md font-bold">Actual Output:</h2>
-                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(actualValues[selectedTestCaseIndex])}
-                  </pre>
-                </div>
-                <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
-                  <h2 className="text-md font-bold">Passed:</h2>
-                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(passedValues)}
-                  </pre>
-                </div>
+                <TestCase 
+                  input={JSON.stringify(apiTestCases[selectedTestCaseIndex])} 
+                  expected_output={JSON.stringify(apiTestResults[selectedTestCaseIndex])} 
+                  actual_output={JSON.stringify(actualValues[selectedTestCaseIndex])} 
+                  passed={passedValues}
+                  />
               </div>
             )}
           </>

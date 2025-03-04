@@ -18,14 +18,14 @@ const StreakBar: React.FC = () => {
       if (user && user.id) {
         try {
           // Calculate the date 7 days ago
-          const sevenDaysAgo = subDays(new Date(), 7);
+          const sevenDaysAgo = subDays(new Date(), 7).toISOString();
 
           // Fetch completed questions for the user within the last 7 days
           const { data, error } = await supabase
             .from('completed_questions')
             .select('difficulty, completed_at')
             .eq('user_id', user.id)
-            .gte('completed_at', sevenDaysAgo.toISOString()); // Filter by date
+            .gte('completed_at', sevenDaysAgo); // Filter by date
 
           if (error) throw error;
 

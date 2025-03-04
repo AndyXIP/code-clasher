@@ -25,7 +25,7 @@ export default function StatCard() {
             .from('completed_questions')
             .select('difficulty, completed_at')
             .eq('user_id', user.id)
-            .gte('completed_at', sevenDaysAgo); // Filter by date range of the past 7 days
+            .gte('completed_at', sevenDaysAgo);
 
           if (error) throw error;
 
