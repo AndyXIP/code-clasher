@@ -21,6 +21,9 @@ import sys
 import json
 import traceback
 import io
+                          
+# Ensure type hints like List[str], Dict[int, str] work
+from typing import *
 
 if __name__ == "__main__":
     # Read all test cases from stdin
@@ -117,16 +120,16 @@ def evaluate_results(test_cases, execution_result):
 
 
 
-# if __name__ == '__main__':
-#     from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
-#     # Run execution with the provided test data
-#     print("\nEXECUTION:")
-#     response = execute_user_code_subprocess(SOLUTION_CODE_1, TEST_DATA_1)
-#     print(json.dumps(response, indent=2))
-#     # Example Usage
-#     print("\nEVALUATION:")
-#     final_result = evaluate_results(TEST_DATA_1, response)
-#     print(json.dumps(final_result, indent=2))
+if __name__ == '__main__':
+    from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
+    # Run execution with the provided test data
+    print("\nEXECUTION:")
+    response = execute_user_code_subprocess(SOLUTION_CODE_1, TEST_DATA_1)
+    print(json.dumps(response, indent=2))
+    # Example Usage
+    print("\nEVALUATION:")
+    final_result = evaluate_results(TEST_DATA_1, response)
+    print(json.dumps(final_result, indent=2))
 
 
 

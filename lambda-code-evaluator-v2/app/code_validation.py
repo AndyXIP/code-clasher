@@ -18,19 +18,31 @@ def add_pass_to_starter_method_body(starter_code: str) -> str:
     return "\n".join(new_lines)
 
 
+import inspect
+
 def extract_method_signature(starter_code: str):
     print("Entering extract_method_signature()...")
-    # Execute the starter code in a controlled environment
-    print("Running: 'exec(starter_code, globals())'")
-    exec(starter_code, globals())
+
+    # Ensure the starter code includes necessary typing imports
+    safe_code = "from typing import *\n" + starter_code
+
+    # Execute in a controlled environment (sandbox)
+    sandbox = {}
+    print("Running exec() in a sandbox environment...")
+    
+    try:
+        exec(safe_code, sandbox)  # Isolated execution
+    except Exception as e:
+        raise ValueError(f"Failed to execute starter code: {str(e)}")
+
     print("exec() completed!")
 
     # Ensure the Solution class exists
-    if "Solution" not in globals():
+    if "Solution" not in sandbox:
         raise ValueError("Starter code must define a class named 'Solution'.")
 
-    # Get the class reference
-    solution_class = globals()["Solution"]
+    # Get the class reference from the sandbox
+    solution_class = sandbox["Solution"]
 
     # Retrieve all methods inside the class
     methods = inspect.getmembers(solution_class, inspect.isfunction)
@@ -52,6 +64,7 @@ def extract_method_signature(starter_code: str):
         "param_count": len(param_names),
         "param_types": param_types
     }
+
 
 
 def validate_user_code(starter_code: str, user_code: str):
@@ -98,31 +111,29 @@ def validate_user_code(starter_code: str, user_code: str):
 
 
 
-# if __name__ == '__main__':
-#     from pprint import pprint
-#     starter_code = "\nclass Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        "
+if __name__ == '__main__':
+    from pprint import pprint
+    starter_code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        '
+    code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000'
 
-#     test_payload = {
-#         "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
-#         "problem_id": 3835,
-#         "language": "python",
-#         "code": """
-# class Solution:
-#     def multiply(self, num1: str, num2: str) -> str:
-#         return '500'""",
-#         "test_cases": {
-#             "inputs": [["Hello, my name is John"]],
-#             "outputs": ['500']
-#         },
-#         "starter_code": starter_code
-#     }
+    test_payload = {
+        "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
+        "problem_id": 3835,
+        "language": "python",
+        "code": code_test,
+        "test_cases": {
+            "inputs": [["Hello, my name is John"]],
+            "outputs": ['500']
+        },
+        "starter_code": starter_code_test
+    }
 
 
-#     pprint(test_payload)  # Pretty-print for debugging
+    pprint(test_payload)  # Pretty-print for debugging
 
-#     starter_code = test_payload["starter_code"]
-#     user_code = test_payload["code"]
+    starter_code = test_payload["starter_code"]
+    user_code = test_payload["code"]
 
-#     # Run validation
-#     validation_result = validate_user_code(starter_code, user_code)
-#     print("Validation Result:", validation_result)
+    # Run validation
+    validation_result = validate_user_code(starter_code, user_code)
+    print("Validation Result:", validation_result)
