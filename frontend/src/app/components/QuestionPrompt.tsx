@@ -39,7 +39,15 @@ function reduceConsecutiveBlankLines(lines: string[]): string[] {
 
 export function parseAndFormatPrompt(multilineText: string): React.ReactNode[] {
   // Split into raw lines
-  const rawLines = multilineText.split(/\r?\n/);
+  let rawLines = multilineText.split(/\r?\n/);
+
+  // Remove everything from "Constraints:" onward
+  const constraintsIndex = rawLines.findIndex((line) =>
+    line.trim().startsWith("Constraints:")
+  );
+  if (constraintsIndex >= 0) {
+    rawLines = rawLines.slice(0, constraintsIndex);
+  }
 
   // Halve consecutive blank lines
   const lines = reduceConsecutiveBlankLines(rawLines);
@@ -60,10 +68,10 @@ export function parseAndFormatPrompt(multilineText: string): React.ReactNode[] {
     const trimmed = line.trim();
     if (!trimmed) {
       // Blank line => small vertical space
-      return <div key={`desc-${idx}`} style={{ margin: "0.5em 0" }} />;
+      return <div key={`desc-${idx}`} className="my-2" />;
     }
     return (
-      <p key={`desc-${idx}`} style={{ margin: "0.5em 0" }}>
+      <p key={`desc-${idx}`} className="my-2">
         {trimmed}
       </p>
     );
@@ -73,21 +81,15 @@ export function parseAndFormatPrompt(multilineText: string): React.ReactNode[] {
   const renderedExamples = exampleLines.map((line, index) => {
     const trimmed = line.trim();
     if (!trimmed) {
-      return <div key={`ex-${index}`} style={{ margin: "0.5em 0" }} />;
+      return <div key={`ex-${index}`} className="my-2" />;
     }
 
     // Detect lines like "Example 1:", "Example 2:", etc.
     const exampleMatch = trimmed.match(/^Example\s+(\d+):/i);
     if (exampleMatch) {
       return (
-        <div
-          key={`ex-${index}`}
-          style={{
-            marginTop: "1em",
-            marginBottom: "1em"
-          }}
-        >
-          <strong>{trimmed}</strong>
+        <div key={`ex-${index}`} className="mt-4 mb-2 font-semibold">
+          {trimmed}
         </div>
       );
     }
@@ -101,25 +103,27 @@ export function parseAndFormatPrompt(multilineText: string): React.ReactNode[] {
       return (
         <pre
           key={`ex-${index}`}
-          style={{
-            borderLeft: "4px solid #ccc",
-            paddingLeft: "12px",
-            backgroundColor: "#f5f5f5",
-            padding: "0.5em",
-            margin: "0.0em 0",
-            borderRadius: "2px",
-            fontFamily: "monospace",
-            whiteSpace: "pre-wrap"
-          }}
+          className="
+            border-l-4 border-gray-300 dark:border-gray-700 
+            pl-3 py-2 my-1 
+            rounded-sm 
+            font-mono 
+            whitespace-pre-wrap 
+            text-gray-800 dark:text-gray-200
+          "
         >
           <strong>{prefix}:</strong>{" "}
-          <span className="text-gray-600 dark:text-gray-300">{rest}</span>
+          <span className="text-gray-600 dark:text-gray-400">{rest}</span>
         </pre>
       );
     }
 
     // Default line
-    return <div key={`ex-${index}`}>{trimmed}</div>;
+    return (
+      <div key={`ex-${index}`} className="my-1">
+        {trimmed}
+      </div>
+    );
   });
 
   // Combine description and examples
