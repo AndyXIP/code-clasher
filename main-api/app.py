@@ -89,7 +89,7 @@ async def shutdown_event():
 
 # ==== API Routes ====
 # Daily Q Helper 
-async def get_daily_questions():
+async def get_daily_questions(max_test_cases=None):
     global valkey_client
     if not valkey_client:
         return {"error": "Valkey client not initialized."}
@@ -135,6 +135,12 @@ async def get_daily_questions():
     easy.pop("solutions", None)
     hard.pop("solutions", None)
 
+    if max_test_cases is not None:
+        easy["inputs"] = easy["inputs"][:max_test_cases]
+        easy["outputs"] = easy["outputs"][:max_test_cases]
+        hard["inputs"] = hard["inputs"][:max_test_cases]
+        hard["outputs"] = hard["outputs"][:max_test_cases]
+
     # Parse stringified arrays for I/O keys back into arrays
     easy = parse_inputs_outputs(easy)
     hard = parse_inputs_outputs(hard)
@@ -144,8 +150,8 @@ async def get_daily_questions():
 
 # Route now checks for errors before returning response
 @app.get("/api/daily-question")
-async def daily_question(difficulty: str = "easy"):
-    daily_qs = await get_daily_questions()
+async def daily_question():
+    daily_qs = await get_daily_questions(max_test_cases=3)
 
     # If an error occurred in the helper, return it as a 500 response
     if "error" in daily_qs:
@@ -157,7 +163,11 @@ async def daily_question(difficulty: str = "easy"):
 
 @app.post("/api/submit-code")
 async def submit_code(payload: Dict[str, Any]):
-    daily_qs = await get_daily_questions()
+    max = 3
+    if payload["is_submit"]:
+        max = None
+    daily_qs = await get_daily_questions(max_test_cases=max)
+
     # If an error occurred in the helper, return it as a 500 response
     if "error" in daily_qs:
         raise HTTPException(status_code=500, detail=daily_qs["error"])
