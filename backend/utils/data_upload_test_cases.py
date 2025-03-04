@@ -196,3 +196,125 @@ def generate_test_cases_with_llm(question, example_inputs, example_outputs):
             time.sleep(2 ** attempt)
 
     return {'inputs': [], 'outputs': []}
+
+
+def process_question(sample):
+    try:
+        url = sample.get('url', '')
+        source = 'leetcode' if 'leetcode' in url else None
+        if not source:
+            return None
+
+        question_text = sample.get('question', '')
+        input_output_raw = sample.get('input_output', '')
+        if not input_output_raw:
+            return None
+
+        input_output = json.loads(input_output_raw)
+        example_inputs = input_output.get('inputs', [])
+        example_outputs = input_output.get('outputs', [])
+
+        if not example_inputs or not example_outputs:
+            return None
+
+        # Parse solutions correctly
+        try:
+            solutions = json.loads(sample['solutions']) if isinstance(sample['solutions'], str) else sample['solutions']
+            solutions = solutions if isinstance(solutions, list) else [solutions]
+        except json.JSONDecodeError:
+            print(f'Failed to parse solutions JSON: {sample['solutions']}')
+            return None
+
+        # Find first valid solution (prefer class-based)
+        valid_solution = next((s for s in solutions if isinstance(s, str) and s.strip().startswith('class ')), None)
+
+        # If no class-based solution, try function-based
+        if not valid_solution:
+            print('No class-based solution found. Looking for function-based solution...')
+            valid_solution = next((s for s in solutions if isinstance(s, str) and 'def ' in s), None)
+
+        # If no valid solution, return None
+        if not valid_solution:
+            print('No valid solution found, skipping...')
+            return None
+
+        print(f'Generating test cases for: {question_text[:50]}...')
+        llm_generated_tests = generate_test_cases_with_llm(question_text, example_inputs, example_outputs)
+
+        valid_inputs = llm_generated_tests.get('inputs', [])
+        valid_outputs = llm_generated_tests.get('outputs', [])
+
+        # Run the solution and generate outputs
+        final_generated_outputs = execute_solution(valid_solution, valid_inputs)
+
+        # Skip if outputs are completely empty
+        if not final_generated_outputs:
+            print(f'No outputs generated for: {question_text[:50]}... Skipping upload.')
+            return None
+
+        return {
+            'question': question_text,
+            'solutions': [valid_solution],
+            'inputs': example_inputs,
+            'outputs': example_outputs,
+            'generated_inputs': valid_inputs,
+            'generated_outputs': final_generated_outputs,
+            'difficulty': sample.get('difficulty', 'Easy'),
+            'starter_code': sample.get('starter_code', ''),
+            'source': source,
+        }
+
+    except Exception as e:
+        print(f'Error processing question: {e}')
+        return None
+
+
+def contains_invalid_values(data):
+    '''
+    Check if the data contains 'inf' or 'NaN'.
+    '''
+    if isinstance(data, dict):
+        return any(contains_invalid_values(v) for v in data.values())
+    elif isinstance(data, list):
+        return any(contains_invalid_values(v) for v in data)
+    elif isinstance(data, float):
+        return math.isinf(data) or math.isnan(data)
+    return False
+
+
+def process_and_upload_dataset(dataset, split):
+    uploaded_count = 0
+    for sample in dataset:
+        processed_question = process_question(sample)
+        if processed_question:
+            # Check for invalid values before upload
+            if contains_invalid_values(processed_question):
+                print(f'Skipping question due to invalid values: {processed_question['question'][:50]}...')
+                continue  # Skip uploading this entry
+
+            try:
+                response = requests.post(SUPABASE_ENDPOINT, headers=HEADERS, json=[processed_question])
+                if response.status_code == 201:
+                    uploaded_count += 1
+                else:
+                    print(f'Failed to upload. Status Code: {response.status_code}, Response: {response.text}')
+
+            except requests.exceptions.RequestException as e:
+                print(f'Request error: {e}')
+
+    print(f'Uploaded {uploaded_count} {split} questions.')
+
+
+# Main execution
+if __name__ == '__main__':
+    print('Loading dataset from Hugging Face...')
+    train_data = load_dataset('codeparrot/apps', split='train')
+    test_data = load_dataset('codeparrot/apps', split='test')
+
+    print('Uploading training dataset...')
+    process_and_upload_dataset(train_data, 'train')
+
+    print('Uploading testing dataset...')
+    process_and_upload_dataset(test_data, 'test')
+
+    print('All uploads completed successfully.')
