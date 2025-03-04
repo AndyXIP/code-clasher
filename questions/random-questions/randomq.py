@@ -6,7 +6,7 @@ def generate_random_questions(count=7, difficulty='introductory', source='leetco
     print(f"DEBUG: generate_random_questions called with count={count}, difficulty={difficulty}, source={source}")
 
     # Build the query for questions that haven't been seen
-    query = supabase.table("questions_test").select("*")
+    query = supabase.table("questions_generated").select("*")
     if difficulty:
         query = query.eq("difficulty", difficulty)
     if source:
