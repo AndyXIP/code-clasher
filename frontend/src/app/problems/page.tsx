@@ -19,8 +19,8 @@ const EditorPage = () => {
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'hard'>('easy');
-  const [passedValues, setPassedValues] = useState<boolean[]>([]);
-  const [actualValues, setActualValues] = useState<string[]>([]);
+  const [passedValues, setPassedValues] = useState<boolean>(false);
+  const [actualValues, setActualValues] = useState<(string | number)[]>([]);
 
   // Use useEffect to fetch data once on initial mount
   useEffect(() => {
@@ -132,13 +132,13 @@ const EditorPage = () => {
   
         // Handle "done" status
         if (data.status === "done") {
-          if (data.console) {
-            setOutput(data.console);
+          if (data.job_result) {
+            setOutput(data.job_result);
           }
   
-          setActualValues(data.actual_outputs || []); // Ensure actual_outputs is an array
-          setPassedValues(data.passed || []); // Default to empty array if not available
-          setError(data.error || null); // Default to null error if none
+          setActualValues(data.job_result.output.actual_outputs || []); // Ensure actual_outputs is an array
+          setPassedValues(data.job_result.output.passed || false); // Default to empty array if not available
+          setError(data.job_result.output.error || null); // Default to null error if none
           ws.close(); // Close the WebSocket after receiving data
         } 
         // Handle timeout case
@@ -285,7 +285,7 @@ const EditorPage = () => {
                 <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
                   <h2 className="text-md font-bold">Passed:</h2>
                   <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(passedValues[selectedTestCaseIndex], null, 2)}
+                    {JSON.stringify(passedValues, null, 2)}
                   </pre>
                 </div>
               </div>
@@ -295,7 +295,7 @@ const EditorPage = () => {
 
         {activeTab === 'console' && (
           <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
-            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
+            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.output.actual_outputs, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
           </div>
         )}
       </div>
