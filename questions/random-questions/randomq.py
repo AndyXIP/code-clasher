@@ -43,7 +43,7 @@ def generate_random_questions(count=7, difficulty='introductory', source='leetco
             print(f"DEBUG: Updated question id {q['id']} to new id {new_id}, set seen to False.")
         
         # Re-run the query to get unseen questions (with filters)
-        query = supabase.table("questions_test").select("*")
+        query = supabase.table("questions_generated").select("*")
         if difficulty:
             query = query.eq("difficulty", difficulty)
         if source:
