@@ -1,5 +1,6 @@
 import json
 from randomq import generate_random_questions
+from double_string_parsing import remove_extra_string_layers
 
 def lambda_handler(event, context):
     try:
@@ -15,6 +16,8 @@ def lambda_handler(event, context):
             difficulty=difficulty if difficulty is not None else 'introductory',
             source='leetcode'  # Defaults to None if not provided
         )
+
+        questions = [remove_extra_string_layers(q) for q in questions]
         
         return {
             "statusCode": 200,
