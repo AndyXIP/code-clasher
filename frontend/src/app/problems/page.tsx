@@ -295,7 +295,7 @@ const EditorPage = () => {
 
         {activeTab === 'console' && (
           <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
-            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.output.actual_outputs, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
+            {output.output.actual_outputs ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.output.actual_outputs, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
           </div>
         )}
       </div>
