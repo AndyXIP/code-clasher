@@ -18,14 +18,10 @@ load_dotenv()
 # Configure logger for Glide
 Logger.set_logger_config(LogLevel.INFO)
 
-# Global variable to hold the Valkey client instance
-valkey_client = None
-
 async def initialize_valkey_client():
     """
     Initializes the Valkey client using Glide.
     """
-    global valkey_client
     host = os.getenv("VALKEY_HOST", "main-cache-mutbnm.serverless.eun1.cache.amazonaws.com")
     port = int(os.getenv("VALKEY_PORT", "6379"))
     
@@ -33,32 +29,29 @@ async def initialize_valkey_client():
     config = GlideClientConfiguration(addresses=addresses, use_tls=True)
     
     try:
-        valkey_client = await GlideClient.create(config)
+        client = await GlideClient.create(config)
         print("Valkey client created successfully.")
+        return client
     except Exception as e:
         print("Failed to create Valkey client:", e)
         raise
 
 async def async_handler(event, context):
     """
-    Async handler that initializes the client if needed, fetches new questions,
-    formats the data with a timestamp, and updates the cache.
+    Async handler that always creates a fresh Valkey client,
+    fetches new questions, formats the data with a timestamp,
+    and updates the cache.
     """
-    
-    global valkey_client
-
-    # Initialize the client if not already done.
     print("Initialising valkey client")
-    if valkey_client is None:
-        try:
-            await initialize_valkey_client()
-        except Exception as e:
-            return {
-                "statusCode": 500,
-                "body": json.dumps({"error": f"Valkey initialization failed: {str(e)}"})
-            }
+    try:
+        valkey_client = await initialize_valkey_client()
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Valkey initialization failed: {str(e)}"})
+        }
     
-    # Try to get new set of (5) questions.
+    # Try to get a new set of (5) questions.
     try:
         # Note: ensure you're calling the correct function; here we use get_questions.
         questions = await get_questions(count=5)
@@ -74,7 +67,13 @@ async def async_handler(event, context):
 
     # Update the cache with the new data.
     key = "active_questions"
-    await valkey_client.set(key, json.dumps(cache_payload))
+    try:
+        await valkey_client.set(key, json.dumps(cache_payload))
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Cache update failed: {str(e)}"})
+        }
 
     return {
         "statusCode": 200,
