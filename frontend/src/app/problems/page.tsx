@@ -183,14 +183,14 @@ const EditorPage = () => {
     setSelectedTestCaseIndex(index);
   };
 
-  const renderFormattedQuestion = (text: string) => {
-    return text.split('\n').map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        <br />
-      </React.Fragment>
-    ));
-  };
+  // const renderFormattedQuestion = (text: string) => {
+  //   return text.split('\n').map((line, index) => (
+  //     <React.Fragment key={index}>
+  //       {line}
+  //       <br />
+  //     </React.Fragment>
+  //   ));
+  // };
 
   return (
     <div
