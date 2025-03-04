@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import MonacoEditorComponent from '../components/MonacoEditor';
 import { useAuth } from '../contexts/AuthContext';
+import QuestionPrompt from '../components/QuestionPrompt';
 
 const EditorPage = () => {
   const { user } = useAuth(); // Get authenticated user
@@ -214,7 +215,7 @@ const EditorPage = () => {
         </div>
 
         <p className="text-lg mb-4">
-          {questionPrompt ? renderFormattedQuestion(questionPrompt) : 'Loading question...'}
+          {questionPrompt ? <QuestionPrompt text={questionPrompt} /> : 'Loading question...'}
         </p>
 
         {/* Tab Navigation */}
