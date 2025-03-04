@@ -149,29 +149,29 @@ def validate_user_code(starter_code: str, user_code: str):
 
 
 
-# if __name__ == '__main__':
-#     from pprint import pprint
-#     starter_code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        '
-#     code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000'
+if __name__ == '__main__':
+    from pprint import pprint
+    starter_code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        '
+    code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000'
 
-#     test_payload = {
-#         "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
-#         "problem_id": 3835,
-#         "language": "python",
-#         "code": code_test,
-#         "test_cases": {
-#             "inputs": [["Hello, my name is John"]],
-#             "outputs": ['500']
-#         },
-#         "starter_code": starter_code_test
-#     }
+    test_payload = {
+        "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
+        "problem_id": 3835,
+        "language": "python",
+        "code": code_test,
+        "test_cases": {
+            "inputs": [["Hello, my name is John"]],
+            "outputs": ['500']
+        },
+        "starter_code": starter_code_test
+    }
 
 
-#     pprint(test_payload)  # Pretty-print for debugging
+    pprint(test_payload)  # Pretty-print for debugging
 
-#     starter_code = test_payload["starter_code"]
-#     user_code = test_payload["code"]
+    starter_code = test_payload["starter_code"]
+    user_code = test_payload["code"]
 
-#     # Run validation
-#     validation_result = validate_user_code(starter_code, user_code)
-#     print("Validation Result:", validation_result)
+    # Run validation
+    validation_result = validate_user_code(starter_code, user_code)
+    print("Validation Result:", validation_result)

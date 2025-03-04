@@ -13,16 +13,10 @@ def execute_user_code_subprocess(user_code: str, test_cases: dict):
     # Write user code to a temporary script file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".py", mode="w") as temp_script:
         temp_script_name = temp_script.name
-        temp_script.write(user_code + "\n\n")
 
-        # Append wrapper code to process all test cases at once, capturing prints and errors separately
+        # Write imports needed for user code before writing user code
         temp_script.write("""
-import sys
-import json
-import traceback
-import io
-
-# FOR CODE EXECUTION:                          
+import json                          
 import math
 import collections
 import heapq
@@ -38,6 +32,16 @@ import random
 import typing
 from typing import List, Tuple, Dict, Set, Optional
 from collections import defaultdict, deque, Counter
+""")
+        # THEN write user code
+        temp_script.write(user_code + "\n\n")
+
+        # Append wrapper code to process all test cases at once, capturing prints and errors separately
+        temp_script.write("""
+import sys
+import json
+import traceback
+import io
 
 if __name__ == "__main__":
     # Read all test cases from stdin
@@ -135,14 +139,22 @@ def evaluate_results(test_cases, execution_result):
 
 
 # if __name__ == '__main__':
-#     from test_data_1 import SOLUTION_CODE_1, TEST_DATA_1
+#     user_code_test = code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000'
+#     test_cases_test = {
+#         "inputs": [["Hello, my name is John"]],
+#         "outputs": ['500']
+#     }
+#     # language = 'python'
+#     # problem_id = '9999'
+
+
 #     # Run execution with the provided test data
 #     print("\nEXECUTION:")
-#     response = execute_user_code_subprocess(SOLUTION_CODE_1, TEST_DATA_1)
+#     response = execute_user_code_subprocess(user_code_test, test_cases_test)
 #     print(json.dumps(response, indent=2))
 #     # Example Usage
 #     print("\nEVALUATION:")
-#     final_result = evaluate_results(TEST_DATA_1, response)
+#     final_result = evaluate_results(test_cases_test, response)
 #     print(json.dumps(final_result, indent=2))
 
 
