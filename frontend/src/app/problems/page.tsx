@@ -164,6 +164,9 @@ const EditorPage = () => {
     } catch (error) {
       console.error(error);
       setError('An error occurred while submitting the code.');
+      if (!user || !user.id) {
+        setError('Please sign in first')
+      }
       setOutput(null);
     }
   };  
@@ -294,18 +297,14 @@ const EditorPage = () => {
         )}
         {activeTab === 'console' && (
           <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
-            {actualValues ? (
-              output?.actual_outputs ? (
-                <pre className="whitespace-pre-wrap">{JSON.stringify(output, null, 2)}</pre>
-              ) : output?.error ? (  // Check if output.error exists
-                <pre className="text-red-500">{output.error}</pre>  // Show output.error
-              ) : (
-                <p>No actual outputs available</p>  // Fallback if no output or error
-              )
+            {output?.error ? (
+              <pre className="text-red-500">{output.error}</pre>
+            ) : output?.console ? (
+              <pre className="whitespace-pre-wrap">{JSON.stringify(output.console, null, 2)}</pre>
             ) : error ? (
-              <pre className="text-red-500">{error}</pre>  // Show general error
+              <pre className="text-red-500">{error}</pre>
             ) : (
-              <p>No output yet</p>  // Default message if no values or error
+              <p>No output yet</p>  // Default message if neither output.error nor output.console nor general error exist
             )}
           </div>
         )}
