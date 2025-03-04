@@ -67,7 +67,7 @@ async def async_handler(event, context):
     # Try to get new leaderboard data.
     try:
         print("DEBUG: About to call get_leaderboard...")
-        leaderboard = await get_top_leaderboard_entries(count=5)
+        leaderboard = get_top_leaderboard_entries(count=5)
         print("DEBUG: Successfully received leaderboard data.")
     except Exception as e:
         print(f"DEBUG: Error getting leaderboard: {e}")
