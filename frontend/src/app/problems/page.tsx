@@ -206,9 +206,9 @@ const EditorPage = () => {
           ))}
         </div>
 
-        <p className="text-lg mb-4">
+        <div className="text-lg mb-4">
           {questionPrompt ? <QuestionPrompt text={questionPrompt} /> : 'Loading question...'}
-        </p>
+        </div>
 
         {/* Tab Navigation */}
         <div className="mt-4">
@@ -261,9 +261,9 @@ const EditorPage = () => {
             {selectedTestCaseIndex !== null && (
               <div>
                 <TestCase 
-                  input={JSON.stringify(apiTestCases[selectedTestCaseIndex])} 
-                  expected_output={JSON.stringify(apiTestResults[selectedTestCaseIndex])} 
-                  actual_output={JSON.stringify(actualValues[selectedTestCaseIndex])} 
+                  input={apiTestCases[selectedTestCaseIndex]} 
+                  expected_output={apiTestResults[selectedTestCaseIndex]} 
+                  actual_output={actualValues[selectedTestCaseIndex]} 
                   passed={passedValues}
                   />
               </div>
