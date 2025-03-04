@@ -10,24 +10,24 @@ on:
       - '!frontend/README.md' # Exclude certain files
 
 jobs:
-  # test:
-  #   name: Test Frontend
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+  test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     # Step 1: Install Dependencies
-  #     - name: Install Dependencies
-  #       run: |
-  #         cd frontend
-  #         npm install
+      # Step 1: Install Dependencies
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm install
 
-  #     # Step 2: Run Tests
-  #     - name: Run Tests
-  #       run: |
-  #         cd frontend
-  #         npm test
+      # Step 2: Run Tests
+      - name: Run Tests
+        run: |
+          cd frontend
+          npm test
 
   build:
     name: Build Frontend
