@@ -19,8 +19,8 @@ const EditorPage = () => {
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'hard'>('easy');
-  const [passedValues, setPassedValues] = useState<boolean[]>([]);
-  const [actualValues, setActualValues] = useState<string[]>([]);
+  const [passedValues, setPassedValues] = useState<boolean>(false);
+  const [actualValues, setActualValues] = useState<(string | number)[]>([]);
 
   // Use useEffect to fetch data once on initial mount
   useEffect(() => {
@@ -89,11 +89,11 @@ const EditorPage = () => {
       if (!user || !user.id) {
         throw new Error('User is not authenticated');
       }
-
+  
       if (!problemId) {
         throw new Error('Problem ID is missing');
       }
-
+  
       const response = await fetch('/api/submit-code', {
         method: 'POST',
         headers: {
@@ -104,56 +104,60 @@ const EditorPage = () => {
           problem_id: problemId,            // Send the problem ID
           language,                         // Programming language
           code,                             // The code submitted by the user
-          is_submit: isSubmit,              // Whether its a submission
+          is_submit: isSubmit,              // Whether it's a submission
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to submit code');
       }
-
+  
       const result = await response.json();
-
+  
       // WebSocket connection for job status
       if (!result.job_id) {
         throw new Error('Job ID is missing in response');
       }
-
+  
       const jobId = result.job_id;
-
+  
       const ws = new WebSocket(`wss://main-api.click/ws/job-status/${jobId}`);
-
+  
       ws.onopen = () => {
         console.log("WebSocket connected for job:", jobId);
       };
-
+  
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-
+  
+        // Handle "done" status
         if (data.status === "done") {
-          setOutput(data.job_result);
-          const actualValues = extractActualValues(data.job_result);
-          const passedValues = extractPassedValues(data.job_result);
-          setActualValues(actualValues);
-          setPassedValues(passedValues);
-          setError(null);
-          ws.close();
-        } else if (data.status === "timeout") {
+          if (data.job_result) {
+            setOutput(data.job_result);
+          }
+  
+          setActualValues(data.job_result.output.actual_outputs || []); // Ensure actual_outputs is an array
+          setPassedValues(data.job_result.output.passed || false); // Default to empty array if not available
+          setError(data.job_result.output.error || null); // Default to null error if none
+          ws.close(); // Close the WebSocket after receiving data
+        } 
+        // Handle timeout case
+        else if (data.status === "timeout") {
           setError("Job took too long to execute");
-          ws.close();
+          ws.close(); // Close WebSocket if the job times out
         }
       };
-
+  
       ws.onerror = (error) => {
         console.error("WebSocket error:", error);
         setError("WebSocket error occurred");
-        ws.close();
+        ws.close(); // Ensure WebSocket is closed on error
       };
-
+  
       ws.onclose = () => {
         console.log("WebSocket closed for job:", jobId);
       };
-
+  
       if (isSubmit) {
         console.log("Code submitted successfully!");
       }
@@ -162,7 +166,7 @@ const EditorPage = () => {
       setError('An error occurred while submitting the code.');
       setOutput(null);
     }
-  };
+  };  
 
   const tabs = [
     { name: 'Console', value: 'console', current: activeTab === 'console' },
@@ -173,20 +177,6 @@ const EditorPage = () => {
 
   const handleTestCaseSelection = (index: number) => {
     setSelectedTestCaseIndex(index);
-  };
-
-  const extractActualValues = (data: any) => {
-    if (data && Array.isArray(data.output)) {
-      return data.output.map((testCase: any) => testCase.actual).flat();
-    }
-    return [];
-  };
-
-  const extractPassedValues = (data: any) => {
-    if (data && Array.isArray(data.output)) {
-      return data.output.map((testCase: any) => testCase.passed);
-    }
-    return [];
   };
 
   const renderFormattedQuestion = (text: string) => {
@@ -295,7 +285,7 @@ const EditorPage = () => {
                 <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
                   <h2 className="text-md font-bold">Passed:</h2>
                   <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(passedValues[selectedTestCaseIndex], null, 2)}
+                    {JSON.stringify(passedValues, null, 2)}
                   </pre>
                 </div>
               </div>
@@ -305,7 +295,7 @@ const EditorPage = () => {
 
         {activeTab === 'console' && (
           <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
-            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
+            {output ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.output.actual_outputs, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
           </div>
         )}
       </div>
