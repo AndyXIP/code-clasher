@@ -126,7 +126,7 @@ export function parseAndFormatPrompt(multilineText: string): React.ReactNode[] {
     );
   });
 
-  // Combine description and examples
+  // Combine description and examples.
   return [...renderedDescription, ...renderedExamples];
 }
 
@@ -134,7 +134,7 @@ interface QuestionPromptProps {
   text: string;
 }
 
-export default function QuestionPrompt({ text }: QuestionPromptProps): JSX.Element {
+export default function QuestionPrompt({ text }: QuestionPromptProps) {
   const formattedElements = parseAndFormatPrompt(text);
   return <div>{formattedElements}</div>;
 }
