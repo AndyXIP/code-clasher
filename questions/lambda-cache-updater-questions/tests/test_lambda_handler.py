@@ -3,9 +3,8 @@ import asyncio
 import pytest
 from unittest.mock import AsyncMock
 
-# Import functions and the global variable from your lambda file.
-# (Assuming your lambda file is named lambda_handler.py)
-from lambda_handler import async_handler, lambda_handler, valkey_client
+# Import functions from your lambda file.
+from lambda_handler import async_handler, lambda_handler
 
 # --- Fake Valkey Client ---
 class FakeValkeyClient:
@@ -39,9 +38,8 @@ def patch_valkey_client(mocker, fake_valkey_client):
     our fake_valkey_client. Also reset the global valkey_client before each test.
     """
     mocker.patch("lambda_handler.GlideClient.create", return_value=fake_valkey_client)
-    # Reset the global client before each test.
     import lambda_handler
-    lambda_handler.valkey_client = None
+    lambda_handler.valkey_client = None  # Reset global state if present
 
 # --- Async Handler Tests ---
 @pytest.mark.asyncio
@@ -68,7 +66,7 @@ async def test_async_handler_success(mocker, fake_valkey_client):
 
     # Verify that the fake client's set method stored the payload.
     stored = await fake_valkey_client.get("active_questions")
-    # Decode the stored bytes before comparing.
+    # stored is bytes; decode before comparing.
     assert stored.decode("utf-8") == json.dumps(fake_payload)
 
 @pytest.mark.asyncio
@@ -76,11 +74,7 @@ async def test_async_handler_get_questions_failure(mocker, fake_valkey_client):
     """
     Test that if get_questions fails, async_handler returns a 500 status.
     """
-    # Simulate an already-initialized client.
-    import lambda_handler
-    lambda_handler.valkey_client = fake_valkey_client
-
-    # Force get_questions to raise an exception.
+    # Patch get_questions to raise an exception.
     mocker.patch("lambda_handler.get_questions", new=AsyncMock(side_effect=Exception("Get questions error")))
 
     result = await async_handler({}, {})
