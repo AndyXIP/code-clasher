@@ -77,7 +77,7 @@ async def async_handler(event, context):
         }
 
     cache_payload = leaderboard
-    print(f"DEBUG: cache_payload ready. Key to store = 'active_leaderboard'")
+    print(f"DEBUG: cache_payload ready. Key to store = 'active_leaderboard_testing'")
 
     # Update the cache with the new data.
     key = "active_leaderboard_testing"
