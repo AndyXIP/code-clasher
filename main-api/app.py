@@ -128,8 +128,6 @@ async def get_daily_questions(max_test_cases=None):
 
     easy = easy_qs[day_index]
     hard = hard_qs[day_index]
-    print(f"Today's easy Q: {easy}")
-    print(f"Today's hard Q: {hard}")
 
     # Remove the "solutions" key from both question objects, if present.
     easy.pop("solutions", None)
@@ -144,6 +142,9 @@ async def get_daily_questions(max_test_cases=None):
     # Parse stringified arrays for I/O keys back into arrays
     easy = parse_inputs_outputs(easy)
     hard = parse_inputs_outputs(hard)
+
+    print(f"Today's easy Q: {easy}")
+    print(f"Today's hard Q: {hard}")
 
     # Return the selected questions as a JSON object.
     return {"easy": easy, "hard": hard}
