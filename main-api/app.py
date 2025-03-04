@@ -133,15 +133,16 @@ async def get_daily_questions(max_test_cases=None):
     easy.pop("solutions", None)
     hard.pop("solutions", None)
 
+    # Parse stringified arrays for I/O keys back into arrays
+    easy = parse_inputs_outputs(easy)
+    hard = parse_inputs_outputs(hard)
+
+    # Limit number of test cases sent to client
     if max_test_cases is not None:
         easy["inputs"] = easy["inputs"][:max_test_cases]
         easy["outputs"] = easy["outputs"][:max_test_cases]
         hard["inputs"] = hard["inputs"][:max_test_cases]
         hard["outputs"] = hard["outputs"][:max_test_cases]
-
-    # Parse stringified arrays for I/O keys back into arrays
-    easy = parse_inputs_outputs(easy)
-    hard = parse_inputs_outputs(hard)
 
     print(f"Today's easy Q: {easy}")
     print(f"Today's hard Q: {hard}")
