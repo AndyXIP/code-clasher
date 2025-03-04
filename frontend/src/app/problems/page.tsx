@@ -132,8 +132,8 @@ const EditorPage = () => {
   
         // Handle "done" status
         if (data.status === "done") {
-          if (data.job_result) {
-            setOutput(data.job_result);
+          if (data.job_result.output) {
+            setOutput(data.job_result.output);
           }
   
           setActualValues(data.job_result.output.actual_outputs || []); // Ensure actual_outputs is an array
@@ -292,10 +292,21 @@ const EditorPage = () => {
             )}
           </>
         )}
-
         {activeTab === 'console' && (
           <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
-            {output.output.actual_outputs ? <pre className="whitespace-pre-wrap">{JSON.stringify(output.output.actual_outputs, null, 2)}</pre> : error ? <pre className="text-red-500">{error}</pre> : <p>No output yet</p>}
+            {actualValues ? (
+              output?.actual_outputs ? (
+                <pre className="whitespace-pre-wrap">{JSON.stringify(output, null, 2)}</pre>
+              ) : output?.error ? (  // Check if output.error exists
+                <pre className="text-red-500">{output.error}</pre>  // Show output.error
+              ) : (
+                <p>No actual outputs available</p>  // Fallback if no output or error
+              )
+            ) : error ? (
+              <pre className="text-red-500">{error}</pre>  // Show general error
+            ) : (
+              <p>No output yet</p>  // Default message if no values or error
+            )}
           </div>
         )}
       </div>
