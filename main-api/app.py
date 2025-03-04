@@ -232,6 +232,28 @@ async def leaderboard():
     return data
 
 
+
+@app.get("/api/leaderboard-testing")
+async def leaderboard_testing():
+    global valkey_client
+    if not valkey_client:
+        raise HTTPException(status_code=500, detail="Valkey client not initialized")
+
+    test_key = "active_leaderboard_testing"
+    try:
+        cached_value = await valkey_client.get(test_key)
+        if cached_value:
+            leaderboard_data = json.loads(cached_value)
+        else:
+            raise Exception("Could not find data in cache for key 'active_leaderboard_testing'")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    data = format_leaderboard_data(leaderboard_data)
+    return data
+
+
+
 # ==== WEBSOCKET for job results ===
 
 @app.websocket("/ws/job-status/{job_id}")
