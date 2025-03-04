@@ -9,11 +9,16 @@ export default function TestCase({ input, expected_output, actual_output, passed
   if (!input) return null;
 
   const formatData = (data: any) => {
+    if (typeof data === 'boolean') {
+      return data ? 'Passed' : 'Failed';
+    }
+    
     if (typeof data === 'object') {
       return JSON.stringify(data, null, 2);
     }
+    
     return data;
-  };
+  };  
 
   const testCaseSections = [
     { title: "Input:", data: input },
