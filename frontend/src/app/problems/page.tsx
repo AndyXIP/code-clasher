@@ -270,25 +270,25 @@ const EditorPage = () => {
                 <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
                   <h2 className="text-md font-bold">Input:</h2>
                   <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(apiTestCases[selectedTestCaseIndex], null, 2)}
+                    {JSON.stringify(apiTestCases[selectedTestCaseIndex])}
                   </pre>
                 </div>
                 <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
                   <h2 className="text-md font-bold">Expected Output:</h2>
                   <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(apiTestResults[selectedTestCaseIndex], null, 2)}
+                    {JSON.stringify(apiTestResults[selectedTestCaseIndex])}
                   </pre>
                 </div>
                 <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
                   <h2 className="text-md font-bold">Actual Output:</h2>
                   <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(actualValues[selectedTestCaseIndex], null, 2)}
+                    {JSON.stringify(actualValues[selectedTestCaseIndex])}
                   </pre>
                 </div>
                 <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800">
                   <h2 className="text-md font-bold">Passed:</h2>
                   <pre className="whitespace-pre-wrap break-words text-sm text-gray-700 dark:text-gray-200">
-                    {JSON.stringify(passedValues, null, 2)}
+                    {JSON.stringify(passedValues)}
                   </pre>
                 </div>
               </div>
@@ -300,11 +300,17 @@ const EditorPage = () => {
             {output?.error ? (
               <pre className="text-red-500">{output.error}</pre>
             ) : output?.console ? (
-              <pre className="whitespace-pre-wrap">{JSON.stringify(output.console, null, 2)}</pre>
+              <pre className="whitespace-pre-wrap">
+                {Array.isArray(output.console)
+                  // Join the array of strings and replace literal \n with real newlines
+                  ? output.console.join('').replace(/\\n/g, '\n')
+                  : // If it's just a single string, replace \n as well
+                    output.console.replace(/\\n/g, '\n')}
+              </pre>
             ) : error ? (
               <pre className="text-red-500">{error}</pre>
             ) : (
-              <p>No output yet</p>  // Default message if neither output.error nor output.console nor general error exist
+              <p>No output yet</p>
             )}
           </div>
         )}
