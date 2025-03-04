@@ -293,7 +293,7 @@ const EditorPage = () => {
 
       {/* Right Side: Code Editor */}
       <div className="w-full md:w-1/2 p-4 flex flex-col">
-        <MonacoEditorComponent onSubmit={handleCodeSubmission} starterCode={starterCode ?? '// no starter code found'}/>
+        <MonacoEditorComponent onSubmit={handleCodeSubmission} questionId={problemId} starterCode={starterCode ?? '// no starter code found'}/>
       </div>
     </div>
   );
