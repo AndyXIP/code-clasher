@@ -10,16 +10,12 @@ def add_pass_to_starter_method_body(starter_code: str) -> str:
         new_lines.append(line)
         # Check if the line ends with ':' (indicating a block start)
         if line.rstrip().endswith(":"):
-            # Determine the current indentation level
             current_indent = len(line) - len(line.lstrip())
             expected_body_indent = current_indent + 4  # one extra indent level
-
-            # Look ahead to see if the next line is sufficiently indented
-            if i + 1 >= len(lines) or (len(lines[i+1]) - len(lines[i+1].lstrip())) <= current_indent:
+            # If there's no next line or the next line is only whitespace, insert 'pass'
+            if i + 1 >= len(lines) or not lines[i+1].strip():
                 new_lines.append(" " * expected_body_indent + "pass")
     return "\n".join(new_lines)
-
-
 
 
 def extract_method_signature(starter_code: str):
@@ -104,6 +100,7 @@ def validate_user_code(starter_code: str, user_code: str):
 
 # if __name__ == '__main__':
 #     from pprint import pprint
+#     starter_code = "\nclass Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        "
 
 #     test_payload = {
 #         "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
@@ -111,15 +108,13 @@ def validate_user_code(starter_code: str, user_code: str):
 #         "language": "python",
 #         "code": """
 # class Solution:
-#     def countSegments(self, s: str) -> int:
-#         return 15""",
+#     def multiply(self, num1: str, num2: str) -> str:
+#         return '500'""",
 #         "test_cases": {
 #             "inputs": [["Hello, my name is John"]],
-#             "outputs": [5]
+#             "outputs": ['500']
 #         },
-#         "starter_code": """
-# class Solution:
-#     def countSegments(self, s: str) -> int:"""  
+#         "starter_code": starter_code
 #     }
 
 
