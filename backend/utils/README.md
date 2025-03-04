@@ -74,8 +74,8 @@ multiprocessing
 ## Folder Structure
 ```
 backend/utils/
+│── data_upload.py             # Script without test case generation
 │── data_upload_test_cases.py  # Main test case generation script
-│── test_case_generation.pdf   # Research paper reference
 │── requirements.txt           # Dependencies
 │── .env                       # API keys & environment variables (not included in version control)
 ```
