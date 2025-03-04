@@ -52,8 +52,8 @@ def get_top_leaderboard_entries(count=5, difficulty='introductory'):
     ]
 
     result = {
-        "introductory": introductory_results,
-        "interview": interview_results,
+        "easy": introductory_results,
+        "hard": interview_results,
     }
     print("DEBUG: returning result =", result)
     return result
