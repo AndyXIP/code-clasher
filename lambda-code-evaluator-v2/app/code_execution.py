@@ -2,12 +2,19 @@ import subprocess
 import json
 import tempfile
 import os
+import resource
+
+
+def limit_resources():
+    # Limit the address space to 256MB
+    resource.setrlimit(resource.RLIMIT_AS, (256 * 1024 * 1024, 256 * 1024 * 1024))
+    # Limit CPU time to 5 seconds (this is in addition to the timeout)
+    resource.setrlimit(resource.RLIMIT_CPU, (5, 5))
 
 
 def execute_user_code_subprocess(user_code: str, test_cases: dict):
     print("Entering execute_user_code_subprocess()...")
     """Executes user code inside a subprocess efficiently by processing all test cases in one run."""
-
     input_cases = test_cases["inputs"]
 
     # Write user code to a temporary script file
@@ -81,19 +88,20 @@ if __name__ == "__main__":
     print(json.dumps({"outputs": results, "print_logs": print_logs, "errors": error_logs}))
 """)
 
-    # Run the user script in a single subprocess
     try:
         result = subprocess.run(
             ["python3", temp_script_name],
-            input=json.dumps(input_cases),  # Pass all test cases at once
+            input=json.dumps(input_cases),
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=5,
+            preexec_fn=limit_resources
         )
+    except subprocess.TimeoutExpired as e:
+        return {"error": "Time limit exceeded."}
     finally:
         os.remove(temp_script_name)  # Clean up temp file
 
-    # Process output
     stdout_output = result.stdout.strip()
     stderr_output = result.stderr.strip()
 
