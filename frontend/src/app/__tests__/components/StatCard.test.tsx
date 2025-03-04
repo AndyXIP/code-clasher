@@ -78,6 +78,25 @@ describe('StatCard Component', () => {
     });
   });
 
+  test('renders correctly when user has no completed questions', async () => {
+    (useAuth as jest.Mock).mockReturnValue({ user: mockUser, loading: false });
+
+    // Mock empty Supabase response
+    (supabase.from as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      gte: jest.fn().mockResolvedValue({ data: [], error: null }),
+    });
+
+    render(<StatCard />);
+
+    await waitFor(() => {
+        expect(screen.getAllByText('0 / 7')).toHaveLength(2); // Expect two occurrences
+        expect(screen.getByText('0 / 14')).toBeInTheDocument();
+        expect(screen.getAllByText('0%')).toHaveLength(3); // Expect three occurrences
+    });
+  });
+
   test('handles Supabase errors gracefully', async () => {
     (useAuth as jest.Mock).mockReturnValue({ user: mockUser, loading: false });
 
