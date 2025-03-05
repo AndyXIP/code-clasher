@@ -10,7 +10,7 @@ import { supabase } from '../SupabaseClient'; // Ensure Supabase is imported
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, loading } = useAuth(); // Get user from AuthContext
+  const { user } = useAuth(); // Get user from AuthContext
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
