@@ -166,6 +166,7 @@ async def daily_question():
 
 # Submission (not Run) helper
 async def handle_is_submit(cache_job_results):
+    print(f"Entering handle_is_submit() with results: {cache_job_results}")
     """
     Handles user submission by making an API call and returning the response.
     """
@@ -178,11 +179,13 @@ async def handle_is_submit(cache_job_results):
 
     url = f"{LEADERBOARD_API_URL}/user-submission"
     params = {"user_id": user_id, "problem_id": problem_id, "difficulty": difficulty}
+    print(f"URL: {url}, PARAMS: {params}")
 
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(url, params=params)
             response.raise_for_status()
+            print(f"Call made. Response: {response}")
             return response.json()
         except httpx.HTTPStatusError as e:
             return {"error": f"API request failed with status {e.response.status_code}"}
@@ -327,7 +330,9 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                 json_job_result = json.loads(job_result.decode('utf-8'))
                 print("> Cache hit!", json_job_result)
                 # Check if is_submit, so we can call to have DB updated
+                print("Checking if Submit and Pass...")
                 if json_job_result["output"]["is_submit"] and json_job_result["output"]["passed"]:
+                    print("Submit and Pass both True!")
                     handle_is_submit(json_job_result)
                 # Send back to client
                 await websocket.send_json({"status": "done", "job_result": json_job_result})
