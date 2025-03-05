@@ -91,9 +91,10 @@ def lambda_handler(event, context):
             # Add difficulty and user_id to results
             results.update({"difficulty": difficulty, "user_id": user_id})
             print(f"results with user_id and diff: {results}")
-            
+
             # Store the updated results in Valkey
-            asyncio.run(store_result_in_valkey(job_id, results, user_id, difficulty))
+            print("Calling store result in Valkey")
+            asyncio.run(store_result_in_valkey(job_id, results))
 
             return {
                 "statusCode": 200,
