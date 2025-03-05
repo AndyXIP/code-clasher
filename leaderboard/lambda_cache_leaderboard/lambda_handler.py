@@ -18,7 +18,6 @@ load_dotenv()
 # Configure logger for Glide
 Logger.set_logger_config(LogLevel.INFO)
 
-# Global variable to hold the Valkey client instance
 
 async def initialize_valkey_client():
     """
@@ -44,7 +43,6 @@ async def async_handler(event, context):
     Async handler that initializes the client if needed, fetches leaderboard data,
     and updates the cache.
     """
-    global valkey_client
 
     print("DEBUG: Received event:", event)
 
