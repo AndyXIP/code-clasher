@@ -43,7 +43,13 @@ jobs:
           cd frontend
           npm install
 
-      # Step 2: Build Frontend
+      # Step 2: Set Environment Variables for Build
+      - name: Set Environment Variables for Build
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> frontend/.env
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> frontend/.env
+
+      # Step 3: Build Frontend
       - name: Build Frontend
         run: |
           cd frontend
