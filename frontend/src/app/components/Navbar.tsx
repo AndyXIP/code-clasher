@@ -122,7 +122,7 @@ export default function Navbar() {
 
       {/* Mobile Menu (Visible When Open) */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-16 left-0 w-full bg-white dark:bg-gray-800 shadow-lg">
+        <div className="md:hidden absolute top-16 left-0 w-full bg-white dark:bg-gray-800 shadow-lg z-50">
           <div className="flex flex-col space-y-2 p-4">
             {links.map((link) => (
               <Link
