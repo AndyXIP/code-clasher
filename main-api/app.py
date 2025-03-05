@@ -180,12 +180,14 @@ async def handle_is_submit(cache_job_results):
         return {"error": "Missing required parameters"}
 
     url = f"{LEADERBOARD_API_URL}/user-submission"
-    params = {"user_id": user_id, "problem_id": problem_id, "difficulty": difficulty}
-    print(f"URL: {url}, PARAMS: {params}")
+    payload = {"user_id": user_id, "problem_id": problem_id, "difficulty": difficulty}
+    print(f"URL: {url}, PAYLOAD: {payload}")
+    # params = {"user_id": user_id, "problem_id": problem_id, "difficulty": difficulty}
+    # print(f"URL: {url}, PARAMS: {params}")
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(url, params=params)
+            response = await client.post(url, json=payload)
             response.raise_for_status()
             print(f"Call made. Response: {response}")
             return response.json()
