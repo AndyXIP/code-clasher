@@ -20,7 +20,7 @@ import MonacoEditorMock from "../../components/MonacoEditor";
 const mockOnSubmit = jest.fn();
 
 test("MonacoEditor renders without crashing", () => {
-  render(<MonacoEditorMock onSubmit={mockOnSubmit} starterCode='mock code' />);
+  render(<MonacoEditorMock onSubmit={mockOnSubmit} questionId='mock id' starterCode='mock code' />);
 
   // Ensure the mocked Monaco component is rendered
   expect(screen.getByTestId("monaco-mock")).toBeInTheDocument();
