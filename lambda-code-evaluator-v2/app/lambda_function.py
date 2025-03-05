@@ -70,6 +70,7 @@ def lambda_handler(event, context):
             starter_code = body_obj.get("starter_code")
             user_id = body_obj.get("user_id")
             difficulty = body_obj.get("difficulty")
+            is_submit = body_obj.get("is_submit")
         
             if not user_code:
                 print("Missing user_code.")
@@ -89,7 +90,7 @@ def lambda_handler(event, context):
             results = process_submission(job_id, starter_code, user_code, test_cases)
 
             # Add difficulty and user_id to results
-            results.update({"difficulty": difficulty, "user_id": user_id})
+            results.update({"difficulty": difficulty, "user_id": user_id, "is_submit": is_submit})
             print(f"results with user_id and diff: {results}")
 
             # Store the updated results in Valkey
