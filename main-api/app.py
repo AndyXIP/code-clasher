@@ -194,6 +194,7 @@ async def handle_is_submit(cache_job_results):
             print(f"API request failed with status {e.response.status_code}")
             print(f"Response body: {e.response.text}")
             print(f"Response headers: {e.response.headers}")
+            print(f"\nFULL ERROR: {str(e)}")
             return {
                 "error": f"API request failed with status {e.response.status_code}",
                 "body": e.response.text,
