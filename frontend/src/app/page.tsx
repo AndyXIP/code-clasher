@@ -32,15 +32,16 @@ export default function HomePage() {
         {/* Show user's full name or fallback to 'Username' */}
         Welcome back, {user.user_metadata?.fullName || user.email || 'Username'}!
       </div>
-      <div className="flex gap-10">
-        <div className="w-[25%]">
+      <div className="flex flex-col md:flex-row gap-10">
+        {/* CodeTracker and StatCard */}
+        <div className="w-full md:w-[25%]">
           <CodeTracker />
         </div>
-        <div className="w-[70%]">
+        <div className="w-full md:w-[70%]">
           <StatCard />
         </div>
       </div>
-      <div className="w-[100%]">
+      <div className="w-[100%] mt-6">
         <StreakBar />
       </div>
     </div>

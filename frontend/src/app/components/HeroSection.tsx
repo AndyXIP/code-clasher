@@ -3,7 +3,7 @@ import { ChevronRightIcon } from '@heroicons/react/20/solid'; // Import the Chev
 export default function HeroSection() {
     return (
         <div className="bg-white dark:bg-black">
-          <div className="relative isolate overflow-hidden bg-gradient-to-b from-indigo-100/20">
+          <div className="relative isolate overflow-hidden bg-gradient-to-b from-indigo-100/20 h-screen"> {/* h-screen ensures full height */}
             <div className="mx-auto max-w-7xl pb-24 sm:pb-32 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-20">
               <div className="px-6 lg:px-0 lg:pt-4">
                 <div className="mx-auto max-w-2xl">
@@ -78,7 +78,8 @@ export default function HeroSection() {
                 </div>
               </div>
             </div>
-            <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white dark:from-black sm:h-32" />
+            {/* Add margin-top for mobile devices */}
+            <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white dark:from-black sm:h-32 mt-16 sm:mt-0" />
           </div>
         </div>
       );
