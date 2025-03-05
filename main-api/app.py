@@ -185,7 +185,7 @@ async def handle_is_submit(cache_job_results):
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(url, params=params)
+            response = await client.post(url, params=params)
             response.raise_for_status()
             print(f"Call made. Response: {response}")
             return response.json()
