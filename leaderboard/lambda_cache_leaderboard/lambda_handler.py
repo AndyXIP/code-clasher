@@ -34,9 +34,11 @@ async def initialize_valkey_client():
     try:
         client = await GlideClient.create(config)
         print("Valkey client created successfully.")
+        return client  # Return the created client
     except Exception as e:
         print(f"Failed to create Valkey client: {e}")
         raise
+
 
 async def async_handler(event, context):
     """
