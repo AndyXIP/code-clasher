@@ -38,6 +38,7 @@ valkey_client = None
 
 sqs = boto3.client('sqs', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
+LEADERBOARD_API_URL = os.getenv('LEADERBOARD_API_URL')
 
 # class SubmitCodePayload(BaseModel):
 #     code: str
@@ -161,12 +162,20 @@ async def daily_question():
 
     return daily_qs
 
-    
+
+# Submission (not Run) helper
+async def handle_is_submit(cache_job_results):
+    url = f"{LEADERBOARD_API_URL}/user-submission"
+    user_id = cache_job_results["user_id"]
+    problem_id = cache_job_results["problem_id"]
+    difficulty = 
+
 
 @app.post("/api/submit-code")
 async def submit_code(payload: Dict[str, Any]):
     max = 3
-    if payload["is_submit"]:
+    is_submit = payload["is_submit"]
+    if is_submit:
         max = None
     daily_qs = await get_daily_questions(max_test_cases=max)
 
@@ -196,6 +205,7 @@ async def submit_code(payload: Dict[str, Any]):
         'outputs': question["outputs"]
     } 
     starter_code = question["starter_code"]
+    difficulty = question["difficulty"]
 
     job_payload = {
         'job_id': job_id,
@@ -203,7 +213,10 @@ async def submit_code(payload: Dict[str, Any]):
         'language': payload["language"],
         'code': payload["code"],
         'test_cases': test_cases,
-        'starter_code': starter_code
+        'starter_code': starter_code,
+        'is_submit': is_submit,
+        'user_id': payload["user_id"],
+        'difficulty': difficulty
     }
     print(f"Job payload: {job_payload}")
 
@@ -266,6 +279,8 @@ async def leaderboard_testing():
 
 
 
+
+
 # ==== WEBSOCKET for job results ===
 
 @app.websocket("/ws/job-status/{job_id}")
@@ -292,6 +307,9 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                 # Turn 'JSON string' cache data into JSON object
                 json_job_result = json.loads(job_result.decode('utf-8'))
                 print("> Cache hit!", json_job_result)
+                # Check if is_submit, so we can call to have DB updated
+                if json_job_result["output"]["is_submit"]:
+                    handle_is_submit(json_job_result)
                 # Send back to client
                 await websocket.send_json({"status": "done", "job_result": json_job_result})
                 break  # Stop polling once result is available
