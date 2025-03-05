@@ -41,7 +41,7 @@ def lambda_handler(event, context):
             }
     
     # 3. Validate required fields
-    required_fields = ["user_id", "question_id", "difficulty"]
+    required_fields = ["user_id", "problem_id", "difficulty"]
     for field in required_fields:
         if field not in data or not data[field]:
             error_msg = f"Missing required field: {field}"
@@ -50,6 +50,8 @@ def lambda_handler(event, context):
                 "statusCode": 400,
                 "body": json.dumps({"error": error_msg})
             }
+
+    data["question_id"] = data.pop("problem_id")
     
     # 4. Validate and process completed_at if provided
     if "completed_at" in data and data["completed_at"]:
