@@ -8,24 +8,24 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": true, // Ensure strict mode is enabled for better type checking
     "noEmit": true,
     "esModuleInterop": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Node", // Ensure modules are resolved the Node way
     "resolveJsonModule": true,
-    "jsx": "react-jsx", // Use 'react-jsx' for React 17+ JSX transform
+    "jsx": "react-jsx", // Correct for React 17+ JSX Transform
     "incremental": true,
     "isolatedModules": true,
     "plugins": [
       {
-        "name": "next"
+        "name": "next" // Add the Next.js plugin if using Next.js
       }
     ],
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ] // Ensure aliasing works for imports starting with @/
     }
   },
   "include": [
@@ -35,6 +35,6 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules" // Exclude node_modules from type checking
   ]
 }
