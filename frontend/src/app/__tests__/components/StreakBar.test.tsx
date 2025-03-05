@@ -1,8 +1,14 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../SupabaseClient';
-import StatCard from '../../components/StatCard';
+import StreakBar from '../../components/StreakBar';
 import '@testing-library/jest-dom';
+
+// Mock StreakBadge component
+jest.mock('../../components/StreakBadges', () => ({
+  __esModule: true,
+  default: ({ streak }: { streak: number }) => <span data-testid={`streak-${streak}`}>Streak: {streak}</span>,
+}));
 
 // Mock useAuth hook
 jest.mock('../../contexts/AuthContext', () => ({
@@ -16,34 +22,15 @@ jest.mock('../../SupabaseClient', () => ({
   },
 }));
 
-describe('StatCard Component', () => {
+describe('StreakBar Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test('displays loading state initially', () => {
     (useAuth as jest.Mock).mockReturnValue({ user: null, loading: true });
-    render(<StatCard />);
+    render(<StreakBar />);
     expect(screen.getByText('Loading...')).toBeInTheDocument();
-  });
-
-  test('renders stats when no questions have been completed', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ user: { id: 'user123' }, loading: false });
-
-    (supabase.from as jest.Mock).mockReturnValue({
-      select: jest.fn().mockReturnValue({
-        eq: jest.fn().mockReturnValue({
-          gte: jest.fn().mockResolvedValue({ data: [], error: null }),
-        }),
-      }),
-    });
-
-    render(<StatCard />);
-
-    await waitFor(() => expect(screen.getByText('Last 7 days')).toBeInTheDocument());
-    expect(screen.getAllByText(/0\s*\/\s*7/i)[0]).toBeInTheDocument(); // Easy Questions Completed
-    expect(screen.getAllByText(/0\s*\/\s*7/i)[1]).toBeInTheDocument(); // Hard Questions Completed
-    expect(screen.getAllByText(/0\s*\/\s*14/i)[0]).toBeInTheDocument(); // Total Questions Completed
   });
 
   test('handles error from Supabase', async () => {
@@ -59,7 +46,7 @@ describe('StatCard Component', () => {
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    render(<StatCard />);
+    render(<StreakBar />);
 
     await waitFor(() => expect(console.error).toHaveBeenCalled());
   });

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import HeroSection from '../../components/HeroSection'; // Adjust path if needed
+import HeroSection from '../../components/HeroSection';
 
 describe('HeroSection Component', () => {
   test('renders the main heading', () => {

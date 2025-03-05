@@ -12,7 +12,8 @@ describe('StreakBadge Component', () => {
     { streak: 5, label: 'Advanced', classIncludes: 'bg-indigo-50' },
     { streak: 6, label: 'Advanced', classIncludes: 'bg-purple-50' },
     { streak: 7, label: 'Master', classIncludes: 'bg-pink-50' },
-    { streak: 10, label: 'Master', classIncludes: 'bg-pink-50' }, // Ensure 7+ maps to "Master"
+    // Ensure 7+ maps to "Master"
+    { streak: 10, label: 'Master', classIncludes: 'bg-pink-50' },
   ];
 
   testCases.forEach(({ streak, label, classIncludes }) => {

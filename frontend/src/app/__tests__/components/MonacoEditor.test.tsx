@@ -1,31 +1,78 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import MonacoEditor from "../../components/MonacoEditor";
+import { useAuth } from "../../contexts/AuthContext";
+import { supabase } from "../../SupabaseClient";
 
-// Mock MonacoEditor component
-jest.mock("../../components/MonacoEditor", () => {
-  return function MonacoEditorMock({ onSubmit }: { onSubmit: () => void }) {
-    return (
-      <div data-testid="monaco-mock">
-        <button onClick={onSubmit}>Submit</button>
-      </div>
-    );
-  };
-});
+// 🛠️ Mocking Monaco Editor
+jest.mock("@monaco-editor/react", () => ({
+  __esModule: true,
+  default: () => <textarea data-testid="monaco-editor" />, // Simulating an editable textarea
+}));
 
-// Import the mocked MonacoEditor component
-import MonacoEditorMock from "../../components/MonacoEditor";
+// 🛠️ Mocking the AuthContext
+jest.mock("../../contexts/AuthContext", () => ({
+  useAuth: jest.fn(),
+}));
 
-// Mock function for onSubmit
-const mockOnSubmit = jest.fn();
+// 🛠️ Mocking Supabase Client
+jest.mock("../../SupabaseClient", () => ({
+  supabase: {
+    from: jest.fn(() => ({
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      single: jest.fn().mockReturnThis(),
+    })),
+  },
+}));
 
-test("MonacoEditor renders without crashing", () => {
-  render(<MonacoEditorMock onSubmit={mockOnSubmit} questionId='mock id' starterCode='mock code' />);
+describe("MonacoEditor", () => {
+  const mockSubmit = jest.fn();
+  const starterCode = "print('Hello, World!')";
+  const questionId = "12345";
 
-  // Ensure the mocked Monaco component is rendered
-  expect(screen.getByTestId("monaco-mock")).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-  // Simulate clicking the submit button
-  fireEvent.click(screen.getByText("Submit"));
-  expect(mockOnSubmit).toHaveBeenCalled();
+  test("calls onSubmit when Run button is clicked", async () => {
+    (useAuth as jest.Mock).mockReturnValue({ user: { id: "user1" }, loading: false });
+
+    await act(async () => {
+      render(<MonacoEditor onSubmit={mockSubmit} starterCode={starterCode} questionId={questionId} />);
+    });
+
+    const runButton = screen.getByText("Run");
+    fireEvent.click(runButton);
+
+    expect(mockSubmit).toHaveBeenCalledWith(starterCode, "python", false);
+  });
+
+  test("calls onSubmit when Submit button is clicked", async () => {
+    (useAuth as jest.Mock).mockReturnValue({ user: { id: "user1" }, loading: false });
+
+    await act(async () => {
+      render(<MonacoEditor onSubmit={mockSubmit} starterCode={starterCode} questionId={questionId} />);
+    });
+
+    const submitButton = screen.getByText("Submit Code");
+    fireEvent.click(submitButton);
+
+    expect(mockSubmit).toHaveBeenCalledWith(starterCode, "python", true);
+  });
+
+  test("alerts user if they try to submit code without logging in", async () => {
+    (useAuth as jest.Mock).mockReturnValue({ user: null, loading: false });
+
+    window.alert = jest.fn(); // Mock alert
+
+    await act(async () => {
+      render(<MonacoEditor onSubmit={mockSubmit} starterCode={starterCode} questionId={questionId} />);
+    });
+
+    const submitButton = screen.getByText("Submit Code");
+    fireEvent.click(submitButton);
+
+    expect(window.alert).toHaveBeenCalledWith("You need to be logged in to submit code!");
+  });
 });
