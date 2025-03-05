@@ -19,13 +19,11 @@ load_dotenv()
 Logger.set_logger_config(LogLevel.INFO)
 
 # Global variable to hold the Valkey client instance
-valkey_client = None
 
 async def initialize_valkey_client():
     """
     Initializes the Valkey client using Glide.
     """
-    global valkey_client
     host = os.getenv("VALKEY_HOST", "main-cache-mutbnm.serverless.eun1.cache.amazonaws.com")
     port = int(os.getenv("VALKEY_PORT", "6379"))
     
