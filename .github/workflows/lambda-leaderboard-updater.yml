@@ -49,7 +49,7 @@ jobs:
         run: |
           echo "Updating Lambda function..."
           aws lambda update-function-code \
-            --function-name leaderboard-updater \
+            --function-name supabase-updater \
             --image-uri $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Log out of Amazon ECR
