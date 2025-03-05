@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar";
 import { supabase } from "../../SupabaseClient";
 import { usePathname } from "next/navigation";
 
-// 🛠️ Mocking Supabase Auth
+// Mocking Supabase Auth
 jest.mock("../../SupabaseClient", () => ({
   supabase: {
     auth: {
@@ -15,7 +15,7 @@ jest.mock("../../SupabaseClient", () => ({
   },
 }));
 
-// 🛠️ Mocking usePathname from Next.js
+// Mocking usePathname from Next.js
 jest.mock("next/navigation", () => ({
   usePathname: jest.fn(),
 }));

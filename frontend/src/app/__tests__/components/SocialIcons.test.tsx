@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { GitHubIcon } from '../../components/SocialIcons'; // Adjust the import path as needed
+import { GitHubIcon } from '../../components/SocialIcons';
 
 describe('GitHubIcon Component', () => {
   test('renders an SVG element with the correct attributes', () => {
