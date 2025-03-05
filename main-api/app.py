@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, WebSocket, Response
 from fastapi.middleware.cors import CORSMiddleware
+import httpx
 from pydantic import BaseModel
 import boto3
 import os
@@ -165,10 +166,28 @@ async def daily_question():
 
 # Submission (not Run) helper
 async def handle_is_submit(cache_job_results):
+    """
+    Handles user submission by making an API call and returning the response.
+    """
+    user_id = cache_job_results.get("user_id")
+    problem_id = cache_job_results.get("problem_id")
+    difficulty = cache_job_results.get("difficulty")
+
+    if not all([user_id, problem_id, difficulty]):
+        return {"error": "Missing required parameters"}
+
     url = f"{LEADERBOARD_API_URL}/user-submission"
-    user_id = cache_job_results["user_id"]
-    problem_id = cache_job_results["problem_id"]
-    difficulty = 
+    params = {"user_id": user_id, "problem_id": problem_id, "difficulty": difficulty}
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            return {"error": f"API request failed with status {e.response.status_code}"}
+        except httpx.RequestError as e:
+            return {"error": f"API request failed: {str(e)}"}
 
 
 @app.post("/api/submit-code")
