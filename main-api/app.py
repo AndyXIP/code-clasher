@@ -331,7 +331,7 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                     handle_is_submit(json_job_result)
                 # Send back to client
                 await websocket.send_json({"status": "done", "job_result": json_job_result})
-                break  # Stop polling once result is available
+                break  # Stop polling once result is available.
 
             elif time.time() - start_time > timeout:
                 print(">> Time ran out!")
