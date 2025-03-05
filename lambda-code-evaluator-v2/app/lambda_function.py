@@ -68,6 +68,8 @@ def lambda_handler(event, context):
             test_cases = body_obj.get("test_cases")
             job_id = body_obj.get("job_id")
             starter_code = body_obj.get("starter_code")
+            user_id = body_obj.get("user_id")
+            difficulty = body_obj.get("difficulty")
         
             if not user_code:
                 print("Missing user_code.")
@@ -86,12 +88,18 @@ def lambda_handler(event, context):
             print("Data from job successfully accessed.")
             results = process_submission(job_id, starter_code, user_code, test_cases)
 
-            asyncio.run(store_result_in_valkey(job_id, results))
+            # Add difficulty and user_id to results
+            results.update({"difficulty": difficulty, "user_id": user_id})
+            print(f"results with user_id and diff: {results}")
+            
+            # Store the updated results in Valkey
+            asyncio.run(store_result_in_valkey(job_id, results, user_id, difficulty))
 
             return {
                 "statusCode": 200,
                 "body": json.dumps(results)
             }
+        
         else:
             err = "Event not in expected SQS format!"
             print(err)
