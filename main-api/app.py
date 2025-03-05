@@ -190,8 +190,10 @@ async def handle_is_submit(cache_job_results):
             print(f"Call made. Response: {response}")
             return response.json()
         except httpx.HTTPStatusError as e:
+            print(f"API request failed with status {e.response.status_code}")
             return {"error": f"API request failed with status {e.response.status_code}"}
         except httpx.RequestError as e:
+            print(f"API request failed: {e}")
             return {"error": f"API request failed: {str(e)}"}
 
 
