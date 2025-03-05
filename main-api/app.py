@@ -170,11 +170,13 @@ async def handle_is_submit(cache_job_results):
     """
     Handles user submission by making an API call and returning the response.
     """
-    user_id = cache_job_results.get("user_id")
-    problem_id = cache_job_results.get("problem_id")
-    difficulty = cache_job_results.get("difficulty")
+    body_obj = cache_job_results.get("output")
+    user_id = body_obj.get("user_id")
+    problem_id = body_obj.get("problem_id")
+    difficulty = body_obj.get("difficulty")
 
     if not all([user_id, problem_id, difficulty]):
+        print("Missing required parameters")
         return {"error": "Missing required parameters"}
 
     url = f"{LEADERBOARD_API_URL}/user-submission"
