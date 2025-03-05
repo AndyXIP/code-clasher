@@ -327,7 +327,7 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                 json_job_result = json.loads(job_result.decode('utf-8'))
                 print("> Cache hit!", json_job_result)
                 # Check if is_submit, so we can call to have DB updated
-                if json_job_result["output"]["is_submit"]:
+                if json_job_result["output"]["is_submit"] and json_job_result["output"]["passed"]:
                     handle_is_submit(json_job_result)
                 # Send back to client
                 await websocket.send_json({"status": "done", "job_result": json_job_result})
