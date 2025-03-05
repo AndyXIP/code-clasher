@@ -304,16 +304,13 @@ async def leaderboard_testing():
 
 
 # ==== WEBSOCKET for job results ===
-
 @app.websocket("/ws/job-status/{job_id}")
 async def websocket_job_status(websocket: WebSocket, job_id: str):
     print(f"Entering websocket for job_id: {job_id}")
     await websocket.accept()
     print("Websocket accepted.")
 
-    # Set max time to wait for job result (seconds)
     timeout = 30 
-    # Set time to wait in between cache polls
     poll_interval = 0.5
     start_time = time.time()
 
@@ -326,25 +323,24 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                 cache_polled = True
 
             if job_result:
-                # Turn 'JSON string' cache data into JSON object
                 json_job_result = json.loads(job_result.decode('utf-8'))
                 print("> Cache hit!", json_job_result)
-                # Check if is_submit, so we can call to have DB updated
                 print("Checking if Submit and Pass...")
                 if json_job_result["output"]["is_submit"] and json_job_result["output"]["passed"]:
                     print("Submit and Pass both True!")
-                    handle_is_submit(json_job_result)
-                # Send back to client
+                    # Trigger handle_is_submit in the background
+                    asyncio.create_task(handle_is_submit(json_job_result))
+                # Send result back to the client immediately
                 await websocket.send_json({"status": "done", "job_result": json_job_result})
-                break  # Stop polling once result is available.
+                break
 
             elif time.time() - start_time > timeout:
                 print(">> Time ran out!")
                 error_msg = f"Job timed out after {timeout} seconds"
                 await websocket.send_json({"status": "timeout", "error": error_msg})
-                break  # Timeout; notify client and close websocket
+                break
 
             print("> Cache miss.")
-            await asyncio.sleep(poll_interval)  # wait before next poll.
+            await asyncio.sleep(poll_interval)
     finally:
         await websocket.close()
