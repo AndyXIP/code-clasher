@@ -1,23 +1,23 @@
-name: Build and Deploy Cache Updater Microservice
+name: Build and Deploy leaderboard api
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'leaderboard-testing/**'
-      - '!leaderboard-testing/README.md'
+      - 'leaderboard-updater/**'
+      - '!leaderboard-updater/README.md'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: leaderboard-testing
+        working-directory: leaderboard-updater
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        usea: actions/checkout@v3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -33,7 +33,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: leaderboard-testing
+          REPOSITORY: lambda-leaderboard-updater
           IMAGE_TAG: ${{ github.sha }}
         run: |
           echo "Building image..."
@@ -44,12 +44,12 @@ jobs:
       - name: Update Lambda Function
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: leaderboard-testing
+          REPOSITORY: lambda-leaderboard-updater
           IMAGE_TAG: ${{ github.sha }}
         run: |
           echo "Updating Lambda function..."
           aws lambda update-function-code \
-            --function-name testing-leaderboard-nat \
+            --function-name leaderboard-updater \
             --image-uri $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Log out of Amazon ECR
