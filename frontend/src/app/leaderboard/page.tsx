@@ -66,9 +66,9 @@ export default function LeaderBoard() {
                 key={item.name}
                 className="hover:bg-gray-100 dark:hover:bg-gray-700 transition"
               >
-                <td className="py-3 px-3 text-sm font-medium">{index + 1}</td>
-                <td className="py-3 px-3 text-sm font-medium">{item.name}</td>
-                <td className="py-3 px-3 text-sm font-medium text-right">{item.score}</td>
+                <td className="py-3 px-3 text-sm w-[33vw] font-medium">{index + 1}</td>
+                <td className="py-3 px-3 text-sm w-[33vw] font-medium">{item.name}</td>
+                <td className="py-3 px-3 text-sm w-[33vw] font-medium text-right">{item.score}</td>
               </tr>
             ))}
           </tbody>
