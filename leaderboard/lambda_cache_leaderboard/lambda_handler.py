@@ -47,18 +47,15 @@ async def async_handler(event, context):
     print("DEBUG: Received event:", event)
 
     # Initialize the client if not already done.
-    if valkey_client is None:
-        print("DEBUG: valkey_client is None; initializing now.")
-        try:
-            await initialize_valkey_client()
-        except Exception as e:
-            print("DEBUG: Exception while initializing Valkey client:", e)
-            return {
-                "statusCode": 500,
-                "body": json.dumps({"error": f"Valkey initialization failed: {str(e)}"})
-            }
-    else:
-        print("DEBUG: valkey_client already initialized.")
+    print("DEBUG: valkey_client is None; initializing now.")
+    try:
+        valkey_client = await initialize_valkey_client()
+    except Exception as e:
+        print("DEBUG: Exception while initializing Valkey client:", e)
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Valkey initialization failed: {str(e)}"})
+        }
 
     # Try to get new leaderboard data.
     try:
