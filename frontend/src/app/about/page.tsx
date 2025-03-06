@@ -65,7 +65,7 @@ export default function AboutPage() {
                 Follow on GitHub
               </SocialLink>
               <SocialLink
-                href="/"
+                href="https://huggingface.co/datasets/codeparrot/apps"
                 icon={LinkIcon}
                 className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
               >
