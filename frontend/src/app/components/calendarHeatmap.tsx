@@ -13,7 +13,7 @@ interface DayMap {
 // Helper: Returns an array of dates between start and end (inclusive)
 function getDaysInRange(start: Date, end: Date): Date[] {
   const days: Date[] = [];
-  let current = new Date(start);
+  const current = new Date(start);
   while (current <= end) {
     days.push(new Date(current));
     current.setDate(current.getDate() + 1);
