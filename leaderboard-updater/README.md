@@ -60,9 +60,3 @@ POST /update-leaderboard
 - **Supabase** (PostgreSQL-based leaderboard storage)
 - **Docker** (optional containerized deployment)
 
-## Contributors
-- **Your Name** - Developer
-
-## License
-This project is licensed under the MIT License.
-
