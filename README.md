@@ -203,8 +203,6 @@ Contributions are welcome! To contribute to this project:
 
 ---
 
-## License
+## Contributing
 
-Include your licensing information here.
-
----
+Yile Huang, Lucas Chan, Will Foster, Andy Peng
