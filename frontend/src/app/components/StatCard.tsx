@@ -20,7 +20,7 @@ export default function StatCard() {
         try {
           // Calculate the date 7 days ago
           const sevenDaysAgo = subDays(new Date(), 7).toISOString();
-          
+
           const { data, error } = await supabase
             .from('completed_questions')
             .select('difficulty, completed_at')
@@ -32,18 +32,27 @@ export default function StatCard() {
           // Calculate the number of easy and hard questions completed
           const easyQuestions = data.filter((item: any) => item.difficulty === 'introductory');
           const hardQuestions = data.filter((item: any) => item.difficulty === 'interview');
-          
+
           const totalQuestions = data.length;
 
-          // Total days in the past 7 days (could be fewer if no data)
-          const daysInPast7Days = 7; 
+          // Total days in the past 7 days
+          const daysInPast7Days = 7;
 
-          // Calculate completion rates based on the number of questions that could have been completed in the past 7 days
-          const easyCompletionRate = totalQuestions > 0 ? ((easyQuestions.length / daysInPast7Days) * 100).toFixed(0) + '%' : '0%';
-          const hardCompletionRate = totalQuestions > 0 ? ((hardQuestions.length / daysInPast7Days) * 100).toFixed(0) + '%' : '0%';
-          const totalCompletionRate = totalQuestions > 0 ? ((totalQuestions / (daysInPast7Days * 2)) * 100).toFixed(0) + '%' : '0%'; // 2 is for the 2 types (easy + hard)
+          // Calculate completion rates
+          const easyCompletionRate = totalQuestions > 0
+            ? ((easyQuestions.length / daysInPast7Days) * 100).toFixed(0) + '%'
+            : '0%';
 
-          // Update stats with calculated values
+          const hardCompletionRate = totalQuestions > 0
+            ? ((hardQuestions.length / daysInPast7Days) * 100).toFixed(0) + '%'
+            : '0%';
+
+          // For total, assume 2 possible questions per day (easy + hard)
+          const totalCompletionRate = totalQuestions > 0
+            ? ((totalQuestions / (daysInPast7Days * 2)) * 100).toFixed(0) + '%'
+            : '0%';
+
+          // Update stats
           setStats({
             easyCompleted: easyQuestions.length,
             hardCompleted: hardQuestions.length,
@@ -61,7 +70,7 @@ export default function StatCard() {
     if (!loading && user) {
       fetchStats();
     }
-  }, [user, loading]); // Run the effect when the user is available
+  }, [user, loading]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -74,7 +83,9 @@ export default function StatCard() {
       </h3>
       <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
         {/* Easy Questions Completed */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-4 py-5 shadow-md
+                        dark:border-gray-600 dark:bg-gray-800
+                        transition transform hover:scale-105 hover:shadow-lg duration-200 sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Easy Questions Completed
           </dt>
@@ -84,7 +95,9 @@ export default function StatCard() {
         </div>
 
         {/* Hard Questions Completed */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-4 py-5 shadow-md
+                        dark:border-gray-600 dark:bg-gray-800
+                        transition transform hover:scale-105 hover:shadow-lg duration-200 sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Hard Questions Completed
           </dt>
@@ -94,7 +107,9 @@ export default function StatCard() {
         </div>
 
         {/* Total Questions Completed */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-4 py-5 shadow-md
+                        dark:border-gray-600 dark:bg-gray-800
+                        transition transform hover:scale-105 hover:shadow-lg duration-200 sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Total Questions Completed
           </dt>
@@ -104,7 +119,9 @@ export default function StatCard() {
         </div>
 
         {/* Easy Completion Rate */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-4 py-5 shadow-md
+                        dark:border-gray-600 dark:bg-gray-800
+                        transition transform hover:scale-105 hover:shadow-lg duration-200 sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Easy Questions Completion Rate
           </dt>
@@ -114,7 +131,9 @@ export default function StatCard() {
         </div>
 
         {/* Hard Completion Rate */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-4 py-5 shadow-md
+                        dark:border-gray-600 dark:bg-gray-800
+                        transition transform hover:scale-105 hover:shadow-lg duration-200 sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Hard Questions Completion Rate
           </dt>
@@ -124,7 +143,9 @@ export default function StatCard() {
         </div>
 
         {/* Total Completion Rate */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-4 py-5 shadow-md
+                        dark:border-gray-600 dark:bg-gray-800
+                        transition transform hover:scale-105 hover:shadow-lg duration-200 sm:p-6">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             Total Questions Completion Rate
           </dt>
