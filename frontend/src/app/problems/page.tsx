@@ -89,6 +89,10 @@ const EditorPage = () => {
       setApiTestResults(hardData.outputs || []);
       setStarterCode(hardData.starter_code || '');
     }
+    setActualValues([]);
+    setPassedPerCase([]);
+    setPassedValues(false);
+    setSubmitting(false);
   }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
 
   // Handle code submission to the API (for both Run and Submit)

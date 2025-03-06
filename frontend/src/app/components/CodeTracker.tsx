@@ -16,15 +16,19 @@ export default function CodeTracker() {
     const fetchStats = async () => {
       if (user && user.id) {
         try {
-          // Get the current timestamp (now) and calculate 24 hours ago
-          const twentyFourHoursAgo = subHours(new Date(), 24).toISOString();
+          // Get the current date and set the time to 12 AM (midnight)
+          const startOfToday = new Date();
+          startOfToday.setHours(0, 0, 0, 0); // Set to 12 AM today
+
+          // Convert to ISO string
+          const startOfTodayISOString = startOfToday.toISOString();
 
           // Fetch completed questions for the user with a completed_at field (ensure you have this field in your table)
           const { data, error } = await supabase
             .from('completed_questions') // replace with your actual table name
             .select('difficulty, completed_at')
             .eq('user_id', user.id) // Assuming you have a user_id field
-            .gte('completed_at', twentyFourHoursAgo); // Filter questions completed in the last 24 hours
+            .gte('completed_at', startOfTodayISOString); // Filter questions completed today
 
           if (error) throw error;
 
