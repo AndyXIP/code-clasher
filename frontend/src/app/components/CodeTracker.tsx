@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 import { supabase } from '../SupabaseClient';  // Import your Supabase client
 import { useAuth } from '../contexts/AuthContext'; // Import the useAuth hook
-import { subHours } from 'date-fns';
 
 export default function CodeTracker() {
   const { user, loading } = useAuth();
