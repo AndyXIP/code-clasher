@@ -5,7 +5,9 @@ import StatCard from './components/StatCard';
 import CodeTracker from './components/CodeTracker';
 import StreakBar from './components/StreakBar';
 import HeroSection from './components/HeroSection';
+import MyMonthlyCalendar from './components/calendarHeatmap'; 
 import { CalendarIcon, ChartBarIcon, FireIcon } from '@heroicons/react/24/outline';
+
 
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -61,6 +63,15 @@ export default function HomePage() {
         </div>
         <StreakBar />
       </div>
+      {/* Monthly Calendar */}
+      <section className="mt-6 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex items-center space-x-2 mb-2">
+          <CalendarIcon className="h-5 w-5 text-indigo-500" />
+          <span className="text-lg font-bold">Monthly Calendar</span>
+        </div>
+        <MyMonthlyCalendar />
+      </section>
+
     </div>
   );
 }

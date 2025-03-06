@@ -21,6 +21,7 @@
     "monaco-editor": "^0.52.2",
     "next": "15.1.7",
     "react": "^19.0.0",
+    "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
     "react-monaco-editor": "^0.58.0",
     "react-router-dom": "^7.2.0"
