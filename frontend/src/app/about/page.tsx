@@ -1,14 +1,17 @@
-import { LinkIcon } from '@heroicons/react/24/outline';
-import clsx from 'clsx';
-import { Container } from '../components/Container';
-import { GitHubIcon } from '../components/SocialIcons';
+import { LinkIcon } from '@heroicons/react/24/outline'
+import clsx from 'clsx'
+import { Container } from '../components/Container'
+import { GitHubIcon } from '../components/SocialIcons'
 
-// Type for the SocialLink props
+/* 
+  SocialLink component from your original code 
+  (unchanged except for some extra spacing) 
+*/
 interface SocialLinkProps {
-  className?: string;
-  href: string;
-  children: React.ReactNode;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  className?: string
+  href: string
+  children: React.ReactNode
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
 }
 
 function SocialLink({ className, href, children, icon: Icon }: SocialLinkProps) {
@@ -22,56 +25,43 @@ function SocialLink({ className, href, children, icon: Icon }: SocialLinkProps) 
         <span className="ml-4">{children}</span>
       </a>
     </li>
-  );
+  )
 }
 
 export const metadata = {
   title: 'About',
-  description:
-    'Code testing and questions for practice.',
-};
+  description: 'Code testing and questions for practice.',
+}
 
 export default function AboutPage() {
   return (
-    <div>
-      <Container>
-        <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
-          <div className="lg:pl-20">
-            <div className="max-w-xs px-2.5 lg:max-w-none"></div>
-          </div>
-          <div className="lg:order-first lg:row-span-2 mt-5">
-            <h1 className="text-4xl mt-10 font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+    <div className="flex flex-col">
+      {/* HERO SECTION */}
+      <div className="relative isolate overflow-hidden bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-16 sm:py-24">
+        <Container>
+          <div className="mx-auto max-w-2xl text-center text-white lg:max-w-4xl">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Code Clasher
             </h1>
-            <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
-              <p>
-                Code Clasher is a web application that allows users complete daily programming challenges on easy and hard difficulties.
-              </p>
-            </div>
-            <h3 className="mt-6 text-2xl font-bold tracking-tight text-zinc-800 sm:text-2xl dark:text-zinc-100">
-              Features Implemented:
-            </h3>
-            <ul className="mt-4 list-disc list-inside text-base text-zinc-600 dark:text-zinc-400">
-              <li>Code editor to solve easy/hard questions.</li>
-              <li>User login system to track your weekly completed questions.</li>
-              <li>View leaderboard of questions solver among other users.</li>
-              <li>Dark mode and light mode support.</li>
-            </ul>
-            <h3 className="mt-6 text-2xl font-bold tracking-tight text-zinc-800 sm:text-2xl dark:text-zinc-100">
-              Components:
-            </h3>
-            <ul className="mt-4 list-disc list-inside text-base text-zinc-600 dark:text-zinc-400">
-              <li>
-                <strong>Next.JS Frontend:</strong> React frontend to handle components, reusable code snippets, api GET/POST requests with next.js API handling.
-              </li>
-              <li>
-                <strong>AWS Backend:</strong> Handles all the code compilation and API calls made to get questions prompts, inputs, outputs, and the handling of any code.
-              </li>
-            </ul>
+            <p className="mt-6 text-base sm:text-lg lg:text-xl text-gray-100">
+              A web application where you can sharpen your coding skills with daily
+              challenges—ranging from easy to hard—while climbing the global leaderboard.
+            </p>
           </div>
-          <div className="lg:pl-20">
-            <ul role="list">
-              <SocialLink href="https://github.com/AndyXIP/sse-team-project" icon={GitHubIcon} className="mt-4">
+        </Container>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <Container>
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-y-12 py-12 lg:grid-cols-3 lg:gap-x-12 lg:py-20">
+          {/* Left column: Social & Extra Links */}
+          <div className="order-2 lg:order-1 lg:col-span-1 lg:pr-8">
+            <ul role="list" className="space-y-6">
+              <SocialLink
+                href="https://github.com/AndyXIP/sse-team-project"
+                icon={GitHubIcon}
+                className="mt-4"
+              >
                 Follow on GitHub
               </SocialLink>
               <SocialLink
@@ -83,8 +73,81 @@ export default function AboutPage() {
               </SocialLink>
             </ul>
           </div>
+
+          {/* Right column: Features & Components */}
+          <div className="order-1 lg:order-2 lg:col-span-2">
+            <div className="mt-5">
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-4xl">
+                Features Implemented
+              </h2>
+              <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {/* Feature Card #1 */}
+                <div className="rounded-lg bg-white p-6 shadow dark:bg-zinc-800">
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    Code Editor
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    Solve both easy and hard coding questions in a built-in editor.
+                  </p>
+                </div>
+                {/* Feature Card #2 */}
+                <div className="rounded-lg bg-white p-6 shadow dark:bg-zinc-800">
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    User Login System
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    Track your weekly completed questions and maintain progress.
+                  </p>
+                </div>
+                {/* Feature Card #3 */}
+                <div className="rounded-lg bg-white p-6 shadow dark:bg-zinc-800">
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    Leaderboard
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    See how you stack up against other users from around the world.
+                  </p>
+                </div>
+                {/* Feature Card #4 */}
+                <div className="rounded-lg bg-white p-6 shadow dark:bg-zinc-800">
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    Dark/Light Mode
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    Enjoy a seamless theme toggle that suits your coding style.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-12">
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-4xl">
+                Components
+              </h2>
+              <div className="mt-6 space-y-6">
+                <div className="rounded-lg bg-white p-6 shadow dark:bg-zinc-800">
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    Next.js Frontend
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    Built with React and Next.js for handling components, code snippets, and
+                    API requests.
+                  </p>
+                </div>
+                <div className="rounded-lg bg-white p-6 shadow dark:bg-zinc-800">
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    AWS Backend
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    Manages code compilation, API calls, and all question/answer logic on
+                    the server side.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </Container>
     </div>
-  );
+  )
 }
