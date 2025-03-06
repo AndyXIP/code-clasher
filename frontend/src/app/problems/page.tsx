@@ -18,7 +18,10 @@ const EditorPage = () => {
   const [problemId, setProblemId] = useState<string>('');
   const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[]>([]);
   const [apiTestResults, setApiTestResults] = useState<(string | number)[]>([]);
+
   const [starterCode, setStarterCode] = useState<string | null>(null);
+  const [editorValueEasy, setEasyEditorValue] = useState('');
+  const [editorValueHard, setHardEditorValue] = useState('');
 
   const [output, setOutput] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +53,8 @@ const EditorPage = () => {
         // Update the state with both easy and hard data
         setEasyData(easy);
         setHardData(hard);
+        setEasyEditorValue(easy.starter_code);
+        setHardEditorValue(hard.starter_code);
 
         setDifficulty('easy');
 
@@ -86,6 +91,7 @@ const EditorPage = () => {
       setApiTestResults(easyData.outputs || []);
       setStarterCode(easyData.starter_code || '');
       setSubmitting(submittingEasy);
+      setStarterCode(editorValueEasy);
     } else if (difficulty === 'hard' && hardData) {
       setQuestionPrompt(hardData.question || '');
       setProblemId(hardData.id || '');
@@ -93,6 +99,7 @@ const EditorPage = () => {
       setApiTestResults(hardData.outputs || []);
       setStarterCode(hardData.starter_code || '');
       setSubmitting(submittingHard);
+      setStarterCode(editorValueHard);
     }
 
     if (difficulty === 'easy' && easyResults) {
@@ -226,6 +233,14 @@ const EditorPage = () => {
     setSelectedTestCaseIndex(index);
   };
 
+  const handleContentChange = (newValue: string) => {
+    if (difficulty === 'easy') {
+      setEasyEditorValue(newValue);
+    } else {
+      setHardEditorValue(newValue);
+    }
+  };
+
   return (
     <div
       style={{ height: 'calc(100vh - 60px)' }}
@@ -353,6 +368,7 @@ const EditorPage = () => {
           questionId={problemId} 
           starterCode={starterCode ?? 'no code found'} 
           onSubmit={handleCodeSubmission}
+          onContentChange={handleContentChange}
         />
       </div>
     </div>

@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,12 +9,13 @@ interface MonacoEditorComponentProps {
   onSubmit: (code: string, language: string, isSubmit: boolean) => void;
   starterCode: string;
   questionId: string;
+  onContentChange: (newValue: string) => void;
 }
 
-const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit, starterCode, questionId }) => {
+const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit, starterCode, questionId, onContentChange }) => {
   const [value, setValue] = useState<string>(starterCode);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
+  const [loading, setLoading] = useState<boolean>(false);
   const { user, loading: authLoading } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -44,35 +43,37 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
             .select('question_id')
             .eq('user_id', user.id)
             .eq('question_id', questionId)
-            .single();  // Expect a single record
+            .single();
   
-          // If there's an error, handle it (but don't treat missing data as an error)
           if (error) {
             console.error("Error fetching completed questions:", error);
-            setIsSubmitDisabled(false);  // Enable submit button if there's an error
-            return;  // Exit early if there's an error
+            setIsSubmitDisabled(false);
+            return;
           }
   
-          // If data is not found, the user hasn't completed the question yet, so enable submit
           if (!data) {
-            setIsSubmitDisabled(false);  
+            setIsSubmitDisabled(false);
           } else {
-            setIsSubmitDisabled(true);   // Question has been completed, disable submit
+            setIsSubmitDisabled(true);
           }
   
         } catch (error) {
-          // Catch any unexpected errors in the try block
           console.error("Unexpected error:", error);
-          setIsSubmitDisabled(false); // Default to enabling submit on unexpected error
+          setIsSubmitDisabled(false);
         }
       }
     };
 
-    // Check if user is authenticated and `questionId` is available
     if (!authLoading && user && questionId) {
       checkQuestionCompletion();
     }
-  }, [user, questionId, authLoading]); // Re-run when `user`, `questionId`, or `loading` state changes
+  }, [user, questionId, authLoading]);
+
+  const handleEditorChange = (newValue: string | undefined) => {
+    const updatedValue = newValue || '';  
+    setValue(updatedValue);
+    onContentChange(updatedValue);
+  };
 
   const handleSubmit = async (isSubmit: boolean) => {
     if (!user) {
@@ -80,17 +81,14 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
       return;
     }
 
-    setLoading(true); // Set loading state to true when the request starts
+    setLoading(true);
 
     try {
-      // Wait for the submission to finish (mock the async behavior)
       await onSubmit(value, 'python', isSubmit);
-
-      // You can also perform any other actions after submission here
     } catch (error) {
       console.error("Error submitting code:", error);
     } finally {
-      setLoading(false); // Set loading state back to false when the request finishes
+      setLoading(false);
     }
   };
 
@@ -110,14 +108,14 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
             type="button"
             onClick={() => handleSubmit(false)}
             className="rounded-md bg-indigo-200 dark:bg-indigo-300 px-3.5 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
-            disabled={loading} // Disable the button while loading
+            disabled={loading}
           >
             {loading ? 'Running...' : 'Run'}
           </button>
           <button
             type="button"
             onClick={() => handleSubmit(true)}
-            disabled={isSubmitDisabled || loading} // Disable if submit is disabled or loading
+            disabled={isSubmitDisabled || loading}
             className={`rounded-md px-3.5 py-2 text-sm font-semibold shadow-sm ${
               isSubmitDisabled || loading
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -135,7 +133,7 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
           height="100%"
           language="python"
           value={value}
-          onChange={(newValue) => setValue(newValue || '')}
+          onChange={handleEditorChange}
           options={{
             selectOnLineNumbers: true,
             fontSize: 14,
