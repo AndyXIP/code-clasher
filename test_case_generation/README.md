@@ -1,4 +1,4 @@
-# README: Test Case Generation
+# Test Case Generation
 
 ## Overview
 This module provides **automated test case generation** for coding problems in our platform. It utilizes **Large Language Models (LLMs)** to generate diverse test cases and executes solution code to validate outputs. The goal is to enhance the variety and reliability of test cases used for evaluating submitted code.
