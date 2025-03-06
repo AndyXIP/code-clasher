@@ -13,7 +13,6 @@ jobs:
   build:
     name: Build Frontend
     runs-on: ubuntu-latest
-    needs: test  # This makes sure the build job only runs after tests pass
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,6 +38,7 @@ jobs:
   test:
     name: Test Frontend
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
   deploy:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
-    needs: build  # This makes sure the deploy job only runs after the build job completes
+    needs: test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
