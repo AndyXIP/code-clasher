@@ -131,15 +131,15 @@ export default function MyMonthlyCalendar() {
       {/* Legend */}
       <div className="mt-4 flex justify-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-sm bg-green-200 dark:bg-purple-400"></div>
-          <span className="text-xs">Introductory</span>
+          <div className="w-2 h-2 rounded-sm bg-green-200 dark:bg-purple-400"></div>
+          <span className="text-xs">Easy</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-sm bg-green-400 dark:bg-purple-600"></div>
-          <span className="text-xs">Interview</span>
+          <div className="w-2 h-2 rounded-sm bg-green-400 dark:bg-purple-600"></div>
+          <span className="text-xs">Hard</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-sm bg-green-600 dark:bg-purple-800"></div>
+          <div className="w-2 h-2 rounded-sm bg-green-600 dark:bg-purple-800"></div>
           <span className="text-xs">Both</span>
         </div>
       </div>
