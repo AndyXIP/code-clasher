@@ -90,43 +90,59 @@ export default function MyMonthlyCalendar() {
     const status = dayMap[dayStr] || 'none';
 
     return {
-      'introductory': 'bg-green-200 dark:bg-purple-800',
+      'introductory': 'bg-green-200 dark:bg-purple-400',
       'interview': 'bg-green-400 dark:bg-purple-600',
-      'both': 'bg-green-600 dark:bg-purple-400',
+      'both': 'bg-green-600 dark:bg-purple-800',
       'none': 'bg-gray-200 dark:bg-gray-700',
     }[status];
   }, [dayMap]);
 
   return (
-    <div className="flex justify-center items-start gap-8 mt-4">
-      <div>
-        <div className="grid grid-cols-7 gap-1 mb-1">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((wd) => (
-            <div
-              key={wd}
-              className="text-xs text-gray-500 dark:text-gray-400 text-center"
-            >
-              {wd}
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-7 gap-1">
-          {weeks.map((week, rowIndex) =>
-            week.map((day, cellIndex) =>
-              day ? (
-                <div
-                  key={format(day, 'yyyy-MM-dd')}
-                  className={`w-6 h-6 rounded-sm ${getColorClass(day)}`}
-                  title={format(day, 'yyyy-MM-dd')}
-                />
-              ) : (
-                <div key={`${rowIndex}-${cellIndex}`} className="w-6 h-6" />
+    <div className="flex flex-col items-center gap-8 mt-4">
+      <div className="flex justify-center items-start gap-8">
+        <div>
+          <div className="grid grid-cols-7 gap-1 mb-1">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((wd) => (
+              <div
+                key={wd}
+                className="text-xs text-gray-500 dark:text-gray-400 text-center"
+              >
+                {wd}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {weeks.map((week, rowIndex) =>
+              week.map((day, cellIndex) =>
+                day ? (
+                  <div
+                    key={format(day, 'yyyy-MM-dd')}
+                    className={`w-6 h-6 rounded-sm ${getColorClass(day)}`}
+                    title={format(day, 'yyyy-MM-dd')}
+                  />
+                ) : (
+                  <div key={`${rowIndex}-${cellIndex}`} className="w-6 h-6" />
+                )
               )
-            )
-          )}
+            )}
+          </div>
         </div>
       </div>
-      {/* Legend remains unchanged */}
+      {/* Legend */}
+      <div className="mt-4 flex justify-center gap-4">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded-sm bg-green-200 dark:bg-purple-400"></div>
+          <span className="text-xs">Introductory</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded-sm bg-green-400 dark:bg-purple-600"></div>
+          <span className="text-xs">Interview</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded-sm bg-green-600 dark:bg-purple-800"></div>
+          <span className="text-xs">Both</span>
+        </div>
+      </div>
     </div>
   );
 }
