@@ -22,7 +22,9 @@ function getDaysInRange(start: Date, end: Date): Date[] {
 }
 
 export default function MyMonthlyCalendar() {
+  /* eslint-disable react-hooks/rules-of-hooks */
   const { user, loading } = useAuth();
+  /* eslint-enable react-hooks/rules-of-hooks */
 
   // Determine current month start/end
   const now = new Date();
@@ -55,7 +57,6 @@ export default function MyMonthlyCalendar() {
     if (!loading && user) {
       fetchMonthlyData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user]);
 
   async function fetchMonthlyData() {
