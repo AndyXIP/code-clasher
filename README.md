@@ -1,17 +1,18 @@
 
 # Code Clasher
 
-This project is a web application that provides real-time RuneScape item prices by utilizing data from the RuneScape Wiki's Real-Time Prices API. The app consists of a Flask backend for data retrieval and a React frontend to display the prices.
+This project is a web application that allows users to test themselves daily with easy and hard programming challenges, while providing a fun competitive leaderboard to increase engagement.
 
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)
-2. [Backend Setup (Flask)](#backend-setup-flask)
-3. [Frontend Setup (React)](#frontend-setup-react)
-4. [Running the Application](#running-the-application)
-5. [API Endpoints](#api-endpoints)
-6. [Contributing](#contributing)
-7. [License](#license)
+2. [Backend Setup (FAST API)](#backend-setup-flask)
+3. [Serverless Functions (AWS)](#serverless-functions)
+4. [Frontend Setup (React)](#frontend-setup-react)
+5. [Running the Application](#running-the-application)
+6. [API Endpoints](#api-endpoints)
+7. [Contributing](#contributing)
+8. [License](#license)
 
 ---
 
@@ -93,6 +94,8 @@ curl https://main-api.click/api/submit-code
 ```
 
 ---
+
+## Serverless Functions (AWS)
 
 ## Frontend Setup (React)
 
