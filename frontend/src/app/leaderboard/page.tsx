@@ -15,27 +15,23 @@ function getMedal(rank: number): { medal: string; borderColor: string } | null {
 }
 
 function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase())
-    .join('');
+  return name.split(' ').map((word) => word.charAt(0).toUpperCase()).join('');
 }
 
 function getMotivationalMessage(rank: number): string {
-  // Customize messages based on rank
   switch (rank) {
     case 1:
       return "You're on fire!";
     case 2:
-      return "So close to the top!";
+      return 'So close to the top!';
     case 3:
-      return "Great hustle!";
+      return 'Great hustle!';
     case 4:
-      return "Keep pushing!";
+      return 'Keep pushing!';
     case 5:
-      return "Stay in the game!";
+      return 'Stay in the game!';
     default:
-      return "Keep rocking it!";
+      return 'Keep rocking it!';
   }
 }
 
@@ -49,7 +45,6 @@ function LeaderBoardCard({ entry, rank }: { entry: LeaderBoardEntry; rank: numbe
       } bg-white dark:bg-gray-800`}
     >
       <div className="flex items-center gap-4">
-        {/* Avatar with medal overlay */}
         <div className="relative">
           <div className="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">
             {getInitials(entry.name)}
@@ -64,15 +59,10 @@ function LeaderBoardCard({ entry, rank }: { entry: LeaderBoardEntry; rank: numbe
           <div className="text-lg font-bold">
             {rank}. <span className="ml-1">{entry.name}</span>
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Points: {entry.score}
-          </div>
-          <div className="text-xs text-gray-400 dark:text-gray-500">
-            {motivationalMessage}
-          </div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">Points: {entry.score}</div>
+          <div className="text-xs text-gray-400 dark:text-gray-500">{motivationalMessage}</div>
         </div>
       </div>
-      {/* Display the numeric score prominently */}
       <div className="text-2xl font-semibold text-gray-700 dark:text-gray-300">
         {entry.score}
       </div>
@@ -80,13 +70,9 @@ function LeaderBoardCard({ entry, rank }: { entry: LeaderBoardEntry; rank: numbe
   );
 }
 
-interface LeaderBoardListProps {
-  data: LeaderBoardEntry[];
-}
-
-function LeaderBoardList({ data }: LeaderBoardListProps) {
+function LeaderBoardList({ data }: { data: LeaderBoardEntry[] }) {
   return (
-    <div className="mt-6 space-y-4">
+    <div className="mt-4 space-y-4">
       {data.map((item, index) => (
         <LeaderBoardCard key={item.name} entry={item} rank={index + 1} />
       ))}
@@ -97,7 +83,7 @@ function LeaderBoardList({ data }: LeaderBoardListProps) {
 export default function LeaderBoard() {
   const [easyData, setEasyData] = useState<LeaderBoardEntry[]>([]);
   const [hardData, setHardData] = useState<LeaderBoardEntry[]>([]);
-  const [view, setView] = useState<'easy' | 'hard'>('easy'); // Toggle between easy & hard
+  const [view, setView] = useState<'easy' | 'hard'>('easy');
 
   useEffect(() => {
     const fetchLeaderBoard = async () => {
@@ -105,46 +91,45 @@ export default function LeaderBoard() {
         const response = await fetch('/api/leaderboard');
         if (!response.ok) throw new Error('Failed to fetch leaderboard data');
         const data = await response.json();
-
         setEasyData(data.easy);
         setHardData(data.hard);
       } catch (error) {
         console.error('Error fetching leaderboard data:', error);
       }
     };
-
     fetchLeaderBoard();
   }, []);
 
   return (
-    <div className="py-5 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-200">
-      <h2 className="text-3xl font-bold text-center mb-6">Leaderboard</h2>
-
-      {/* Toggle Buttons */}
-      <div className="flex justify-center space-x-4">
-        <button
-          className={`px-6 py-2 rounded-md text-sm font-medium transition ${
-            view === 'easy'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-300 dark:bg-gray-600 dark:text-gray-200'
-          }`}
-          onClick={() => setView('easy')}
-        >
-          Easy Level
-        </button>
-        <button
-          className={`px-6 py-2 rounded-md text-sm font-medium transition ${
-            view === 'hard'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-300 dark:bg-gray-600 dark:text-gray-200'
-          }`}
-          onClick={() => setView('hard')}
-        >
-          Hard Level
-        </button>
+    <div className="px-4 sm:px-6 lg:px-8 py-5 text-gray-900 dark:text-gray-200">
+      <div className="mb-4 text-center">
+        <p className="text-lg font-medium">Top Code Clashers of All Time</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Zero Bugs, Maximum Bragging Rights!</p>
       </div>
-
-      {/* Leaderboard List */}
+      <div className="border-b border-gray-200 dark:border-gray-700">
+        <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+          <button
+            onClick={() => setView('easy')}
+            className={`whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium transition ${
+              view === 'easy'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+            }`}
+          >
+            Easy Level
+          </button>
+          <button
+            onClick={() => setView('hard')}
+            className={`whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium transition ${
+              view === 'hard'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+            }`}
+          >
+            Hard Level
+          </button>
+        </nav>
+      </div>
       <LeaderBoardList data={view === 'easy' ? easyData : hardData} />
     </div>
   );
