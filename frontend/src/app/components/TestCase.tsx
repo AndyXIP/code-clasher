@@ -14,7 +14,7 @@ export default function TestCase({ input, expected_output, actual_output, passed
     }
     
     if (typeof data === 'object') {
-      return JSON.stringify(data, null, 2);
+      return JSON.stringify(data);
     }
     
     return data;
