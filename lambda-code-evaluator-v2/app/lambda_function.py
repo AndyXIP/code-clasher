@@ -41,16 +41,11 @@ def process_submission(job_id, starter_code, user_code, test_cases):
     evaluation_result = evaluate_results(test_cases, execution_result)
 
     # Format final response
-    return {
-        "job_status": "completed",
-        "job_id": job_id,
-        "passed": evaluation_result["passed"],
-        "error": evaluation_result["error"],
-        "console": evaluation_result["console"],
-        "inputs": evaluation_result["inputs"],
-        "expected_outputs": evaluation_result["expected_outputs"],
-        "actual_outputs": evaluation_result["actual_outputs"]
-    }
+    evaluation_result.update({
+    "job_status": "completed",
+    "job_id": job_id
+    })
+    return evaluation_result
 
 
 # ------------------------------
