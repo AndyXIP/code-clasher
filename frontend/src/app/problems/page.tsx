@@ -12,6 +12,8 @@ const EditorPage = () => {
   const { user } = useAuth(); // Get authenticated user
   const [easyData, setEasyData] = useState<any>(null);
   const [hardData, setHardData] = useState<any>(null);
+  const [easyResults, setEasyResults] = useState<any>(null);
+  const [hardResults, setHardResults] = useState<any>(null);
   const [questionPrompt, setQuestionPrompt] = useState<string>('');
   const [problemId, setProblemId] = useState<string>('');
   const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[]>([]);
@@ -24,9 +26,12 @@ const EditorPage = () => {
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'hard'>('easy');
   const [passedValues, setPassedValues] = useState<boolean | null>(null);
-  const [passedPerCase, setPassedPerCase] = useState<boolean[]>([]);
+  const [passedPerCase, setPassedPerCase] = useState<(boolean | null)[]>([]);
   const [actualValues, setActualValues] = useState<(string | number)[]>([]);
+  
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [submittingEasy, setSubmittingEasy] = useState<boolean>(false);
+  const [submittingHard, setSubmittingHard] = useState<boolean>(false);
 
   // Use useEffect to fetch data once on initial mount
   useEffect(() => {
@@ -47,8 +52,6 @@ const EditorPage = () => {
         setHardData(hard);
 
         setDifficulty('easy');
-
-        setSubmitting(false);
 
         // Set default test case for the selected difficulty
         if (easy && easy.inputs && easy.inputs.length > 0) {
@@ -82,17 +85,32 @@ const EditorPage = () => {
       setApiTestCases(easyData.inputs || []);
       setApiTestResults(easyData.outputs || []);
       setStarterCode(easyData.starter_code || '');
+      setSubmitting(submittingEasy);
     } else if (difficulty === 'hard' && hardData) {
       setQuestionPrompt(hardData.question || '');
       setProblemId(hardData.id || '');
       setApiTestCases(hardData.inputs || []);
       setApiTestResults(hardData.outputs || []);
       setStarterCode(hardData.starter_code || '');
+      setSubmitting(submittingHard);
     }
-    setActualValues([]);
-    setPassedPerCase([]);
-    setPassedValues(false);
-    setSubmitting(false);
+
+    if (difficulty === 'easy' && easyResults) {
+      setActualValues(easyResults.actual_outputs || []);
+      setPassedPerCase(easyResults.passed_per_case || []);
+      setPassedValues(easyResults.passed || false);
+      setOutput(easyResults);
+    } else if (difficulty === 'hard' && hardResults) {
+      setActualValues(hardResults.actual_outputs || []);
+      setPassedPerCase(hardResults.passed_per_case || []);
+      setPassedValues(hardResults.passed || false);
+      setOutput(hardResults);
+    } else {
+      setActualValues([]);
+      setPassedPerCase([]);
+      setPassedValues(false);
+      setOutput([]);
+    }
   }, [difficulty, easyData, hardData]); // Only run this when difficulty changes
 
   // Handle code submission to the API (for both Run and Submit)
@@ -148,6 +166,12 @@ const EditorPage = () => {
             setOutput(data.job_result.output);
           }
 
+          if (difficulty === 'easy') {
+            setEasyResults(data.job_result.output);
+          } else {
+            setHardResults(data.job_result.output);
+          }
+
           setActualValues(data.job_result.output.actual_outputs || []); // Ensure actual_outputs is an array
           setPassedPerCase(data.job_result.output.passed_per_case || []);
           setPassedValues(data.job_result.output.passed || false); // Default to false if not available
@@ -183,6 +207,11 @@ const EditorPage = () => {
       setOutput(null);
     } finally {
       setSubmitting(isSubmit);
+      if (difficulty == 'easy') {
+        setSubmittingEasy(isSubmit);
+      } else {
+        setSubmittingHard(isSubmit);
+      }
     }
   };
 
