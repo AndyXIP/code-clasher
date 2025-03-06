@@ -210,6 +210,7 @@ const EditorPage = () => {
         </div>
 
         <div className="text-lg mb-4">
+          <p>{passedValues}</p>
           {questionPrompt ? <QuestionPrompt text={questionPrompt} /> : 'Loading question...'}
         </div>
 
