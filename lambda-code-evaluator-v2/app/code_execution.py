@@ -116,7 +116,6 @@ if __name__ == "__main__":
 
 
 
-
 def evaluate_results(test_cases, execution_result):
     print("Entering evaluate_results()...")
     """Compares actual and expected outputs, formats final JSON response."""
@@ -128,8 +127,16 @@ def evaluate_results(test_cases, execution_result):
 
     expected_outputs = test_cases["outputs"]
 
-    # Determine pass/fail
-    passed = actual_outputs == expected_outputs
+    # Build a boolean array for pass/fail per test case
+    passed_per_case = []
+    for i in range(len(expected_outputs)):
+        # If actual_outputs is shorter than expected_outputs, handle gracefully
+        actual = actual_outputs[i] if i < len(actual_outputs) else None
+        expected = expected_outputs[i]
+        passed_per_case.append(actual == expected)
+
+    # Overall pass/fail is true if all test cases passed
+    passed = all(passed_per_case)
 
     # If errors occurred, store the first one
     error_message = error_logs[0] if error_logs else None
@@ -137,33 +144,10 @@ def evaluate_results(test_cases, execution_result):
     # Format final response
     return {
         "passed": passed,
+        "passed_per_case": passed_per_case,
         "error": error_message,
         "console": console_logs if console_logs else None,
         "inputs": test_cases["inputs"],
         "expected_outputs": expected_outputs,
         "actual_outputs": actual_outputs
     }
-
-
-
-# if __name__ == '__main__':
-#     user_code_test = code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000'
-#     test_cases_test = {
-#         "inputs": [["Hello, my name is John"]],
-#         "outputs": ['500']
-#     }
-#     # language = 'python'
-#     # problem_id = '9999'
-
-
-#     # Run execution with the provided test data
-#     print("\nEXECUTION:")
-#     response = execute_user_code_subprocess(user_code_test, test_cases_test)
-#     print(json.dumps(response, indent=2))
-#     # Example Usage
-#     print("\nEVALUATION:")
-#     final_result = evaluate_results(test_cases_test, response)
-#     print(json.dumps(final_result, indent=2))
-
-
-
