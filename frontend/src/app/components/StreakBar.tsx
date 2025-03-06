@@ -11,7 +11,6 @@ const StreakBar: React.FC = () => {
     easyStreak: 0,
     hardStreak: 0,
   });
-  const totalMaxStreak = 14; // Total max streak is 14 (7 for easy + 7 for hard)
 
   useEffect(() => {
     const fetchStreaks = async () => {
@@ -53,17 +52,14 @@ const StreakBar: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  // Calculate the total streak (easy + hard)
-  const totalStreak = userStreaks.easyStreak + userStreaks.hardStreak;
-
   return (
     <div>
       <h3 className="text-base font-semibold text-gray-900 dark:text-gray-200">
         Weekly Streaks
       </h3>
-      <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+      <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
         {/* Easy Streak */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6 w-full">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             <div className="mb-3"><StreakBadge streak={userStreaks.easyStreak} /></div>
             Easy Streak
@@ -71,10 +67,28 @@ const StreakBar: React.FC = () => {
           <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
             {userStreaks.easyStreak}
           </dd>
+          {/* Easy Streak Progress Bar */}
+          <div className="mt-5">
+            <div className="relative pt-1">
+              <div className="flex mb-2 items-center justify-between">
+                <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                  Streak: {userStreaks.easyStreak} / 7
+                </span>
+              </div>
+              <div className="flex mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                  <div
+                    className="bg-indigo-600 h-2.5 rounded-full"
+                    style={{ width: `${(userStreaks.easyStreak / 7) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Hard Streak */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
+        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6 w-full">
           <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
             <div className="mb-3"><StreakBadge streak={userStreaks.hardStreak} /></div>
             Hard Streak
@@ -82,38 +96,26 @@ const StreakBar: React.FC = () => {
           <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
             {userStreaks.hardStreak}
           </dd>
-        </div>
-
-        {/* Total Streak */}
-        <div className="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow dark:shadow-md sm:p-6">
-          <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-            <div className="mb-3"><StreakBadge streak={totalStreak} /></div>
-            Total Streak
-          </dt>
-          <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-            {totalStreak}
-          </dd>
-        </div>
-      </dl>
-
-      {/* Total Streak (Easy + Hard) */}
-      <div className="mt-5">
-        <div className="relative pt-1">
-          <div className="flex mb-2 items-center justify-between">
-            <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-              Total Streak: {totalStreak} / {totalMaxStreak}
-            </span>
-          </div>
-          <div className="flex mb-2">
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div
-                className="bg-indigo-600 h-2.5 rounded-full"
-                style={{ width: `${(totalStreak / totalMaxStreak) * 100}%` }}
-              ></div>
+          {/* Hard Streak Progress Bar */}
+          <div className="mt-5">
+            <div className="relative pt-1">
+              <div className="flex mb-2 items-center justify-between">
+                <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                  Streak: {userStreaks.hardStreak} / 7
+                </span>
+              </div>
+              <div className="flex mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                  <div
+                    className="bg-indigo-600 h-2.5 rounded-full"
+                    style={{ width: `${(userStreaks.hardStreak / 7) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </dl>
     </div>
   );
 };
