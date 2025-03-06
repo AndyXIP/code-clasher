@@ -212,7 +212,7 @@ const EditorPage = () => {
 
         {/* Tab Navigation */}
         <div className="mt-4">
-          <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 rounded-lg shadow dark:bg-black">
+          <nav aria-label="Tabs" className="isolate flex divide-x divide-gray-200 dark:divide-gray-600 rounded-lg shadow dark:bg-black">
             {tabs.map((tab, tabIdx) => (
               <button
                 key={tab.name}
@@ -271,7 +271,7 @@ const EditorPage = () => {
           </>
         )}
         {activeTab === 'console' && (
-          <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 rounded-md min-h-[100px]">
+          <div className="dark:bg-slate-800 mt-5 mb-5 p-4 border border-gray-300 dark:border-gray-600 rounded-md min-h-[100px]">
             {output?.error ? (
               <pre className="text-red-500">{output.error}</pre>
             ) : output?.console ? (
