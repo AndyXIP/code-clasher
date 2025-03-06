@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 
 describe('TestCase Component', () => {
   test('does not render if input is null or undefined', () => {
-    const { container } = render(<TestCase input={null} expected_output={10} actual_output={10} passed={true} />);
+    const { container } = render(<TestCase input={null} expected_output={10} actual_output={10} />);
     expect(container.firstChild).toBeNull();
   });
 
@@ -14,7 +14,6 @@ describe('TestCase Component', () => {
         input={{ a: 1, b: 2 }}
         expected_output={3}
         actual_output={3}
-        passed={true}
       />
     );
 
@@ -24,8 +23,6 @@ describe('TestCase Component', () => {
     expect(screen.getAllByText('3')[0]).toBeInTheDocument();
     expect(screen.getByText('Actual Output:')).toBeInTheDocument();
     expect(screen.getAllByText('3')[1]).toBeInTheDocument();
-    expect(screen.getByText('Passed:')).toBeInTheDocument();
-    expect(screen.getByText('Passed')).toBeInTheDocument();
   });
 
   test('renders correctly when test case fails', () => {
@@ -34,7 +31,6 @@ describe('TestCase Component', () => {
         input={[1, 2, 3]}
         expected_output={6}
         actual_output={5}
-        passed={false}
       />
     );
 
@@ -44,7 +40,5 @@ describe('TestCase Component', () => {
     expect(screen.getByText('6')).toBeInTheDocument();
     expect(screen.getByText('Actual Output:')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument();
-    expect(screen.getByText('Passed:')).toBeInTheDocument();
-    expect(screen.getByText('Failed')).toBeInTheDocument();
   });
 });
