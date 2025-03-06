@@ -2,10 +2,9 @@ interface TestCaseProps {
   input: any;
   expected_output: any;
   actual_output: any;
-  passed: boolean;
 }
 
-export default function TestCase({ input, expected_output, actual_output, passed }: TestCaseProps) {
+export default function TestCase({ input, expected_output, actual_output}: TestCaseProps) {
   if (!input) return null;
 
   const formatData = (data: any) => {
@@ -24,7 +23,6 @@ export default function TestCase({ input, expected_output, actual_output, passed
     { title: "Input:", data: input },
     { title: "Expected Output:", data: expected_output },
     { title: "Actual Output:", data: actual_output },
-    { title: "Passed:", data: passed }
   ];
 
   return (

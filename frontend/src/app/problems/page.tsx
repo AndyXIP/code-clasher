@@ -6,6 +6,7 @@ import MonacoEditorComponent from '../components/MonacoEditor';
 import { useAuth } from '../contexts/AuthContext';
 import QuestionPrompt from '../components/QuestionPrompt';
 import TestCase from '../components/TestCase';
+import Alert from '../components/Alert';
 
 const EditorPage = () => {
   const { user } = useAuth(); // Get authenticated user
@@ -22,9 +23,10 @@ const EditorPage = () => {
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'hard'>('easy');
-  const [passedValues, setPassedValues] = useState<boolean>(false);
+  const [passedValues, setPassedValues] = useState<boolean | null>(null);
   const [passedPerCase, setPassedPerCase] = useState<boolean[]>([]);
   const [actualValues, setActualValues] = useState<(string | number)[]>([]);
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   // Use useEffect to fetch data once on initial mount
   useEffect(() => {
@@ -45,6 +47,8 @@ const EditorPage = () => {
         setHardData(hard);
 
         setDifficulty('easy');
+
+        setSubmitting(false);
 
         // Set default test case for the selected difficulty
         if (easy && easy.inputs && easy.inputs.length > 0) {
@@ -173,6 +177,8 @@ const EditorPage = () => {
         setError('Please sign in first');
       }
       setOutput(null);
+    } finally {
+      setSubmitting(isSubmit);
     }
   };
 
@@ -210,7 +216,11 @@ const EditorPage = () => {
         </div>
 
         <div className="text-lg mb-4">
-          <p>{passedValues}</p>
+          {submitting && (
+            <>
+              <Alert passed={passedValues} />
+            </>
+          )}
           {questionPrompt ? <QuestionPrompt text={questionPrompt} /> : 'Loading question...'}
         </div>
 
@@ -280,7 +290,6 @@ const EditorPage = () => {
                   input={apiTestCases[selectedTestCaseIndex]}
                   expected_output={apiTestResults[selectedTestCaseIndex]}
                   actual_output={actualValues[selectedTestCaseIndex]}
-                  passed={passedPerCase[selectedTestCaseIndex]}
                 />
               </div>
             )}

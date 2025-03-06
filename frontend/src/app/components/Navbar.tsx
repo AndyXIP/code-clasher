@@ -93,7 +93,7 @@ export default function Navbar() {
             {user ? (
               <button
                 type="button"
-                className="hidden md:block rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500"
+                className="hidden md:block rounded-md px-4 py-2 border-gray-400 border-2 text-sm font-semibold hover:bg-red-500 hover:text-white"
                 onClick={handleSignOut}
               >
                 Sign Out

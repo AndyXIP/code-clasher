@@ -18,6 +18,18 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false); // Add loading state
   const { user, loading: authLoading } = useAuth();
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
 
   useEffect(() => {
     setValue(starterCode);
@@ -129,7 +141,7 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
             fontSize: 14,
             lineNumbers: 'on',
             minimap: { enabled: false },
-            theme: 'vs-dark',
+            theme: isDarkMode ? 'vs-dark' : 'vs',
             scrollBeyondLastLine: false,
           }}
         />
