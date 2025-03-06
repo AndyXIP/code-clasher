@@ -38,7 +38,7 @@ export default function HomePage() {
         <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center space-x-2 mb-2">
             <CalendarIcon className="h-5 w-5 text-indigo-500" />
-            <span className="text-lg font-bold">Today's Progress</span>
+            <span className="text-lg font-bold">Today&apos;s Progress</span>
           </div>
           <CodeTracker />
         </section>
