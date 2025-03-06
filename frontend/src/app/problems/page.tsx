@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { XCircleIcon, CheckCircleIcon, EllipsisHorizontalCircleIcon } from '@heroicons/react/20/solid'; // Import CircleIcon for neutral state
 import MonacoEditorComponent from '../components/MonacoEditor';
 import { useAuth } from '../contexts/AuthContext';
 import QuestionPrompt from '../components/QuestionPrompt';
@@ -15,13 +16,14 @@ const EditorPage = () => {
   const [apiTestCases, setApiTestCases] = useState<(string | number | (string | number)[])[]>([]);
   const [apiTestResults, setApiTestResults] = useState<(string | number)[]>([]);
   const [starterCode, setStarterCode] = useState<string | null>(null);
-  
+
   const [output, setOutput] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTestCaseIndex, setSelectedTestCaseIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'console' | 'testCases'>('console');
   const [difficulty, setDifficulty] = useState<'easy' | 'hard'>('easy');
   const [passedValues, setPassedValues] = useState<boolean>(false);
+  const [passedPerCase, setPassedPerCase] = useState<boolean[]>([]);
   const [actualValues, setActualValues] = useState<(string | number)[]>([]);
 
   // Use useEffect to fetch data once on initial mount
@@ -42,7 +44,7 @@ const EditorPage = () => {
         setEasyData(easy);
         setHardData(hard);
 
-        setDifficulty('easy')
+        setDifficulty('easy');
 
         // Set default test case for the selected difficulty
         if (easy && easy.inputs && easy.inputs.length > 0) {
@@ -91,75 +93,76 @@ const EditorPage = () => {
       if (!user || !user.id) {
         throw new Error('User is not authenticated');
       }
-  
+
       if (!problemId) {
         throw new Error('Problem ID is missing');
       }
-  
+
       const response = await fetch('/api/submit-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: user.id,                 // User ID
-          problem_id: problemId,            // Send the problem ID
-          language,                         // Programming language
-          code,                             // The code submitted by the user
-          is_submit: isSubmit,              // Whether it's a submission
+          user_id: user.id, // User ID
+          problem_id: problemId, // Send the problem ID
+          language, // Programming language
+          code, // The code submitted by the user
+          is_submit: isSubmit, // Whether it's a submission
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to submit code');
       }
-  
+
       const result = await response.json();
-  
+
       // WebSocket connection for job status
       if (!result.job_id) {
         throw new Error('Job ID is missing in response');
       }
-  
+
       const jobId = result.job_id;
-  
+
       const ws = new WebSocket(`wss://main-api.click/ws/job-status/${jobId}`);
-  
+
       ws.onopen = () => {
         console.log("WebSocket connected for job:", jobId);
       };
-  
+
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-  
+
         // Handle "done" status
         if (data.status === "done") {
           if (data.job_result.output) {
             setOutput(data.job_result.output);
           }
-  
+
           setActualValues(data.job_result.output.actual_outputs || []); // Ensure actual_outputs is an array
-          setPassedValues(data.job_result.output.passed || false); // Default to empty array if not available
+          setPassedPerCase(data.job_result.output.passed_per_case || []);
+          setPassedValues(data.job_result.output.passed || false); // Default to false if not available
           setError(data.job_result.output.error || null); // Default to null error if none
           ws.close(); // Close the WebSocket after receiving data
-        } 
+        }
         // Handle timeout case
         else if (data.status === "timeout") {
           setError("Job took too long to execute");
           ws.close(); // Close WebSocket if the job times out
         }
       };
-  
+
       ws.onerror = (error) => {
         console.error("WebSocket error:", error);
         setError("WebSocket error occurred");
         ws.close(); // Ensure WebSocket is closed on error
       };
-  
+
       ws.onclose = () => {
         console.log("WebSocket closed for job:", jobId);
       };
-  
+
       if (isSubmit) {
         console.log("Code submitted successfully!");
       }
@@ -167,11 +170,11 @@ const EditorPage = () => {
       console.error(error);
       setError('An error occurred while submitting the code.');
       if (!user || !user.id) {
-        setError('Please sign in first')
+        setError('Please sign in first');
       }
       setOutput(null);
     }
-  };  
+  };
 
   const tabs = [
     { name: 'Console', value: 'console', current: activeTab === 'console' },
@@ -243,29 +246,41 @@ const EditorPage = () => {
           <>
             <div className="mt-4 flex space-x-4 justify-center">
               {apiTestCases.map((_, index) => (
-                <button
-                  key={index}
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    selectedTestCaseIndex === index
-                      ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
-                      : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
-                  }`}
-                  onClick={() => handleTestCaseSelection(index)}
-                >
-                  Case {index + 1}
-                </button>
+                <div key={index} className="flex items-center space-x-2">
+                  {/* Conditionally render icons based on passedPerCase[index] */}
+                  {passedPerCase[index] === false ? (
+                    <XCircleIcon className="h-6 w-6 text-red-500" />
+                  ) : passedPerCase[index] === true ? (
+                    <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                  ) : (
+                    // Neutral icon if value is undefined or null
+                    <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-400" /> // Neutral circle outline
+                  )}
+
+                  <button
+                    key={index}
+                    className={`px-4 py-2 text-sm font-medium rounded-md ${
+                      selectedTestCaseIndex === index
+                        ? 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                        : 'bg-gray-500 text-gray-200 hover:bg-gray-400'
+                    }`}
+                    onClick={() => handleTestCaseSelection(index)}
+                  >
+                    Case {index + 1}
+                  </button>
+                </div>
               ))}
             </div>
 
             {/* Selected Test Case Details */}
             {selectedTestCaseIndex !== null && (
               <div>
-                <TestCase 
-                  input={apiTestCases[selectedTestCaseIndex]} 
-                  expected_output={apiTestResults[selectedTestCaseIndex]} 
-                  actual_output={actualValues[selectedTestCaseIndex]} 
-                  passed={passedValues}
-                  />
+                <TestCase
+                  input={apiTestCases[selectedTestCaseIndex]}
+                  expected_output={apiTestResults[selectedTestCaseIndex]}
+                  actual_output={actualValues[selectedTestCaseIndex]}
+                  passed={passedPerCase[selectedTestCaseIndex]}
+                />
               </div>
             )}
           </>
@@ -277,10 +292,8 @@ const EditorPage = () => {
             ) : output?.console ? (
               <pre className="whitespace-pre-wrap">
                 {Array.isArray(output.console)
-                  // Join the array of strings and replace literal \n with real newlines
                   ? output.console.join('').replace(/\\n/g, '\n')
-                  : // If it's just a single string, replace \n as well
-                    output.console.replace(/\\n/g, '\n')}
+                  : output.console.replace(/\\n/g, '\n')}
               </pre>
             ) : error ? (
               <pre className="text-red-500">{error}</pre>
@@ -292,8 +305,12 @@ const EditorPage = () => {
       </div>
 
       {/* Right Side: Code Editor */}
-      <div className="w-full md:w-1/2 p-4 flex flex-col">
-        <MonacoEditorComponent onSubmit={handleCodeSubmission} questionId={problemId} starterCode={starterCode ?? '// no starter code found'}/>
+      <div className="w-full md:w-1/2 p-4 flex flex-col justify-between space-y-4">
+        <MonacoEditorComponent
+          questionId={problemId} 
+          starterCode={starterCode ?? 'no code found'} 
+          onSubmit={handleCodeSubmission}
+        />
       </div>
     </div>
   );
