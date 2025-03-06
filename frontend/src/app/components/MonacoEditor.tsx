@@ -15,6 +15,7 @@ interface MonacoEditorComponentProps {
 const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit, starterCode, questionId, onContentChange }) => {
   const [value, setValue] = useState<string>(starterCode);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(false);
+  const [isRunDisabled, setIsRunDisabled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { user, loading: authLoading } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -35,39 +36,35 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
   }, [starterCode]);
 
   useEffect(() => {
-    const checkQuestionCompletion = async () => {
-      if (user) {
-        try {
-          const { data, error } = await supabase
-            .from('completed_questions')
-            .select('question_id')
-            .eq('user_id', user.id)
-            .eq('question_id', questionId)
-            .single();
-  
-          if (error) {
-            console.error("Error fetching completed questions:", error);
-            setIsSubmitDisabled(false);
-            return;
-          }
-  
-          if (!data) {
-            setIsSubmitDisabled(false);
-          } else {
-            setIsSubmitDisabled(true);
-          }
-  
-        } catch (error) {
-          console.error("Unexpected error:", error);
-          setIsSubmitDisabled(false);
-        }
-      }
-    };
-
     if (!authLoading && user && questionId) {
       checkQuestionCompletion();
     }
   }, [user, questionId, authLoading]);
+
+  // Reusable function to check question completion
+  const checkQuestionCompletion = async () => {
+    if (!user || !questionId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('completed_questions')
+        .select('question_id')
+        .eq('user_id', user.id)
+        .eq('question_id', questionId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching completed questions:", error);
+        setIsSubmitDisabled(false);
+        return;
+      }
+
+      setIsSubmitDisabled(!!data); // Disable submit if question is completed, else enable
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      setIsSubmitDisabled(false); // Re-enable submit if there's an error
+    }
+  };
 
   const handleEditorChange = (newValue: string | undefined) => {
     const updatedValue = newValue || '';  
@@ -82,6 +79,7 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
     }
 
     setLoading(true);
+    setIsSubmitDisabled(true);  // Disable submit button immediately
 
     try {
       await onSubmit(value, 'python', isSubmit);
@@ -89,6 +87,24 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
       console.error("Error submitting code:", error);
     } finally {
       setLoading(false);
+      if (isSubmit) {
+        // Re-check completion status after submission
+        setTimeout(checkQuestionCompletion, 2000); // Delay to simulate re-check
+      }
+    }
+  };
+
+  const handleRun = async () => {
+    setLoading(true);
+    setIsRunDisabled(true); // Disable the "Run" button immediately when clicked
+
+    try {
+      await onSubmit(value, 'python', false);  // Pass false to indicate it's not a submit
+    } catch (error) {
+      console.error("Error running code:", error);
+    } finally {
+      setLoading(false);
+      setIsRunDisabled(false);  // Re-enable the "Run" button after processing
     }
   };
 
@@ -106,9 +122,9 @@ const MonacoEditorComponent: React.FC<MonacoEditorComponentProps> = ({ onSubmit,
         <div className="flex space-x-3">
           <button
             type="button"
-            onClick={() => handleSubmit(false)}
+            onClick={handleRun}
             className="rounded-md bg-indigo-200 dark:bg-indigo-300 px-3.5 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
-            disabled={loading}
+            disabled={isRunDisabled || loading}
           >
             {loading ? 'Running...' : 'Run'}
           </button>
