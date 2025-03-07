@@ -22,9 +22,7 @@ async def get_questions(
     Raises a WeeklyQuestionsError for network, status, or JSON errors.
     Returns a dict with keys 'easy' and 'hard' containing lists of questions.
     """
-    query_string = (
-        f"/random-questions?count={count}&difficulty="
-    )
+    query_string = f"/random-questions?count={count}&difficulty="
     url_easy = f"{BASE_URL}{query_string}{difficulty_easy}"
     url_hard = f"{BASE_URL}{query_string}{difficulty_hard}"
     print("Constructed URLs for easy and hard calls")

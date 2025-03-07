@@ -2,9 +2,7 @@ import random
 from db_client.db_client import supabase
 
 
-def generate_random_questions(
-    count=7, difficulty="introductory"
-):
+def generate_random_questions(count=7, difficulty="introductory"):
     print(
         (
             f"DEBUG: generate_random_questions called with count={count}, "
