@@ -8,7 +8,6 @@ from glide import (
     NodeAddress,
     Logger,
     LogLevel,
-    ClosingError,
 )
 from get_leaderboard import (
     get_leaderboard,
@@ -77,7 +76,7 @@ async def async_handler(event, context):
         return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
 
     cache_payload = leaderboard
-    print(f"DEBUG: cache_payload ready. Key to store = 'active_leaderboard'")
+    print("DEBUG: cache_payload ready. Key to store = 'active_leaderboard'")
 
     # Update the cache with the new data.
     key = "active_leaderboard"

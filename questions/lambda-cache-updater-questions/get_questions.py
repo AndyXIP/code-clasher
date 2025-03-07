@@ -1,7 +1,5 @@
 import httpx
-import json
 import datetime
-import dotenv
 import os
 
 BASE_URL = os.getenv("QUESTIONS_API_URL")

@@ -8,7 +8,6 @@ from glide import (
     NodeAddress,
     Logger,
     LogLevel,
-    ClosingError,
 )
 from get_questions import (
     get_questions,

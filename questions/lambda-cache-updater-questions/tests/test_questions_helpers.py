@@ -186,7 +186,8 @@ def test_get_day_start_with_reference():
 
 def test_format_questions_data():
     """
-    Test that format_questions_data() returns the expected structure, including the correct timestamp.
+    Test that format_questions_data() returns the expected structure,
+    including the correct timestamp.
     """
     # Sample input
     questions_data = {

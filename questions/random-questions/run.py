@@ -9,7 +9,6 @@ def lambda_handler(event, context):
 
         count = int(qs["count"]) if "count" in qs else None
         difficulty = qs.get("difficulty")
-        source = qs.get("source")
 
         # If count is None, or any parameter is not provided, the function's defaults will apply.
         questions = generate_random_questions(
