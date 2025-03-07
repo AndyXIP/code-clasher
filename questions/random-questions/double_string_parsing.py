@@ -1,5 +1,6 @@
 import json
 
+
 def remove_extra_string_layers(row: dict) -> dict:
     """
     Given a dictionary with 'inputs' and 'outputs' keys, both stored as text,

@@ -11,4 +11,3 @@ if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("Supabase credentials missing from .env")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-

@@ -1,4 +1,3 @@
-
 def get_leaderboard():
     pass
     """

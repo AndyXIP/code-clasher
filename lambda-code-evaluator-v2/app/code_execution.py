@@ -7,7 +7,9 @@ import resource
 
 def limit_resources():
     # Limit the address space to 256MB
-    resource.setrlimit(resource.RLIMIT_AS, (256 * 1024 * 1024, 256 * 1024 * 1024))
+    resource.setrlimit(
+        resource.RLIMIT_AS, (256 * 1024 * 1024, 256 * 1024 * 1024)
+    )
     # Limit CPU time to 5 seconds (this is in addition to the timeout)
     resource.setrlimit(resource.RLIMIT_CPU, (5, 5))
 
@@ -18,11 +20,14 @@ def execute_user_code_subprocess(user_code: str, test_cases: dict):
     input_cases = test_cases["inputs"]
 
     # Write user code to a temporary script file
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".py", mode="w") as temp_script:
+    with tempfile.NamedTemporaryFile(
+        delete=False, suffix=".py", mode="w"
+    ) as temp_script:
         temp_script_name = temp_script.name
 
         # Write imports needed for user code before writing user code
-        temp_script.write("""
+        temp_script.write(
+            """
 import json                          
 import math
 import collections
@@ -39,12 +44,14 @@ import random
 import typing
 from typing import List, Tuple, Dict, Set, Optional
 from collections import defaultdict, deque, Counter
-""")
+"""
+        )
         # THEN write user code
         temp_script.write(user_code + "\n\n")
 
         # Append wrapper code to process all test cases at once, capturing prints and errors separately
-        temp_script.write("""
+        temp_script.write(
+            """
 import sys
 import json
 import traceback
@@ -86,7 +93,8 @@ if __name__ == "__main__":
 
     # Print final output as JSON
     print(json.dumps({"outputs": results, "print_logs": print_logs, "errors": error_logs}))
-""")
+"""
+        )
 
     try:
         result = subprocess.run(
@@ -95,7 +103,7 @@ if __name__ == "__main__":
             capture_output=True,
             text=True,
             timeout=5,
-            preexec_fn=limit_resources
+            preexec_fn=limit_resources,
         )
     except subprocess.TimeoutExpired as e:
         return {"error": "Time limit exceeded."}
@@ -113,7 +121,6 @@ if __name__ == "__main__":
         return execution_result  # {"outputs": [...], "print_logs": [...], "errors": [...]}
     except json.JSONDecodeError:
         return {"error": "Failed to parse execution output."}
-
 
 
 def evaluate_results(test_cases, execution_result):
@@ -149,5 +156,5 @@ def evaluate_results(test_cases, execution_result):
         "console": console_logs if console_logs else None,
         "inputs": test_cases["inputs"],
         "expected_outputs": expected_outputs,
-        "actual_outputs": actual_outputs
+        "actual_outputs": actual_outputs,
     }

@@ -31,7 +31,7 @@ def add_pass_to_starter_method_body(starter_code: str) -> str:
             current_indent = len(line) - len(line.lstrip())
             expected_body_indent = current_indent + 4  # one extra indent level
             # If there's no next line or the next line is only whitespace, insert 'pass'
-            if i + 1 >= len(lines) or not lines[i+1].strip():
+            if i + 1 >= len(lines) or not lines[i + 1].strip():
                 new_lines.append(" " * expected_body_indent + "pass")
     return "\n".join(new_lines)
 
@@ -88,7 +88,9 @@ def extract_method_signature(starter_code: str):
 
     # Ensure exactly one method exists
     if len(methods) != 1:
-        raise ValueError("Starter code must contain exactly one method inside 'Solution'.")
+        raise ValueError(
+            "Starter code must contain exactly one method inside 'Solution'."
+        )
 
     # Extract method details
     method_name, method_ref = methods[0]
@@ -96,12 +98,15 @@ def extract_method_signature(starter_code: str):
 
     # Extract parameter details (excluding 'self')
     param_names = list(method_signature.parameters.keys())[1:]  # Skip 'self'
-    param_types = [param.annotation for param in list(method_signature.parameters.values())[1:]]  # Skip 'self'
+    param_types = [
+        param.annotation
+        for param in list(method_signature.parameters.values())[1:]
+    ]  # Skip 'self'
 
     return {
         "method_name": method_name,
         "param_count": len(param_names),
-        "param_types": param_types
+        "param_types": param_types,
     }
 
 
@@ -132,7 +137,10 @@ def validate_user_code(starter_code: str, user_code: str):
     # Compare parameter count
     if user_signature["param_count"] != expected_signature["param_count"]:
         print("Incorrect number of parameters in user code.")
-        return {"valid": False, "error": "Incorrect number of parameters in user code."}
+        return {
+            "valid": False,
+            "error": "Incorrect number of parameters in user code.",
+        }
 
     # (Optional) Compare parameter types
     expected_types = expected_signature["param_types"]
@@ -140,19 +148,21 @@ def validate_user_code(starter_code: str, user_code: str):
 
     if expected_types != user_types:
         print("Parameter types do not match the starter code.")
-        return {"valid": False, "error": "Parameter types do not match the starter code."}
+        return {
+            "valid": False,
+            "error": "Parameter types do not match the starter code.",
+        }
 
     # If everything passes:
     print("Validation success!")
     return {"valid": True, "message": "User code is valid!"}
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     from pprint import pprint
-    starter_code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        '
-    code_test = '\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000'
+
+    starter_code_test = "\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        "
+    code_test = "\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000"
 
     test_payload = {
         "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
@@ -161,11 +171,10 @@ if __name__ == '__main__':
         "code": code_test,
         "test_cases": {
             "inputs": [["Hello, my name is John"]],
-            "outputs": ['500']
+            "outputs": ["500"],
         },
-        "starter_code": starter_code_test
+        "starter_code": starter_code_test,
     }
-
 
     pprint(test_payload)  # Pretty-print for debugging
 

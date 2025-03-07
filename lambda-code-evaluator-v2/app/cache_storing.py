@@ -8,11 +8,11 @@ from glide import (
     LogLevel,
     NodeAddress,
     RequestError,
-    TimeoutError
+    TimeoutError,
 )
 
-VALKEY_HOST = "main-cache-mutbnm.serverless.eun1.cache.amazonaws.com" #os.getenv("VALKEY_HOST")
-VALKEY_PORT = 6379  #os.getenv("VALKEY_PORT")
+VALKEY_HOST = "main-cache-mutbnm.serverless.eun1.cache.amazonaws.com"  # os.getenv("VALKEY_HOST")
+VALKEY_PORT = 6379  # os.getenv("VALKEY_PORT")
 
 
 # ------------------------------
@@ -34,10 +34,7 @@ async def store_result_in_valkey(job_id, results):
         print("Connected to Valkey.")
 
         # Convert results to JSON string
-        results_json = json.dumps({
-            "status": "completed",
-            "output": results
-        })
+        results_json = json.dumps({"status": "completed", "output": results})
 
         # Store with a TTL (e.g., 300 seconds)
         TTL = 300

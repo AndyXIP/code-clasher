@@ -5,6 +5,7 @@ import asyncio
 from fastapi.testclient import TestClient
 from app import app  # This imports the FastAPI instance
 
+
 # --- Fake Valkey Client ---
 class FakeValkeyClient:
     def __init__(self):
@@ -15,22 +16,24 @@ class FakeValkeyClient:
         value = self.store.get(key)
         if value is not None:
             # In our app, the code expects a bytes object so we encode if it's a str.
-            return value.encode('utf-8') if isinstance(value, str) else value
+            return value.encode("utf-8") if isinstance(value, str) else value
         return None
 
     async def set(self, key, value):
         # Store the value as a string.
         if isinstance(value, bytes):
-            value = value.decode('utf-8')
+            value = value.decode("utf-8")
         self.store[key] = value
 
     async def close(self):
         pass
 
+
 # --- Pytest Fixtures ---
 @pytest.fixture
 def fake_valkey_client():
     return FakeValkeyClient()
+
 
 @pytest.fixture
 def client(fake_valkey_client, monkeypatch):
@@ -63,25 +66,33 @@ def test_job_result_websocket(client, fake_valkey_client):
             {
                 "test_input": [-10],
                 "expected": [0],
-                "actual": {"error": "NameError: name 'fortnite' is not defined"},
-                "passed": False
+                "actual": {
+                    "error": "NameError: name 'fortnite' is not defined"
+                },
+                "passed": False,
             },
             {
                 "test_input": [10],
                 "expected": [20],
-                "actual": {"error": "NameError: name 'fortnite' is not defined"},
-                "passed": False
+                "actual": {
+                    "error": "NameError: name 'fortnite' is not defined"
+                },
+                "passed": False,
             },
             {
                 "test_input": [7],
                 "expected": [17],
-                "actual": {"error": "NameError: name 'fortnite' is not defined"},
-                "passed": False
-            }
-        ]
+                "actual": {
+                    "error": "NameError: name 'fortnite' is not defined"
+                },
+                "passed": False,
+            },
+        ],
     }
     # Set the job result in the fake cache under the key "job:{job_id}"
-    asyncio.run(fake_valkey_client.set(f"job:{job_id}", json.dumps(job_result)))
+    asyncio.run(
+        fake_valkey_client.set(f"job:{job_id}", json.dumps(job_result))
+    )
 
     # Connect to the websocket endpoint.
     with client.websocket_connect(f"/ws/job-status/{job_id}") as websocket:
@@ -102,14 +113,17 @@ def test_job_result_websocket_timeout(client, fake_valkey_client, monkeypatch):
     # Force fake_valkey_client.get to always return None.
     async def always_none(key):
         return None
+
     monkeypatch.setattr(fake_valkey_client, "get", always_none)
 
     # Create a fake time function to simulate that time advances beyond the timeout.
     original_time = time.time()
+
     class TimeMock:
         def __init__(self, start):
             self.start = start
             self.calls = 0
+
         def __call__(self):
             self.calls += 1
             # On first call, return the actual start time.
@@ -117,12 +131,14 @@ def test_job_result_websocket_timeout(client, fake_valkey_client, monkeypatch):
             if self.calls > 1:
                 return self.start + 31
             return self.start
+
     time_mock = TimeMock(original_time)
     monkeypatch.setattr(time, "time", time_mock)
 
     # Override asyncio.sleep so that it doesn't actually wait.
     async def fake_sleep(duration):
         pass
+
     monkeypatch.setattr(asyncio, "sleep", fake_sleep)
 
     # Connect to the websocket endpoint.

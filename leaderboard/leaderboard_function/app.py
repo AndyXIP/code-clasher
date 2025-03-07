@@ -1,11 +1,12 @@
 import json
 from leaderboard import get_top_leaderboard_entries
 
+
 def lambda_handler(event, context):
     try:
         # Extract any query parameters (if needed)
         qs = event.get("queryStringParameters") or {}
-        
+
         # For example, let’s see if the user can pass 'count' via ?count=10
         count = int(qs["count"]) if "count" in qs else 5
 
@@ -16,7 +17,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps(leaderboard)
+            "body": json.dumps(leaderboard),
         }
     except Exception as e:
         # If something goes wrong, log and return a 500
@@ -24,5 +25,5 @@ def lambda_handler(event, context):
         return {
             "statusCode": 500,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"error": str(e)})
+            "body": json.dumps({"error": str(e)}),
         }

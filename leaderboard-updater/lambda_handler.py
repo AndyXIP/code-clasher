@@ -1,12 +1,12 @@
-import os
 import json
 from datetime import datetime
 from db_client import supabase
 
+
 def lambda_handler(event, context):
     """
     Lambda handler to take JSON data from API Gateway, either from the request body
-    or query string parameters, parse it, and insert the record into the 
+    or query string parameters, parse it, and insert the record into the
     'completed_questions' table in Supabase.
     Expected fields: user_id, question_id, difficulty, and optionally completed_at.
     """
@@ -24,22 +24,25 @@ def lambda_handler(event, context):
             print("DEBUG:", error_msg)
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": error_msg})
+                "body": json.dumps({"error": error_msg}),
             }
     else:
         # 2. If no body is provided, try to use query string parameters
         qs = event.get("queryStringParameters")
         if qs:
             print("DEBUG: No body found; using query string parameters:", qs)
-            data = qs  # data is already a dictionary containing user_id, question_id, difficulty, etc.
+            data = qs
+            # data is already a dictionary containing user_id, question_id, difficulty, etc.
         else:
-            error_msg = "No input data provided (neither body nor query parameters)."
+            error_msg = (
+                "No input data provided (neither body nor query parameters)."
+            )
             print("DEBUG:", error_msg)
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": error_msg})
+                "body": json.dumps({"error": error_msg}),
             }
-    
+
     # 3. Validate required fields
     required_fields = ["user_id", "problem_id", "difficulty"]
     for field in required_fields:
@@ -48,11 +51,11 @@ def lambda_handler(event, context):
             print("DEBUG:", error_msg)
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": error_msg})
+                "body": json.dumps({"error": error_msg}),
             }
 
     data["question_id"] = data.pop("problem_id")
-    
+
     # 4. Validate and process completed_at if provided
     if "completed_at" in data and data["completed_at"]:
         try:
@@ -63,14 +66,16 @@ def lambda_handler(event, context):
             print("DEBUG:", error_msg, e)
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": error_msg})
+                "body": json.dumps({"error": error_msg}),
             }
-    
+
     print("DEBUG: Final input data to be inserted:", data)
-    
+
     # 5. Insert data into Supabase 'completed_questions' table.
     try:
-        print("DEBUG: Inserting data into Supabase table 'completed_questions'...")
+        print(
+            "DEBUG: Inserting data into Supabase table 'completed_questions'..."
+        )
         response = supabase.table("completed_questions").insert(data).execute()
         print("DEBUG: Raw response from Supabase:", response)
         result = response.dict()
@@ -79,23 +84,18 @@ def lambda_handler(event, context):
             print("DEBUG: Supabase returned error:", error_msg)
             return {
                 "statusCode": 500,
-                "body": json.dumps({"error": error_msg})
+                "body": json.dumps({"error": error_msg}),
             }
     except Exception as e:
         error_msg = f"Failed to insert data: {str(e)}"
         print("DEBUG:", error_msg)
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": error_msg})
-        }
-    
+        return {"statusCode": 500, "body": json.dumps({"error": error_msg})}
+
     success_msg = "Data inserted successfully"
     print("DEBUG:", success_msg, "Inserted data:", result.get("data"))
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "message": success_msg,
-            "data": result.get("data")
-        })
+        "body": json.dumps(
+            {"message": success_msg, "data": result.get("data")}
+        ),
     }
-

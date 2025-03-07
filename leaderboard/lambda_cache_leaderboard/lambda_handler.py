@@ -10,7 +10,9 @@ from glide import (
     LogLevel,
     ClosingError,
 )
-from get_leaderboard import get_leaderboard  # Note: ensure function names match
+from get_leaderboard import (
+    get_leaderboard,
+)  # Note: ensure function names match
 
 # Load environment variables from .env file if needed
 load_dotenv()
@@ -23,13 +25,17 @@ async def initialize_valkey_client():
     """
     Initializes the Valkey client using Glide.
     """
-    host = os.getenv("VALKEY_HOST", "main-cache-mutbnm.serverless.eun1.cache.amazonaws.com")
+    host = os.getenv(
+        "VALKEY_HOST", "main-cache-mutbnm.serverless.eun1.cache.amazonaws.com"
+    )
     port = int(os.getenv("VALKEY_PORT", "6379"))
-    
+
     addresses = [NodeAddress(host, port)]
     config = GlideClientConfiguration(addresses=addresses, use_tls=True)
-    
-    print(f"DEBUG: Attempting to create Valkey client with host={host}, port={port}")
+
+    print(
+        f"DEBUG: Attempting to create Valkey client with host={host}, port={port}"
+    )
 
     try:
         client = await GlideClient.create(config)
@@ -56,7 +62,9 @@ async def async_handler(event, context):
         print("DEBUG: Exception while initializing Valkey client:", e)
         return {
             "statusCode": 500,
-            "body": json.dumps({"error": f"Valkey initialization failed: {str(e)}"})
+            "body": json.dumps(
+                {"error": f"Valkey initialization failed: {str(e)}"}
+            ),
         }
 
     # Try to get new leaderboard data.
@@ -66,10 +74,7 @@ async def async_handler(event, context):
         print("DEBUG: Successfully received leaderboard data.")
     except Exception as e:
         print(f"DEBUG: Error getting leaderboard: {e}")
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": str(e)})
-        }
+        return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
 
     cache_payload = leaderboard
     print(f"DEBUG: cache_payload ready. Key to store = 'active_leaderboard'")
@@ -84,13 +89,11 @@ async def async_handler(event, context):
         print(f"DEBUG: Error setting data in Valkey cache: {e}")
         return {
             "statusCode": 500,
-            "body": json.dumps({"error": f"Cache update failed: {str(e)}"})
+            "body": json.dumps({"error": f"Cache update failed: {str(e)}"}),
         }
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps(cache_payload)
-    }
+    return {"statusCode": 200, "body": json.dumps(cache_payload)}
+
 
 def lambda_handler(event, context):
     """
