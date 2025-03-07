@@ -7,6 +7,7 @@ on:
     paths:
       - 'leaderboard/leaderboard_function/**'
       - '!leaderboard/leaderboard_function/README.md'
+      - '.github/workflows/lambda-leaderboard-api.yml'
 
 jobs:
   build:

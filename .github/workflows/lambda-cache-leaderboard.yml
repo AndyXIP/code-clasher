@@ -7,6 +7,7 @@ on:
     paths:
       - 'leaderboard/lambda_cache_leaderboard/**'
       - '!leaderboard/lambda_cache_leaderboard/README.md'
+      - '.github/workflows/lambda-cache-leaderboard.yml'
 
 jobs:
   build:
