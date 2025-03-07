@@ -5,10 +5,12 @@ from db_client.db_client import supabase
 def generate_random_questions(
     count=7, difficulty="introductory", source="leetcode"
 ):
-    print((
-        f"DEBUG: generate_random_questions called with count={count}, "
-        f"difficulty={difficulty}, source={source}"
-    ))
+    print(
+        (
+            f"DEBUG: generate_random_questions called with count={count}, "
+            f"difficulty={difficulty}, source={source}"
+        )
+    )
 
     # Build the query for questions that haven't been seen
     query = supabase.table("questions_generated").select("*")
@@ -29,10 +31,12 @@ def generate_random_questions(
 
     # If there are not enough unseen questions, reset the seen flag and update id for all rows
     if len(questions) < count:
-        print((
-            "DEBUG: Not enough unseen questions; "
-            "resetting seen status and incrementing id for all rows."
-        ))
+        print(
+            (
+                "DEBUG: Not enough unseen questions; "
+                "resetting seen status and incrementing id for all rows."
+            )
+        )
         # Get all questions (ignoring seen flag)
         all_response = supabase.table("questions_test").select("*").execute()
         all_data = all_response.dict()
@@ -44,7 +48,9 @@ def generate_random_questions(
         # For each question, update: set seen=False and add 1000 to its id
         for q in all_questions:
             new_id = q["id"] + 1000
-            print(f"DEBUG: Updated question id {q['id']} to new id {new_id}, set seen to False.")
+            print(
+                f"DEBUG: Updated question id {q['id']} to new id {new_id}, set seen to False."
+            )
 
         # Re-run the query to get unseen questions (with filters)
         query = supabase.table("questions_generated").select("*")

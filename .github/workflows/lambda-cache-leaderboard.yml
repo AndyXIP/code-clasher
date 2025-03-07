@@ -10,11 +10,37 @@ on:
       - '.github/workflows/lambda-cache-leaderboard.yml'
 
 jobs:
+  lint-and-format:
+    name: Lint and Format Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Black and Flake8
+        run: |
+          pip install black flake8
+
+      - name: Run Black (Auto-format)
+        run: |
+          black leaderboard/lambda_cache_leaderboard --check
+
+      - name: Run Flake8 (Linting)
+        run: |
+          flake8 leaderboard/lambda_cache_leaderboard
+
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: leaderboard/lambda_cache_leaderboard
+    needs: lint-and-format
 
     steps:
       - name: Checkout code
