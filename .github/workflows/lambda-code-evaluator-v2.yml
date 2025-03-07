@@ -29,11 +29,11 @@ jobs:
 
       - name: Run Black (Auto-format)
         run: |
-          black . --check
+          black lambda-code-evaluator-v2 --check
 
       - name: Run Flake8 (Linting)
         run: |
-          flake8 .
+          flake8 lambda-code-evaluator-v2
 
   build:
     runs-on: ubuntu-latest
