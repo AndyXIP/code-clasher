@@ -2,7 +2,9 @@ import random
 from db_client.db_client import supabase
 
 
-def generate_random_questions(count=7, difficulty="introductory"):
+def generate_random_questions(
+    count=7, difficulty="introductory", source="leetcode"
+):
     print(
         (
             f"DEBUG: generate_random_questions called with count={count}, "
@@ -14,6 +16,8 @@ def generate_random_questions(count=7, difficulty="introductory"):
     query = supabase.table("questions_generated").select("*")
     if difficulty:
         query = query.eq("difficulty", difficulty)
+    if source:
+        query = query.eq("source", source)
     query = query.eq("seen", False)
 
     response = query.execute()
@@ -44,6 +48,12 @@ def generate_random_questions(count=7, difficulty="introductory"):
         # For each question, update: set seen=False and add 1000 to its id
         for q in all_questions:
             new_id = q["id"] + 1000
+            _ = (
+                supabase.table("questions_test")
+                .update({"seen": False, "id": new_id})
+                .eq("id", q["id"])
+                .execute()
+            )
             print(
                 f"DEBUG: Updated question id {q['id']} to new id {new_id}, set seen to False."
             )
@@ -52,6 +62,8 @@ def generate_random_questions(count=7, difficulty="introductory"):
         query = supabase.table("questions_generated").select("*")
         if difficulty:
             query = query.eq("difficulty", difficulty)
+        if source:
+            query = query.eq("source", source)
         query = query.eq("seen", False)
         response = query.execute()
         data = response.dict()
