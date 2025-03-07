@@ -39,7 +39,7 @@ def generate_random_questions(
         )
         # Get all questions (ignoring seen flag)
         all_response = (
-            supabase.table("questions_generation").select("*").execute()
+            supabase.table("questions_generated").select("*").execute()
         )
         all_data = all_response.dict()
         if all_data.get("error"):
@@ -51,7 +51,7 @@ def generate_random_questions(
         for q in all_questions:
             new_id = q["id"] + 1000
             _ = (
-                supabase.table("questions_generation")
+                supabase.table("questions_generated")
                 .update({"seen": False, "id": new_id})
                 .eq("id", q["id"])
                 .execute()
