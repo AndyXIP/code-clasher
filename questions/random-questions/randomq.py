@@ -38,7 +38,9 @@ def generate_random_questions(
             )
         )
         # Get all questions (ignoring seen flag)
-        all_response = supabase.table("questions_generation").select("*").execute()
+        all_response = (
+            supabase.table("questions_generation").select("*").execute()
+        )
         all_data = all_response.dict()
         if all_data.get("error"):
             error_msg = all_data["error"].get("message", "Unknown error")
