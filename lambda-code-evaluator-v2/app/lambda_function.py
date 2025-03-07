@@ -11,10 +11,12 @@ def process_submission(job_id, starter_code, user_code, test_cases):
     Returns a structured JSON response with status, execution results, and errors.
     """
     print("Entering process_submission()...")
-    print((
-        f"job_id: {job_id}, starter_code: {starter_code}, "
-        f"user_code: {user_code}, test_cases: {test_cases}"
-    ))
+    print(
+        (
+            f"job_id: {job_id}, starter_code: {starter_code}, "
+            f"user_code: {user_code}, test_cases: {test_cases}"
+        )
+    )
 
     # Ensure required fields are present
     if not user_code or not job_id or not test_cases or not starter_code:

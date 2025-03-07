@@ -159,8 +159,8 @@ def validate_user_code(starter_code: str, user_code: str):
 if __name__ == "__main__":
     from pprint import pprint
 
-    starter_code_test = "\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        " # noqa
-    code_test = "\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000" # noqa
+    starter_code_test = "\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        "  # noqa
+    code_test = "\nclass Solution:\n    def minDeletionSize(self, A: List[str]) -> int:\n        return 10000"  # noqa
 
     test_payload = {
         "job_id": "4ce96567-2739-4a01-aea0-2e73af90c0dc",
