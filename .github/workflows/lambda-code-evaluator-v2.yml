@@ -7,13 +7,43 @@ on:
     paths:
       - 'lambda-code-evaluator-v2/**'
       - '!lambda-code-evaluator-v2/README.md'
+      - '.github/workflows/lambda-code-evaluator-v2.yml'
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lambda-code-evaluator-v2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies for Linting
+        run: |
+          pip install --upgrade pip
+          pip install black flake8
+
+      - name: Run Black for code formatting
+        run: |
+          black --check .
+
+      - name: Run Flake8 for linting
+        run: |
+          flake8 .
+
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: lambda-code-evaluator-v2
+    needs: lint
 
     steps:
       - name: Checkout code
