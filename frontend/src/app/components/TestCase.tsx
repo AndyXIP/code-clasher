@@ -9,7 +9,7 @@ export default function TestCase({ input, expected_output, actual_output}: TestC
 
   const formatData = (data: any) => {
     if (typeof data === 'boolean') {
-      return data ? 'Passed' : 'Failed';
+      return data ? 'true' : 'false';
     }
     
     if (typeof data === 'object') {
