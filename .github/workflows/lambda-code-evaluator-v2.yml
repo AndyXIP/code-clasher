@@ -13,9 +13,6 @@ jobs:
   lint-and-format:
     name: Lint and Format Code
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: lambda-code-evaluator-v2
 
     steps:
       - name: Checkout code
