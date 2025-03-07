@@ -10,11 +10,40 @@ on:
       - '.github/workflows/lambda-code-evaluator-v2.yml'
 
 jobs:
+  lint-and-format:
+    name: Lint and Format Code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lambda-code-evaluator-v2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Black and Flake8
+        run: |
+          pip install black flake8
+
+      - name: Run Black (Auto-format)
+        run: |
+          black . --check
+
+      - name: Run Flake8 (Linting)
+        run: |
+          flake8 .
+
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: lambda-code-evaluator-v2
+    needs: lint-and-format
 
     steps:
       - name: Checkout code
