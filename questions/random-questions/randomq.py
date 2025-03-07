@@ -16,8 +16,8 @@ def generate_random_questions(
     query = supabase.table("questions_generated").select("*")
     if difficulty:
         query = query.eq("difficulty", difficulty)
-    if source:
-        query = query.eq("source", source)
+    # if source:
+    #     query = query.eq("source", source)
     query = query.eq("seen", False)
 
     response = query.execute()
@@ -64,8 +64,8 @@ def generate_random_questions(
         query = supabase.table("questions_generated").select("*")
         if difficulty:
             query = query.eq("difficulty", difficulty)
-        if source:
-            query = query.eq("source", source)
+        # if source:
+        #     query = query.eq("source", source)
         query = query.eq("seen", False)
         response = query.execute()
         data = response.dict()
