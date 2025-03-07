@@ -13,7 +13,6 @@ class WeeklyQuestionsError(Exception):
 
 async def get_questions(
     count=5,
-    source="leetcode",
     difficulty_easy="introductory",
     difficulty_hard="interview",
 ):
@@ -24,7 +23,7 @@ async def get_questions(
     Returns a dict with keys 'easy' and 'hard' containing lists of questions.
     """
     query_string = (
-        f"/random-questions?count={count}&source={source}&difficulty="
+        f"/random-questions?count={count}&difficulty="
     )
     url_easy = f"{BASE_URL}{query_string}{difficulty_easy}"
     url_hard = f"{BASE_URL}{query_string}{difficulty_hard}"
