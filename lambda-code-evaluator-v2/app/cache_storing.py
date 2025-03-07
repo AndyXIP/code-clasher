@@ -37,7 +37,6 @@ async def store_result_in_valkey(job_id, results):
         results_json = json.dumps({"status": "completed", "output": results})
 
         # Store with a TTL (e.g., 300 seconds)
-        TTL = 300
         key = f"job:{job_id}"
         print(f"Sending data to valkey at {key}")
         await client.set(key, results_json)
