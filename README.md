@@ -1,8 +1,8 @@
 # Code Clasher
 
-> **AWS-based programming puzzles platform with LLM-enhanced test suite generation system, Next.js + Vercel frontend, and a secure & scalable pipeline for execution of arbitrary user code.**
-
 ![Code Clasher Demo](https://img.shields.io/badge/Status-Archived-red) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazon-aws&logoColor=white) ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)
+
+AWS-based programming puzzles platform with LLM-enhanced test suite generation system, Next.js + Vercel frontend, and a secure & scalable pipeline for execution of arbitrary user code.
 
 **Demo (Archived):** [https://sse-team-project.vercel.app](https://sse-team-project.vercel.app)  
 **GitHub Repository:** [https://github.com/AndyXIP/sse-team-project](https://github.com/AndyXIP/sse-team-project)
