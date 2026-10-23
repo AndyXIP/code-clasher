@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "sh -c 'if command -v baum >/dev/null 2>&1 && baum hooks agent --check cursor before-submit-prompt >/dev/null 2>&1; then exec baum hooks agent cursor before-submit-prompt; fi; if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks cursor before-submit-prompt'"
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "sh -c 'if command -v baum >/dev/null 2>&1 && baum hooks agent --check cursor pre-compact >/dev/null 2>&1; then exec baum hooks agent cursor pre-compact; fi; if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks cursor pre-compact'"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "sh -c 'if command -v baum >/dev/null 2>&1 && baum hooks agent --check cursor session-end >/dev/null 2>&1; then exec baum hooks agent cursor session-end; fi; if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks cursor session-end'"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "sh -c 'if command -v baum >/dev/null 2>&1 && baum hooks agent --check cursor session-start >/dev/null 2>&1; then exec baum hooks agent cursor session-start; fi; if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks cursor session-start'"
+      }
+    ],
+    "stop": [
+      {
+        "command": "sh -c 'if command -v baum >/dev/null 2>&1 && baum hooks agent --check cursor stop >/dev/null 2>&1; then exec baum hooks agent cursor stop; fi; if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks cursor stop'"
+      }
+    ],
+    "subagentStart": [
+      {
+        "command": "sh -c 'if command -v baum >/dev/null 2>&1 && baum hooks agent --check cursor subagent-start >/dev/null 2>&1; then exec baum hooks agent cursor subagent-start; fi; if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks cursor subagent-start'"
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "sh -c 'if command -v baum >/dev/null 2>&1 && baum hooks agent --check cursor subagent-stop >/dev/null 2>&1; then exec baum hooks agent cursor subagent-stop; fi; if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks cursor subagent-stop'"
+      }
+    ]
+  },
+  "version": 1
+}
